@@ -1,0 +1,955 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>React Concepts Lab · Levelup</title>
+<script>
+/* apply the saved theme before first paint (same storage key as index.html) */
+(function(){ try{ var o=JSON.parse(localStorage.getItem('code-playground:v1')); if(o&&(o.theme==='light'||o.theme==='dark')) document.documentElement.setAttribute('data-theme',o.theme); }catch(e){} })();
+</script>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f5f8; --panel:#ffffff; --panel-2:#f1f3f7; --border:#e1e4ea; --text:#1a1e27; --muted:#667085;
+  --accent:#4f46e5; --accent-h:#4338ca; --accent-soft:#eceeff; --on-accent:#ffffff;
+  --good:#137a4b; --good-bg:#e5f6ed; --bad:#c0362c; --bad-bg:#fdecea; --warn:#9a5b06; --warn-bg:#fff3de;
+  --code-bg:#fbfbfd; --gutter:#f1f3f7; --shadow:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.06);
+  --mono: ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+    --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+    --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+    --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+  --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+  --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+  --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-padding-top:72px}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono)}
+.ev-runner{position:absolute;left:-9999px;top:0;width:320px;height:240px;border:0}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+code{font-family:var(--mono);font-size:.9em;background:var(--panel-2);border:1px solid var(--border);border-radius:5px;padding:1px 5px}
+a{color:var(--accent)}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;min-height:56px;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--accent);color:var(--on-accent);flex:none}
+.brand-name{font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.brand-sub{color:var(--muted);font-size:12px;padding-left:10px;border-left:1px solid var(--border);white-space:nowrap}
+.nav{display:flex;align-items:center;gap:2px;margin-left:12px;min-width:0;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;color:var(--muted);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap;flex:none}
+.nav a:hover{background:var(--panel-2);color:var(--text)}
+.nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.spacer{flex:1}
+.icon-btn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--panel-2);color:var(--text)}
+
+/* ---------- controls (shared look) ---------- */
+.btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel);font-weight:600;font-size:13px;white-space:nowrap;transition:background .15s,border-color .15s,box-shadow .15s}
+.btn:hover:not(:disabled){background:var(--panel-2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover:not(:disabled){background:var(--accent-h);border-color:var(--accent-h)}
+.btn.success{background:var(--good);border-color:var(--good);color:#fff}
+.btn.success:hover:not(:disabled){filter:brightness(1.08);background:var(--good)}
+.btn.danger{color:var(--bad)}
+.btn.sm{height:28px;padding:0 10px;font-size:12px}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover:not(:disabled){background:var(--panel-2)}
+.kbd{font-family:var(--mono);font-size:10px;opacity:.75;border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:2px}
+.input,.select,.textarea{width:100%;border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:7px 10px;min-height:34px;transition:border-color .15s,box-shadow .15s}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.pill{display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:99px;font-size:11px;font-weight:600;background:var(--panel-2);color:var(--muted)}
+.pill.easy{background:var(--good-bg);color:var(--good)}
+.pill.medium{background:var(--warn-bg);color:var(--warn)}
+.pill.hard{background:var(--bad-bg);color:var(--bad)}
+.pill.react{background:var(--accent-soft);color:var(--accent)}
+.tabs{display:flex;gap:2px}
+.tab{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-weight:600;font-size:13px}
+.tab:hover{background:var(--panel-2);color:var(--text)}
+.tab[aria-selected="true"]{background:var(--accent-soft);color:var(--accent)}
+.tab .count{font-size:11px;background:var(--panel-2);color:var(--muted);border-radius:99px;padding:0 6px}
+.tab[aria-selected="true"] .count{background:var(--panel);color:var(--accent)}
+.seg{display:inline-flex;flex-wrap:wrap;padding:3px;border-radius:9px;background:var(--panel-2);border:1px solid var(--border);gap:2px}
+.seg button{border:0;background:transparent;border-radius:7px;padding:5px 12px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button:hover{color:var(--text)}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--accent);box-shadow:var(--shadow)}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+.bar{height:6px;background:var(--panel-2);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--good);border-radius:99px;transition:width .3s}
+.spinner{width:12px;height:12px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--accent);animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+#toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;z-index:60}
+.toast{background:var(--text);color:var(--bg);padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);font-weight:600;font-size:13px;animation:fade .2s;max-width:340px}
+.toast.bad{background:var(--bad);color:var(--on-accent)}
+@keyframes fade{from{opacity:0}}
+
+/* ---------- console lines (same as index.html) ---------- */
+.log{display:flex;gap:8px;padding:6px 10px;border-radius:8px;font:12.5px/1.5 var(--mono);border:1px solid transparent;margin-bottom:4px}
+.log pre{margin:0;white-space:pre-wrap;word-break:break-word;font:inherit;flex:1;min-width:0}
+.log .ts{flex:none;color:var(--muted);font-size:11px;padding-top:1px}
+.log-log,.log-info,.log-debug{background:var(--panel-2)}
+.log-warn{background:var(--warn-bg);color:var(--warn)}
+.log-error{background:var(--bad-bg);color:var(--bad)}
+.log-result{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.log-meta{color:var(--muted);padding-left:2px}
+.log .lv{flex:none;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding-top:2px;min-width:34px}
+
+/* ---------- layout ---------- */
+.body{display:grid;grid-template-columns:276px minmax(0,1fr);align-items:start}
+.sidebar{position:sticky;top:56px;height:calc(100vh - 56px);height:calc(100dvh - 56px);display:flex;flex-direction:column;min-height:0;background:var(--panel);border-right:1px solid var(--border)}
+.side-top{padding:14px 14px 6px}
+.side-top h2{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.progress-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.qlist{flex:1;overflow:auto;padding:8px 8px 12px;display:grid;align-content:start;gap:2px}
+.qitem{position:relative;display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 10px;border:1px solid transparent;border-radius:9px;background:transparent;transition:background .12s}
+.qitem:hover{background:var(--panel-2)}
+.qitem.active{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)}
+.qstatus{flex:none;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);color:transparent}
+.qstatus.pass{background:var(--good);border-color:var(--good);color:var(--on-accent)}
+.qmain{display:grid;gap:1px;min-width:0}
+.qtitle{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qmeta{font-size:12px;color:var(--muted)}
+.grp{display:grid;gap:2px}
+.grp-h{display:flex;justify-content:space-between;gap:8px;padding:10px 10px 3px;font:700 11px var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.grp-h .n{font-weight:500;letter-spacing:0;text-transform:none}
+.pips{letter-spacing:1px;font-family:var(--mono);margin-right:4px}
+.pips .on{color:var(--good);font-weight:700}
+.side-foot{padding:10px 14px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}
+.main{padding:16px;min-width:0}
+.lesson{max-width:1020px;margin:0 auto;display:grid;gap:14px}
+.l-head h1{margin:0 0 2px;font-size:22px;letter-spacing:-.01em;line-height:1.3}
+.l-head p{margin:0}
+.sec{padding:16px 18px;min-width:0}
+.sec>h2{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:15px;letter-spacing:-.005em}
+.sec>h2 .num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:12px}
+.sec p{margin:0 0 10px}
+.sec p:last-child{margin-bottom:0}
+.explain p{font-size:14.5px;line-height:1.6;max-width:78ch}
+.analogy{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--accent-soft);color:var(--text);margin-top:4px}
+.analogy b{color:var(--accent)}
+.hint{font-size:12px;color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row.between{justify-content:space-between}
+
+/* ---------- editor + console ---------- */
+.editor-wrap{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--code-bg)}
+.editor-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.code{display:block;width:100%;border:0;outline:none;resize:vertical;background:transparent;color:var(--text);padding:12px 14px;white-space:pre;overflow:auto;tab-size:2;-moz-tab-size:2;font:13px/1.6 var(--mono);min-height:120px}
+.console{border:1px solid var(--border);border-radius:10px;background:var(--panel);margin-top:10px;overflow:hidden}
+.console-h{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border);background:var(--panel-2);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.console-h .st{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:500;display:flex;align-items:center;gap:6px}
+.console-b{padding:8px 10px;max-height:280px;overflow:auto;min-height:44px}
+.console-b .empty{color:var(--muted);font-size:13px;padding:4px 2px}
+.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}
+
+/* ---------- visual blocks ---------- */
+.viz-note{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+.viz-note.warn{background:var(--warn-bg);color:var(--warn);padding:6px 10px;border-radius:8px}
+.stepper{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.stepper .count{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.narr{padding:10px 12px;border-radius:10px;background:var(--panel-2);border:1px solid var(--border);margin:10px 0;min-height:44px}
+.narr b{color:var(--accent)}
+.split{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:12px}
+.codeview{margin:0;padding:8px 0;border:1px solid var(--border);border-radius:10px;background:var(--code-bg);font:12.5px/1.6 var(--mono);overflow:auto;counter-reset:l}
+.codeview .ln{display:block;padding:0 12px 0 0;white-space:pre;border-left:3px solid transparent}
+.codeview .ln::before{counter-increment:l;content:counter(l);display:inline-block;width:32px;padding-right:10px;text-align:right;color:var(--muted);opacity:.8}
+.codeview .ln.on{background:var(--accent-soft);border-left-color:var(--accent)}
+.scope{border:2px solid var(--border);border-radius:10px;padding:8px 10px 10px;margin-top:8px;background:color-mix(in srgb,var(--panel) 94%,var(--accent))}
+.scope.d0{margin-top:0;border-color:color-mix(in srgb,var(--accent) 40%,var(--border))}
+.scope.d1{border-color:color-mix(in srgb,var(--good) 45%,var(--border))}
+.scope.d2{border-color:color-mix(in srgb,var(--warn) 50%,var(--border))}
+.scope-h{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--muted);margin-bottom:4px}
+.scope-h b{color:var(--text);text-transform:none;letter-spacing:0;font-size:12.5px}
+.vars{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:2px 10px;font:12.5px/1.5 var(--mono);margin:2px 0}
+.vars .n{color:var(--muted)}
+.vars .v{word-break:break-word}
+.chg{background:var(--warn-bg);color:var(--warn);border-radius:4px;padding:0 5px;font-family:var(--sans);font-size:11px;font-weight:700;margin-left:6px}
+.fnbox{margin-top:6px;border:1px dashed var(--border);border-radius:8px;padding:4px 8px;font-size:12px;background:var(--panel)}
+.fnbox code{background:none;border:0;padding:0}
+.novars{font-size:12px;color:var(--muted);font-style:italic}
+.memtable{width:100%;border-collapse:collapse;font:12.5px var(--mono)}
+.memtable th{font:700 11px var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;padding:4px 8px;border-bottom:1px solid var(--border)}
+.memtable td{padding:4px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+.memtable tr.chg-row td{background:var(--warn-bg)}
+.memtable .kind{color:var(--muted)}
+.tdz{color:var(--bad);font-weight:700}
+.phase{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 9px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.phase.exec{background:var(--good-bg);color:var(--good)}
+
+/* event loop */
+.lanes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.lane{border:1px solid var(--border);border-radius:10px;background:var(--panel-2);padding:8px 8px 4px;min-height:170px;display:flex;flex-direction:column}
+.lane h4{margin:0 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;justify-content:space-between;gap:6px}
+.lane h4 span{font-weight:500;text-transform:none;letter-spacing:0}
+.lane-items{display:flex;flex-direction:column;flex:1}
+.lane.stack .lane-items{flex-direction:column-reverse;justify-content:flex-start}
+.chip{display:block;border:1px solid var(--border);border-left-width:4px;background:var(--panel);border-radius:8px;padding:4px 8px;font:12px/1.4 var(--mono);margin-bottom:6px;word-break:break-word}
+.chip.new{animation:pop .28s ease-out}
+.chip .k{display:block;font:700 10px var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.chip.micro{border-left-color:var(--accent)}
+.chip.macro{border-left-color:var(--warn);border-left-style:dashed}
+.chip.run{border-left-color:var(--good)}
+.chip.running{background:var(--good-bg);border-color:var(--good)}
+.chip.wait{border-style:dashed;opacity:.9}
+.lane-empty{font-size:12px;color:var(--muted);font-style:italic;padding:2px}
+@keyframes pop{from{opacity:0;transform:translateY(-6px) scale(.97)}}
+.waitbox{margin-top:auto;border-top:1px dashed var(--border);padding-top:6px}
+.waitbox h5{margin:0 0 4px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.consolebox{margin-top:10px}
+.consolebox .console-b{max-height:170px}
+
+/* timeline */
+.tl{margin-top:4px;padding-right:14px}
+.tl-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px;align-items:center;margin:5px 0}
+.tl-name{font:12px var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl-track{position:relative;height:24px;background:var(--panel-2);border-radius:6px;background-image:linear-gradient(to right,var(--border) 1px,transparent 1px);background-size:var(--tick,10%) 100%}
+.tl-bar{position:absolute;top:3px;bottom:3px;border-radius:5px;background:var(--accent);color:var(--on-accent);font-size:11px;font-weight:600;padding:0 6px;overflow:hidden;white-space:nowrap;line-height:18px;min-width:4px}
+.tl-bar.fail{background:var(--bad);color:var(--on-accent);background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.28) 0 4px,transparent 4px 8px)}
+.tl-axis{display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px;margin-top:2px}
+.tl-ticks{position:relative;height:16px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tl-ticks span{position:absolute;transform:translateX(-50%)}
+.tl-ticks span:first-child{transform:none}
+.tl-total{margin-top:8px;font-size:13px}
+.tl-logs{margin:8px 0 0;padding:0;list-style:none;font:12px var(--mono);display:grid;gap:2px}
+.tl-logs li{display:flex;gap:8px}
+.tl-logs .t{color:var(--muted);min-width:64px;text-align:right}
+.tl-mark{position:absolute;top:0;bottom:0;width:2px;background:var(--warn)}
+
+/* this helper */
+.fc{display:grid;gap:8px}
+.fc-node{border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--panel)}
+.fc-node.q{border-left:4px solid var(--accent)}
+.fc-node.done{border-left:4px solid var(--good);background:var(--good-bg)}
+.fc-node .ans{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.fc-node .picked{font-size:12px;font-weight:700;color:var(--good)}
+.fc-arrow{text-align:center;color:var(--muted);line-height:1;font-size:14px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{font:700 11px var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--border)}
+.tbl td{padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+.tbl pre{margin:0;font:12px/1.5 var(--mono);white-space:pre-wrap;word-break:break-word}
+.tbl tr.sel td{background:var(--accent-soft)}
+.tblwrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
+.tblwrap .tbl{min-width:560px}
+
+/* equality */
+.mxwrap{overflow:auto;border:1px solid var(--border);border-radius:10px;max-height:460px}
+.mx{border-collapse:separate;border-spacing:0;font:12px var(--mono)}
+.mx th{position:sticky;top:0;z-index:2;background:var(--panel-2);padding:4px 6px;font-weight:600;white-space:nowrap;border-bottom:1px solid var(--border)}
+.mx th.rh{left:0;top:auto;z-index:1;text-align:right;border-right:1px solid var(--border);border-bottom:0}
+.mx th.corner{left:0;z-index:3}
+.mx td{padding:0;border:0}
+.mx button{display:block;width:34px;height:28px;border:1px solid var(--panel);border-radius:5px;font:700 12px var(--mono);background:var(--panel-2);color:var(--muted)}
+.mx button.t{background:var(--good-bg);color:var(--good)}
+.mx button.f{background:var(--bad-bg);color:var(--bad)}
+.mx button.sel{outline:2px solid var(--accent);outline-offset:-2px}
+.vals{display:flex;flex-wrap:wrap;gap:6px}
+.vals button{border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:3px 9px;font:12.5px var(--mono)}
+.vals button:hover{background:var(--panel-2)}
+.vals button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:700}
+.pair{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:10px 0}
+.pair div{border:1px solid var(--border);border-radius:10px;padding:8px 10px;background:var(--panel)}
+.pair .l{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.pair .r{font:700 18px var(--mono)}
+.pair .r.t{color:var(--good)}
+.pair .r.f{color:var(--bad)}
+
+/* quiz */
+.qz{display:grid;gap:14px}
+.qcard{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--panel)}
+.qcard.pass{border-left:4px solid var(--good)}
+.qcard.fail{border-left:4px solid var(--bad)}
+.qcard h3{margin:0 0 8px;font-size:13px;display:flex;gap:8px;align-items:center}
+.qcard h3 .badge{font-size:12px;font-weight:700;padding:1px 9px;border-radius:99px}
+.badge.pass{background:var(--good-bg);color:var(--good)}
+.badge.fail{background:var(--bad-bg);color:var(--bad)}
+.badge.todo{background:var(--panel-2);color:var(--muted)}
+.codeblock{margin:0 0 10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--code-bg);font:12.5px/1.6 var(--mono);overflow:auto;white-space:pre;tab-size:2}
+.opts{display:grid;gap:6px;margin:0 0 10px;padding:0;border:0;min-width:0}
+.opts legend{font-size:12px;font-weight:700;color:var(--muted);padding:0;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);border-radius:9px;padding:7px 10px;background:var(--panel);cursor:pointer}
+.opt:hover{background:var(--panel-2)}
+.opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.opt:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.opt input{margin-top:4px;accent-color:var(--accent)}
+.opt pre{margin:0;font:12.5px/1.5 var(--mono);white-space:pre-wrap;word-break:break-word}
+.typed{margin-top:6px}
+.typed .textarea{font:12.5px/1.5 var(--mono);min-height:64px;resize:vertical}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.cmp>div{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--panel)}
+.cmp h4{margin:0;padding:4px 10px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--panel-2);border-bottom:1px solid var(--border)}
+.cmp pre{margin:0;padding:8px 10px;font:12.5px/1.5 var(--mono);white-space:pre-wrap;word-break:break-word}
+.cmp .ok h4{background:var(--good-bg);color:var(--good)}
+.cmp .no h4{background:var(--bad-bg);color:var(--bad)}
+.why{font-size:13px;padding:8px 10px;border-radius:9px;background:var(--panel-2)}
+.why b{color:var(--accent)}
+
+/* cheat sheet */
+.cheat{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cheat h3{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.cheat ul{margin:0;padding-left:18px}
+.cheat li{margin:4px 0}
+.cheat .mistakes li::marker{color:var(--bad);content:"✗  "}
+.cheat .keys li::marker{color:var(--good);content:"✓  "}
+
+@media (max-width:1240px){
+  .brand-sub{display:none}
+}
+@media (max-width:960px){
+  .topbar{position:static;flex-wrap:wrap;padding:8px 16px;row-gap:6px}
+  .brand-sub{display:none}
+  .nav{order:3;flex:1 0 100%;margin-left:0;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+  .spacer{display:block}
+  .body{grid-template-columns:minmax(0,1fr)}
+  .sidebar{position:static;height:auto;border-right:0;border-bottom:1px solid var(--border)}
+  .qlist{display:flex;overflow-x:auto;padding:4px 12px 10px;gap:6px;-webkit-overflow-scrolling:touch}
+  .grp{display:flex;align-items:center;gap:6px;flex:none}
+  .grp+.grp{border-left:1px solid var(--border);padding-left:8px}
+  .grp-h{padding:0 4px;white-space:nowrap}
+  .grp-h .n{display:none}
+  .qitem{width:auto;flex:none;border-color:var(--border)}
+  .qtitle{overflow:visible}
+  .side-foot{padding:8px 16px 12px}
+  .split{grid-template-columns:minmax(0,1fr)}
+  .lanes{grid-template-columns:minmax(0,1fr)}
+  .lane{min-height:0}
+  .cheat,.cmp{grid-template-columns:minmax(0,1fr)}
+  .sec{padding:14px}
+}
+@media (max-width:560px){
+  .btn .lbl-long{display:none}
+  .main{padding:12px 16px}
+  .l-head h1{font-size:19px}
+  .tl-row,.tl-axis{grid-template-columns:70px minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* ---- React Concepts additions (on top of the JS Concepts shell styles) ---- */
+.topic{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 8px;border-radius:8px;color:var(--text);text-decoration:none;font-size:13px}
+.topic:hover{background:var(--panel-2)}
+.topic.active{background:var(--accent-soft);color:var(--accent)}
+.topic .tn{display:grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--panel-2);color:var(--muted);font-size:11px;font-weight:700}
+.topic.active .tn{background:var(--accent);color:var(--on-accent)}
+.topic .tt{display:grid;gap:1px;min-width:0}
+.topic .tl{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topic .ts{color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topic.active .ts{color:var(--accent);opacity:.8}
+.topic .td{font-size:11px;font-weight:700;color:var(--muted);background:var(--panel-2);border-radius:99px;padding:1px 7px;display:inline-flex;align-items:center;gap:3px}
+.topic .td.ok{background:var(--good-bg);color:var(--good)}
+.out-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:12px}
+.preview{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--panel)}
+.preview .console-h{border-bottom:1px solid var(--border)}
+.preview-b{min-height:180px;background:#fff;position:relative}
+.preview-b .empty{color:#98a2b3;padding:16px;font-size:13px}
+.preview-frame{display:block;width:100%;height:100%;min-height:180px;border:0;background:#fff}
+.preview-b:has(.preview-frame) .empty{display:none}
+.st.ok{color:var(--good)} .st.bad{color:var(--bad)}
+.ok{color:var(--good)} .bad{color:var(--bad)} .warn{color:var(--warn)}
+.pill.ok{background:var(--good-bg);color:var(--good)}
+.rq{border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-top:12px;background:var(--panel)}
+.rq-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.rq-n{font-weight:800;font-size:12px;color:var(--muted);letter-spacing:.04em}
+.rq-st{font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px}
+.rq .codeblock{margin:0 0 10px}
+.rq-opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.rq-opt{display:flex;gap:10px;align-items:flex-start;text-align:left;padding:8px 10px;border:1px solid var(--border);border-radius:9px;background:var(--panel);cursor:pointer;transition:border-color .15s,background .15s}
+.rq-opt:hover:not(:disabled){background:var(--panel-2);border-color:var(--accent)}
+.rq-opt:disabled{cursor:default;opacity:.85}
+.rq-opt .rq-k{flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--panel-2);font-size:11px;font-weight:800;color:var(--muted)}
+.rq-opt pre{margin:0;font:12.5px/1.45 var(--mono);white-space:pre-wrap;word-break:break-word;color:var(--text)}
+.rq-opt.right{border-color:var(--good);background:var(--good-bg)} .rq-opt.right .rq-k{background:var(--good);color:#fff}
+.rq-opt.wrong{border-color:var(--bad);background:var(--bad-bg)} .rq-opt.wrong .rq-k{background:var(--bad);color:#fff}
+.rq-result{margin-top:10px;display:grid;gap:8px}
+.rq-actual pre{margin:4px 0 0;padding:8px 10px;border-radius:8px;background:var(--code-bg,var(--panel-2));border:1px solid var(--border);font:12.5px/1.45 var(--mono);white-space:pre-wrap}
+.cheat-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.cheat-grid h3{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.cheat-grid ul{margin:0;padding-left:18px;display:grid;gap:5px}
+.cheat-grid ul.bad li::marker{color:var(--bad)}
+.cheat-grid ul li::marker{color:var(--good)}
+.toast.bad{border-color:var(--bad);color:var(--bad)}
+@media (max-width:900px){ .out-grid,.cheat-grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" id="logo"></span>
+    <span class="brand-name">Levelup</span>
+    <span class="brand-sub">React concepts lab</span>
+  </div>
+  <nav class="nav" aria-label="Levelup pages" data-levelup-nav></nav>
+  <div class="spacer"></div>
+  <button class="icon-btn" id="theme-btn" aria-label="Toggle light/dark theme"></button>
+</header>
+
+<div class="body">
+  <aside class="sidebar" aria-label="Lessons">
+    <div class="side-top">
+      <h2>React concepts</h2>
+      <div id="progress"></div>
+    </div>
+    <nav class="qlist" id="topics" aria-label="Topics"></nav>
+    <div class="side-foot"><span>Predict-the-output quizzes count toward progress.</span><button class="btn sm ghost" id="reset-progress" title="Clear saved progress">Reset</button></div>
+  </aside>
+  <main class="main" id="main" tabindex="-1">
+    <article class="lesson" id="lesson"></article>
+  </main>
+</div>
+<div id="toasts" aria-live="polite"></div>
+<div class="sr-only" id="live" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+'use strict';
+/* ==========================================================================
+   Sandbox. Student code runs ONLY inside a sandboxed iframe (allow-scripts, no
+   same-origin) that loads React, ReactDOM and Babel from the same CDN as React Lab.
+   The frame compiles JSX with Babel, runs it, forwards console output to us and
+   reports "done" once the console has been quiet for a moment (so effects and
+   re-renders have settled).
+   ========================================================================== */
+const CDN={
+  react:'https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.development.js',
+  dom:'https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.development.js',
+  babel:'https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js'
+};
+/* Everything below is stringified into the frame. Keep it ES5-ish and self-contained. */
+function frameMain(){
+  var NONCE=document.currentScript.getAttribute('data-nonce');
+  var CODE=document.getElementById('user-code').textContent;
+  function send(type,payload){ parent.postMessage({__rc:NONCE,type:type,payload:payload},'*'); }
+  function fmt(v){
+    var t=typeof v;
+    if(t==='string') return v;
+    if(t==='function') return '[Function'+(v.name?': '+v.name:'')+']';
+    if(t==='symbol') return v.toString();
+    if(v===undefined) return 'undefined';
+    if(v===null) return 'null';
+    if(v instanceof Error) return v.name+': '+v.message;
+    if(t==='object'){
+      if(v.$$typeof) return '<'+(typeof v.type==='string'?v.type:(v.type&&v.type.name)||'Component')+' />';
+      try{ return JSON.stringify(v,function(k,x){ return typeof x==='function'?'[Function]':x; }); }catch(e){ return String(v); }
+    }
+    return String(v);
+  }
+  var idle=null, finished=false;
+  function bump(){ clearTimeout(idle); idle=setTimeout(function(){ if(!finished){ finished=true; send('done'); } },700); }
+  ['log','info','warn','error'].forEach(function(k){
+    var orig=console[k];
+    console[k]=function(){
+      var args=Array.prototype.slice.call(arguments), text=args.map(fmt).join(' ');
+      // React's dev-mode warnings are useful but noisy; keep them short.
+      if(k==='error'&&/^Warning: /.test(text)){ text='React warning: '+text.replace(/^Warning: /,'').split('\n')[0].replace(/%s/g,function(){ return fmt(args.splice(1,1)[0]); }); k='warn'; }
+      send('log',{kind:k==='info'?'log':k,text:text}); bump();
+      try{ orig.apply(console,arguments); }catch(e){}
+    };
+  });
+  window.addEventListener('error',function(e){ send('log',{kind:'error',text:(e.error&&(e.error.name+': '+e.error.message))||String(e.message)}); bump(); });
+  window.addEventListener('unhandledrejection',function(e){ send('log',{kind:'error',text:'Unhandled rejection: '+fmt(e.reason)}); bump(); });
+  var rendered=false;
+  var realRoot=ReactDOM.createRoot(document.getElementById('root'));
+  window.root={ render:function(el){ rendered=true; realRoot.render(el); }, unmount:function(){ realRoot.unmount(); } };
+  var PRE='const {useState,useEffect,useLayoutEffect,useRef,useMemo,useCallback,useContext,createContext,useReducer,memo,Fragment,forwardRef,StrictMode}=React;\n';
+  var POST='\n;window.__App=(typeof App!=="undefined")?App:undefined;';
+  try{
+    var out=Babel.transform(PRE+CODE+POST,{presets:['react'],sourceType:'script',retainLines:true}).code;
+    (0,eval)(out);
+    if(!rendered&&typeof window.__App==='function'){ realRoot.render(React.createElement(window.__App)); }
+  }catch(e){
+    send('log',{kind:'error',text:(e.name||'Error')+': '+String(e.message).replace(/^unknown: /,'').split('\n')[0]});
+  }
+  bump();
+}
+const FRAME_CSS='html,body{margin:0}body{font:13px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#111;background:#fff;padding:10px}button,input,select{font:inherit}button{padding:4px 10px;border-radius:6px;border:1px solid #c9ced8;background:#f6f7fa;cursor:pointer}button:hover{background:#eceef3}input{padding:4px 8px;border-radius:6px;border:1px solid #c9ced8}ul{margin:6px 0;padding-left:20px}.box{border:1px solid #c9ced8;border-radius:8px;padding:8px 10px;margin:6px 0}';
+const newNonce=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+function buildDoc(code,nonce){
+  const safe=s=>String(s).replace(/<\/script/gi,'<\\/script').replace(/<!\x2d\x2d/g,'<\\!--');
+  const js=safe('('+frameMain+')();');
+  return '<!doctype html><html><head><meta charset="utf-8"><style>'+FRAME_CSS+'</style></head><body><div id="root"></div>'
+    +'<script type="text/plain" id="user-code">'+safe(code)+'<\/script>'
+    +['react','dom','babel'].map(k=>'<script src="'+CDN[k]+'"><\/script>').join('')
+    +'<script data-nonce="'+nonce+'">'+js+'<\/script></body></html>';
+}
+const TIMEOUT_MS=12000;
+/* run(code, {mount, onLog, onDone}) → {cancel}. mount: element to show the live preview in (optional). */
+function run(code,opts){
+  opts=opts||{};
+  const nonce=newNonce(); const f=document.createElement('iframe');
+  f.setAttribute('sandbox','allow-scripts'); f.title='React preview'; f.className='preview-frame';
+  if(!opts.mount){ f.style.cssText='position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px'; }
+  let done=false, timer=null;
+  const finish=err=>{ if(done) return; done=true; clearTimeout(timer); window.removeEventListener('message',onMsg); if(!opts.mount) f.remove(); opts.onDone&&opts.onDone(err||null); };
+  const onMsg=e=>{ const d=e.data; if(!d||d.__rc!==nonce) return; if(d.type==='log') opts.onLog&&opts.onLog(d.payload); else if(d.type==='done') finish(); };
+  window.addEventListener('message',onMsg);
+  timer=setTimeout(()=>finish('Timed out after '+(TIMEOUT_MS/1000)+'s. The sandbox loads React from a CDN, so check your connection.'),TIMEOUT_MS);
+  f.srcdoc=buildDoc(code,nonce);
+  (opts.mount||document.body).appendChild(f);
+  return {cancel:()=>finish('cancelled')};
+}
+const normOut=s=>String(s).replace(/\r/g,'').split('\n').map(l=>l.replace(/\s+$/,'')).join('\n').replace(/^\n+|\n+$/g,'');
+
+/* ---------- small helpers / theme (shared storage with the other Levelup pages) ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const P={
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+  play:'<path d="m6 4 14 8-14 8z"/>', reset:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>', x:'<path d="M18 6 6 18M6 6l12 12"/>', next:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  react:'<circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/>'
+};
+const ic=(n,s=16)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+function announce(msg){ const l=$('#live'); if(!l) return; l.textContent=''; setTimeout(()=>{ l.textContent=msg; },30); }
+function toast(msg,bad){ const t=document.createElement('div'); t.className='toast'+(bad?' bad':''); t.textContent=msg; $('#toasts').appendChild(t); setTimeout(()=>t.remove(),3200); }
+const KEY='code-playground:v1';
+const PKEY='code-playground:react-concepts:v1';
+function readJSON(k){ try{ const o=JSON.parse(localStorage.getItem(k)); return o&&typeof o==='object'?o:null; }catch(e){ return null; } }
+function writeJSON(k,o){ try{ localStorage.setItem(k,JSON.stringify(o)); return true; }catch(e){ return false; } }
+function getTheme(){ const o=readJSON(KEY); return o&&(o.theme==='light'||o.theme==='dark')?o.theme:null; }
+function setTheme(t){ const o=readJSON(KEY)||{}; o.theme=t; writeJSON(KEY,o); }
+let themeState=getTheme();
+const isDark=()=>themeState?themeState==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+function applyTheme(){
+  if(themeState) document.documentElement.dataset.theme=themeState; else delete document.documentElement.dataset.theme;
+  $('#theme-btn').innerHTML=ic(isDark()?'sun':'moon',18); $('#theme-btn').title=isDark()?'Switch to light theme':'Switch to dark theme';
+}
+let PR={done:{},topic:'jsx'};
+function loadProgress(){ const o=readJSON(PKEY); if(o){ PR.done=o.done&&typeof o.done==='object'?o.done:{}; if(typeof o.topic==='string') PR.topic=o.topic; } }
+function saveProgress(){ writeJSON(PKEY,PR); }
+const doneList=t=>Array.isArray(PR.done[t.id])?PR.done[t.id]:[];
+const isDone=(t,qid)=>doneList(t).indexOf(qid)>=0;
+function markDone(t,qid){ if(isDone(t,qid)) return; PR.done[t.id]=doneList(t).concat([qid]); saveProgress(); renderSidebar(); }
+const IS_MAC=/Mac|iPhone|iPad/.test(navigator.platform);
+const RUN_KEY=IS_MAC?'⌘ + Enter':'Ctrl + Enter';
+
+/* ==========================================================================
+   Lesson content. Code strings avoid backticks and dollar-brace so they can sit
+   inside template literals. React hooks and a `root` are already in scope inside
+   the sandbox; a component called App is rendered automatically.
+   ========================================================================== */
+const GROUPS=['Rendering','State','Effects & refs','Performance & patterns'];
+const TOPICS=[
+{
+  id:'jsx',group:'Rendering',title:'JSX & elements',tag:'JSX is just a function call that returns a plain object',
+  explain:[
+    '<b>JSX</b> is syntax sugar. <code>&lt;h1 className="t"&gt;Hi&lt;/h1&gt;</code> compiles to <code>React.createElement("h1", {className: "t"}, "Hi")</code>, which returns a small plain object called an <b>element</b>: <code>{type, props, key}</code>. Nothing is put on the screen until a root renders that element.',
+    'Anything inside <code>{ }</code> is an ordinary JavaScript <b>expression</b>. Because of that, <code>false</code>, <code>null</code> and <code>undefined</code> render nothing but <code>0</code> and <code>""</code> are real values and <code>0</code> <em>is</em> shown. A component name must start with a capital letter or JSX treats it as an HTML tag.',
+    'A component can only return one root node, so use a <b>fragment</b> <code>&lt;&gt;…&lt;/&gt;</code> to group siblings without adding a wrapper element to the DOM.'
+  ],
+  analogy:'An element is a <b>recipe card</b>, not the dish. Writing JSX fills in the card; React only cooks when a root renders it, and it can compare two cards cheaply to decide what changed.',
+  variants:[
+    {id:'v1',label:'What an element really is',code:"const el = <h1 className=\"title\">Hello</h1>;\n\nconsole.log(typeof el);\nconsole.log(el.type, el.props.className, el.props.children);\n\n// Nothing renders until a root renders the element:\nroot.render(el);\n",expect:'object\nh1 title Hello'},
+    {id:'v2',label:'Expressions and falsy values',code:"function App() {\n  const items = [];\n  const user = null;\n  return (\n    <ul>\n      <li>{items.length && 'has items'}</li>   {/* renders 0 */}\n      <li>{items.length > 0 && 'has items'}</li> {/* renders nothing */}\n      <li>{user ? user.name : 'guest'}</li>\n      <li>{null}{undefined}{false}</li>          {/* all empty */}\n    </ul>\n  );\n}\n\nconst el = <App />;\nconsole.log(el.type === App, Object.keys(el.props).length);\n",expect:'true 0'},
+    {id:'v3',label:'Children and fragments',code:"const list = (\n  <ul>\n    {[1, 2, 3].map(n => <li key={n}>{n}</li>)}\n  </ul>\n);\nconsole.log(Array.isArray(list.props.children), list.props.children.length);\n\nfunction App() {\n  return (\n    <>\n      <p>Two siblings,</p>\n      <p>no wrapper div.</p>\n    </>\n  );\n}\nconsole.log((<App />).type === App);\n",expect:'true 3\ntrue'}
+  ],
+  quiz:[
+    {id:'q1',code:"const el = <p>{0 && 'hidden'}</p>;\nconsole.log(el.props.children);",options:['0','hidden','false','undefined'],answer:0,why:'<code>0 &amp;&amp; …</code> evaluates to <code>0</code>, and <code>0</code> is a real child. This is the classic "why is there a stray 0 on my page" bug; use <code>items.length &gt; 0 &amp;&amp;</code> instead.'},
+    {id:'q2',code:"function Box() { return <div />; }\nconst a = <div />;\nconst b = <Box />;\nconsole.log(typeof a, a.type, typeof b.type);",options:['object div function','function div object','object object function','string div function'],answer:0,why:'Elements are plain objects. For a host element <code>type</code> is the tag name string; for a component it is the component function itself.'},
+    {id:'q3',code:"const el = (\n  <section>\n    <h2>Title</h2>\n    text\n  </section>\n);\nconsole.log(el.props.children.length, typeof el.props.children[1]);",options:['2 string','1 object','2 object','undefined undefined'],answer:0,why:'Two children: the <code>&lt;h2&gt;</code> element and the trimmed text <code>"text"</code>. Whitespace-only lines between them are dropped by the JSX compiler.'}
+  ],
+  cheat:{keys:['JSX → <code>React.createElement</code> → a plain <code>{type, props}</code> object.','<code>{ }</code> takes any expression; <code>false/null/undefined</code> render nothing, <code>0</code> and <code>""</code> do render.','Components start with a capital letter; lowercase names become HTML tags.','Fragments <code>&lt;&gt;…&lt;/&gt;</code> group children without extra DOM.'],mistakes:['<code>{list.length &amp;&amp; &lt;List/&gt;}</code> renders <code>0</code> for an empty list.','Returning two siblings without a fragment is a syntax error.','Using <code>class</code> instead of <code>className</code>, or <code>for</code> instead of <code>htmlFor</code>.']}
+},
+{
+  id:'components',group:'Rendering',title:'Components & props',tag:'Functions that take props and return elements',
+  explain:[
+    'A <b>component</b> is a function that receives one argument, <b>props</b>, and returns elements. Props are how a parent configures a child; they flow <b>down</b> only, and they are <b>read-only</b>: a component must never change the props it receives.',
+    'Whatever you put between a component\'s opening and closing tags arrives as <code>props.children</code>, which makes wrappers like cards, layouts and modals easy. Default values come from ordinary destructuring defaults: <code>{name = "friend"}</code>.',
+    'React calls your component every time it needs to know what the UI should look like, so it must be <b>pure</b>: same props and state in, same JSX out, no side effects during render.'
+  ],
+  analogy:'A component is a <b>coffee machine</b>: props are the buttons you press. You can press different buttons to get different drinks, but the customer cannot rewire the machine from the outside.',
+  variants:[
+    {id:'v1',label:'Props and defaults',code:"function Greet({ name = 'friend', punct = '!' }) {\n  console.log('render Greet:', name);\n  return <p>Hello, {name}{punct}</p>;\n}\n\nfunction App() {\n  return (\n    <>\n      <Greet />\n      <Greet name=\"Ada\" />\n      <Greet name=\"Grace\" punct=\"?\" />\n    </>\n  );\n}\n",expect:'render Greet: friend\nrender Greet: Ada\nrender Greet: Grace'},
+    {id:'v2',label:'children as a prop',code:"function Card({ title, children }) {\n  return (\n    <div className=\"box\">\n      <strong>{title}</strong>\n      {children}\n    </div>\n  );\n}\n\nfunction App() {\n  const card = (\n    <Card title=\"Tip\">\n      <p>Anything between the tags is children.</p>\n    </Card>\n  );\n  console.log(card.props.title, card.props.children.type);\n  return card;\n}\n",expect:'Tip p'},
+    {id:'v3',label:'Props are read-only',code:"function Badge(props) {\n  console.log('props frozen?', Object.isFrozen(props));\n  props.label = 'changed';    // silently ignored (throws in strict mode)\n  console.log('label is still:', props.label);\n  return <span className=\"box\">{props.label}</span>;\n}\n\nfunction App() {\n  return <Badge label=\"original\" />;\n}\n",expect:'props frozen? true\nlabel is still: original'}
+  ],
+  quiz:[
+    {id:'q1',code:"function Item({ n }) {\n  console.log('Item', n);\n  return <li>{n}</li>;\n}\nfunction App() {\n  console.log('App');\n  return <ul><Item n={1} /><Item n={2} /></ul>;\n}",options:['App\nItem 1\nItem 2','Item 1\nItem 2\nApp','App\nItem 2\nItem 1','App'],answer:0,why:'React renders the parent first, then each child in order. Creating <code>&lt;Item n={1} /&gt;</code> only creates an element; the function is called when React renders it.'},
+    {id:'q2',code:"function G({ name = 'anonymous' }) {\n  console.log(name);\n  return null;\n}\nfunction App() {\n  return <><G /><G name={null} /><G name={undefined} /></>;\n}",options:['anonymous\nnull\nanonymous','anonymous\nanonymous\nanonymous','null\nnull\nanonymous','anonymous\nnull\nundefined'],answer:0,why:'Destructuring defaults apply only when the value is <code>undefined</code>. <code>null</code> is a real value and is passed through.'},
+    {id:'q3',code:"function Wrap({ children }) {\n  console.log(Array.isArray(children), typeof children);\n  return <div>{children}</div>;\n}\nfunction App() {\n  return <Wrap><span>one</span></Wrap>;\n}",options:['false object','true object','false string','true undefined'],answer:0,why:'With a single child, <code>children</code> is that one element, not an array. It becomes an array only when there are two or more children.'}
+  ],
+  cheat:{keys:['Component = function(props) → elements. Capitalised name.','Props flow down and are read-only; the parent owns them.','<code>props.children</code> is whatever sits between the tags: one node or an array.','Defaults via destructuring apply to <code>undefined</code> only, not <code>null</code>.','Keep render pure: no fetching, subscriptions or mutation during render.'],mistakes:['Mutating props or a prop object (arrays included) inside the child.','Assuming <code>children</code> is always an array.','Defining a component inside another component\'s body: it becomes a new type on every render and remounts.']}
+},
+{
+  id:'rendering',group:'Rendering',title:'Render & commit',tag:'When React calls your components, and what happens after',
+  explain:[
+    'React works in two phases. In the <b>render phase</b> it calls your components to work out what the UI should be (this must be pure and can be repeated or thrown away). In the <b>commit phase</b> it applies the minimal DOM changes, then runs effects.',
+    'A component re-renders when its <b>state</b> changes or when its <b>parent re-renders</b>. By default a re-render of a parent renders all of its children, even if their props did not change. React then compares the new elements with the previous ones and touches only the DOM that differs.',
+    'Rendering is <b>asynchronous</b>: <code>root.render()</code> and <code>setState</code> only <em>schedule</em> work. The code after them keeps running, and the actual render happens a moment later.'
+  ],
+  analogy:'Render is <b>drafting the blueprint</b> and commit is <b>the builders</b>. Redrafting is cheap and can be thrown away; the builders only change the walls that moved.',
+  variants:[
+    {id:'v1',label:'Render is scheduled, not immediate',code:"function App() {\n  console.log('2. App renders');\n  useEffect(() => console.log('3. effect after commit'));\n  return <p>Look at the console order.</p>;\n}\n\nroot.render(<App />);\nconsole.log('1. after root.render()');\n",expect:'1. after root.render()\n2. App renders\n3. effect after commit'},
+    {id:'v2',label:'Parents re-render their children',code:"function Child({ label }) {\n  console.log('  Child renders (props unchanged)');\n  return <p>{label}</p>;\n}\n\nfunction App() {\n  const [n, setN] = useState(0);\n  console.log('App renders, n =', n);\n  useEffect(() => { if (n < 2) setN(n + 1); }, [n]);\n  return <Child label=\"same label every time\" />;\n}\n",expect:'App renders, n = 0\n  Child renders (props unchanged)\nApp renders, n = 1\n  Child renders (props unchanged)\nApp renders, n = 2\n  Child renders (props unchanged)'},
+    {id:'v3',label:'Only changed DOM is touched',code:"function App() {\n  const [n, setN] = useState(0);\n  const ref = useRef(null);\n  useEffect(() => {\n    if (n === 0) {\n      ref.current.dataset.mark = 'kept by React';   // React did not create this attribute\n      setN(1);\n    } else {\n      // React updated the text but left the unrelated attribute alone\n      console.log(ref.current.textContent, '|', ref.current.dataset.mark);\n    }\n  }, [n]);\n  return <p ref={ref}>count: {n}</p>;\n}\n",expect:'count: 1 | kept by React'}
+  ],
+  quiz:[
+    {id:'q1',code:"function App() {\n  console.log('render');\n  useEffect(() => console.log('effect'));\n  return null;\n}\nroot.render(<App />);\nconsole.log('done');",options:['done\nrender\neffect','render\neffect\ndone','render\ndone\neffect','done\neffect\nrender'],answer:0,why:'<code>root.render</code> only schedules the work. The synchronous script finishes first (<code>done</code>), then React renders, commits and runs effects.'},
+    {id:'q2',code:"function Leaf() { console.log('Leaf'); return null; }\nfunction App() {\n  const [n, setN] = useState(0);\n  console.log('App', n);\n  useEffect(() => { if (n === 0) setN(1); }, [n]);\n  return <Leaf />;\n}",options:['App 0\nLeaf\nApp 1\nLeaf','App 0\nLeaf\nApp 1','App 0\nApp 1\nLeaf','App 0\nLeaf'],answer:0,why:'Every time <code>App</code> renders it renders <code>Leaf</code> too; unchanged props do not stop that by default (see <em>memo</em> later).'},
+    {id:'q3',code:"function App() {\n  const [n, setN] = useState(0);\n  console.log('render', n);\n  useEffect(() => {\n    setN(1);\n    console.log('effect sees', n);\n  }, []);\n  return null;\n}",options:['render 0\neffect sees 0\nrender 1','render 0\neffect sees 1\nrender 1','render 0\nrender 1\neffect sees 0','render 0\neffect sees 0'],answer:0,why:'<code>setN</code> schedules a re-render; it does not change the <code>n</code> this effect closed over. The log runs first with the old value, then React renders again.'}
+  ],
+  cheat:{keys:['Render phase: call components, must be pure. Commit phase: patch the DOM, then run effects.','Re-render triggers: own state change, or the parent re-rendered.','Children re-render with their parent unless memoised.','<code>root.render</code>/<code>setState</code> schedule work; code after them runs first.','React only mutates DOM nodes whose output changed.'],mistakes:['Expecting a value to be updated right after calling its setter.','Doing side effects (fetch, subscriptions, DOM writes) directly in the component body.','Thinking a child skips rendering just because its props look the same.']}
+},
+{
+  id:'keys',group:'Rendering',title:'Keys & reconciliation',tag:'How React matches old and new elements',
+  explain:[
+    'When React re-renders it <b>reconciles</b>: it compares the new element tree with the previous one. If an element at the same position has the same <b>type</b>, React updates that DOM node and keeps the component\'s state. If the type differs, it unmounts the old subtree (state lost) and mounts the new one.',
+    'For lists, position is a poor identity, so a <b>key</b> tells React which item is which across renders. With stable keys, reordering or inserting items moves existing components instead of destroying and recreating them. Index keys break as soon as items are reordered, inserted or removed.',
+    'Changing a key on purpose is a legitimate way to <b>reset</b> a component: a new key means a fresh mount with fresh state.'
+  ],
+  analogy:'Keys are <b>name tags at a party</b>. Without them, React identifies guests by which chair they sit in, so when someone leaves, everyone "becomes" the person who used to sit in their chair.',
+  variants:[
+    {id:'v1',label:'Same type + position = update, not remount',code:"function Counter({ label }) {\n  useEffect(() => {\n    console.log('mounted:', label);\n    return () => console.log('unmounted:', label);\n  }, []);\n  return <p>{label}</p>;\n}\n\nfunction App() {\n  const [n, setN] = useState(0);\n  useEffect(() => { if (n === 0) setN(1); }, [n]);\n  // Same type at the same position: React updates the prop, state survives\n  return <Counter label={'render ' + n} />;\n}\n",expect:'mounted: render 0'},
+    {id:'v2',label:'A new key remounts',code:"function Counter({ label }) {\n  useEffect(() => {\n    console.log('mounted:', label);\n    return () => console.log('unmounted:', label);\n  }, []);\n  return <p>{label}</p>;\n}\n\nfunction App() {\n  const [n, setN] = useState(0);\n  useEffect(() => { if (n === 0) setN(1); }, [n]);\n  // The key changes, so React throws the old instance away\n  return <Counter key={n} label={'render ' + n} />;\n}\n",expect:'mounted: render 0\nunmounted: render 0\nmounted: render 1'},
+    {id:'v3',label:'Reordering with stable keys',code:"function Item({ id }) {\n  useEffect(() => {\n    console.log('mounted', id);\n    return () => console.log('unmounted', id);\n  }, []);\n  return <li>{id}</li>;\n}\n\nfunction App() {\n  const [ids, setIds] = useState(['a', 'b', 'c']);\n  useEffect(() => { if (ids[0] === 'a') setIds(['c', 'a', 'b']); }, [ids]);\n  // Keys let React MOVE the existing items; nothing unmounts\n  return <ul>{ids.map(id => <Item key={id} id={id} />)}</ul>;\n}\n",expect:'mounted a\nmounted b\nmounted c'}
+  ],
+  quiz:[
+    {id:'q1',code:"function Box() {\n  useEffect(() => {\n    console.log('mount');\n    return () => console.log('unmount');\n  }, []);\n  return <div />;\n}\nfunction App() {\n  const [n, setN] = useState(0);\n  useEffect(() => { if (n === 0) setN(1); }, [n]);\n  return n === 0 ? <Box /> : <section><Box /></section>;\n}",options:['mount\nunmount\nmount','mount','mount\nmount','unmount\nmount'],answer:0,why:'The element at the top position changed type (<code>Box</code> → <code>section</code>), so the whole old subtree unmounts and the new one, including a new <code>Box</code>, mounts.'},
+    {id:'q2',code:"function Row({ id }) {\n  useEffect(() => { console.log('mount', id); }, []);\n  return <li>{id}</li>;\n}\nfunction App() {\n  const [ids, setIds] = useState([1, 2]);\n  useEffect(() => { if (ids[0] === 1) setIds([2, 1]); }, [ids]);\n  return <ul>{ids.map((id, i) => <Row key={i} id={id} />)}</ul>;\n}",options:['mount 1\nmount 2','mount 1\nmount 2\nmount 2\nmount 1','mount 2\nmount 1','mount 1\nmount 2\nmount 1\nmount 2'],answer:0,why:'With <em>index</em> keys the rows keep their keys 0 and 1, so React reuses both components and just changes their props. No remount happens, but the components\' own state would now be attached to the wrong data.'},
+    {id:'q3',code:"function Field() {\n  useEffect(() => { console.log('Field mounted'); }, []);\n  return <input />;\n}\nfunction App() {\n  const [user, setUser] = useState('ann');\n  useEffect(() => { if (user === 'ann') setUser('bob'); }, [user]);\n  return <Field key={user} />;\n}",options:['Field mounted\nField mounted','Field mounted','Field mounted\nField mounted\nField mounted','(nothing)'],answer:0,why:'Keying the form by the user id is the standard way to reset it: a new key means a fresh mount with cleared state.'}
+  ],
+  cheat:{keys:['Same type at the same position → update in place, state kept.','Different type → unmount old, mount new, state lost.','Keys give list items a stable identity across renders; use ids, not indexes.','Change a key on purpose to reset a component.'],mistakes:['<code>key={index}</code> on lists that reorder, insert or delete.','Using <code>Math.random()</code> as a key: every render remounts everything.','Wrapping a child in a new element conditionally (changes the type and remounts it).']}
+},
+{
+  id:'usestate',group:'State',title:'useState & batching',tag:'State is a snapshot; setters schedule the next one',
+  explain:[
+    '<code>useState</code> gives a component memory that survives re-renders. Calling the setter does not change the variable you hold; it <b>schedules a re-render</b> in which <code>useState</code> returns the new value. Within one render, <code>n</code> is a fixed <b>snapshot</b>.',
+    'React <b>batches</b> state updates: several setters called in the same event handler or effect cause a single re-render (React 18 batches everywhere, including timeouts and promises). Because of the snapshot, <code>setN(n + 1)</code> twice adds one, not two. Pass an <b>updater function</b> <code>setN(v =&gt; v + 1)</code> when the new value depends on the previous one.',
+    'Setting state to the <b>same value</b> (by <code>Object.is</code>) is skipped, so mutating an object and setting the same reference does nothing. Always create a new object or array.'
+  ],
+  analogy:'Each render is a <b>photograph</b>. Calling the setter asks for a new photo to be taken; it does not edit the one in your hand. Updater functions are instructions handed to the photographer: "whatever the value is by then, add one".',
+  variants:[
+    {id:'v1',label:'Snapshot: n + 1 twice',code:"function App() {\n  const [n, setN] = useState(0);\n  console.log('render, n =', n);\n  useEffect(() => {\n    setN(n + 1);   // n is 0 in this snapshot\n    setN(n + 1);   // still 0 + 1\n  }, []);\n  return <p>n = {n}</p>;\n}\n",expect:'render, n = 0\nrender, n = 1'},
+    {id:'v2',label:'Updater functions',code:"function App() {\n  const [n, setN] = useState(0);\n  console.log('render, n =', n);\n  useEffect(() => {\n    setN(v => v + 1);   // uses the latest pending value\n    setN(v => v + 1);\n  }, []);\n  return <p>n = {n}</p>;\n}\n",expect:'render, n = 0\nrender, n = 2'},
+    {id:'v3',label:'Objects must be replaced',code:"function App() {\n  const [user, setUser] = useState({ name: 'Ann', age: 30 });\n  console.log('render:', user.name, user.age);\n  useEffect(() => {\n    user.age = 31;          // mutation: React cannot see this\n    setUser(user);          // same reference -> skipped\n    setUser({ ...user, name: 'Bea' });   // new object -> re-render\n  }, []);\n  return <p>{user.name}, {user.age}</p>;\n}\n",expect:'render: Ann 30\nrender: Bea 31'}
+  ],
+  quiz:[
+    {id:'q1',code:"function App() {\n  const [n, setN] = useState(0);\n  useEffect(() => {\n    setN(n + 1);\n    setN(n + 1);\n    setN(n + 1);\n  }, []);\n  console.log(n);\n  return null;\n}",options:['0\n1','0\n3','0\n1\n2\n3','0'],answer:0,why:'All three calls use the snapshot <code>n = 0</code>, so they all set 1. They are batched into one re-render.'},
+    {id:'q2',code:"function App() {\n  const [n, setN] = useState(0);\n  useEffect(() => {\n    setN(n + 1);\n    setN(v => v + 1);\n    setN(n + 5);\n  }, []);\n  console.log(n);\n  return null;\n}",options:['0\n5','0\n7','0\n2','0\n1'],answer:0,why:'The queue is processed in order: 1, then 1 + 1 = 2, then a plain value <code>n + 5 = 5</code> replaces everything before it.'},
+    {id:'q3',code:"function App() {\n  const [s, setS] = useState({ a: 1 });\n  useEffect(() => {\n    s.a = 2;\n    setS(s);\n  }, []);\n  console.log('render', s.a);\n  return null;\n}",options:['render 1','render 1\nrender 2','render 2','render 1\nrender 1'],answer:0,why:'<code>setS(s)</code> passes the same reference, so React bails out and never re-renders. The mutation happened but nothing is re-drawn.'}
+  ],
+  cheat:{keys:['State is a snapshot per render; setters schedule the next render.','Multiple setters in one handler/effect → one batched re-render.','Use <code>setX(v =&gt; …)</code> when the next value depends on the previous.','A plain value in the queue replaces earlier updates; updaters build on them.','Same reference (<code>Object.is</code>) → no re-render. Copy objects and arrays.'],mistakes:['Reading state right after calling the setter and expecting the new value.','<code>arr.push(x); setArr(arr)</code>: same array, no update. Use <code>setArr([...arr, x])</code>.','Storing derived data in state instead of computing it during render.']}
+},
+{
+  id:'controlled',group:'State',title:'Controlled inputs & forms',tag:'One source of truth for what the user typed',
+  explain:[
+    'A <b>controlled</b> input gets its <code>value</code> from state and reports changes through <code>onChange</code>. React state is the single source of truth, so validation, formatting and resetting are ordinary state updates. If you pass <code>value</code> without <code>onChange</code>, the field is frozen.',
+    'An <b>uncontrolled</b> input keeps its own value in the DOM; you read it when needed with a ref. Use <code>defaultValue</code> for the initial value. This is fine for simple forms where you only need the value on submit.',
+    'The first argument to <code>useState</code> is used <b>only on the first render</b>. If computing it is expensive, pass a function (<code>useState(() =&gt; compute())</code>) so it is not recomputed on every render.'
+  ],
+  analogy:'Controlled is a <b>thermostat</b>: you set the number, the display shows exactly that number. Uncontrolled is a <b>wall dial</b>: it holds its own position and you go and read it when you care.',
+  variants:[
+    {id:'v1',label:'Controlled text input (type in the preview)',code:"function App() {\n  const [name, setName] = useState('');\n  const clean = name.trimStart().replace(/\\s+/g, ' ');   // normalise as you type\n  console.log('mounted; type in the box');\n  return (\n    <div>\n      <input value={clean} onChange={e => setName(e.target.value)} placeholder=\"Your name\" />\n      <p>Hello, {clean || '…'} ({clean.length} chars)</p>\n      <button onClick={() => setName('')}>Reset</button>\n    </div>\n  );\n}\n",expect:'mounted; type in the box'},
+    {id:'v2',label:'Checkbox, select and derived validity',code:"function App() {\n  const [form, setForm] = useState({ plan: 'free', agree: false });\n  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));\n  const valid = form.plan === 'free' || form.agree;\n  console.log('initial valid:', valid);\n  return (\n    <div>\n      <select value={form.plan} onChange={e => set('plan', e.target.value)}>\n        <option value=\"free\">Free</option>\n        <option value=\"pro\">Pro</option>\n      </select>\n      <label style={{ marginLeft: 8 }}>\n        <input type=\"checkbox\" checked={form.agree} onChange={e => set('agree', e.target.checked)} /> agree to terms\n      </label>\n      <p>{valid ? 'Ready to submit' : 'Pro plan needs agreement'}</p>\n    </div>\n  );\n}\n",expect:'initial valid: true'},
+    {id:'v3',label:'Uncontrolled with a ref',code:"function App() {\n  const inputRef = useRef(null);\n  useEffect(() => {\n    inputRef.current.focus();\n    console.log('initial DOM value:', inputRef.current.value);\n  }, []);\n  function submit(e) {\n    e.preventDefault();\n    console.log('submitted:', inputRef.current.value);\n  }\n  return (\n    <form onSubmit={submit}>\n      <input ref={inputRef} defaultValue=\"draft\" />\n      <button type=\"submit\">Submit</button>\n    </form>\n  );\n}\n",expect:'initial DOM value: draft'}
+  ],
+  quiz:[
+    {id:'q1',code:"function App() {\n  const [v, setV] = useState('a');\n  useEffect(() => { setV(x => x + 'b'); }, []);\n  console.log(v);\n  return <input value={v} onChange={e => setV(e.target.value)} />;\n}",options:['a\nab','ab','a','a\nb'],answer:0,why:'First render shows the initial state <code>a</code>; the effect appends and triggers one more render with <code>ab</code>.'},
+    {id:'q2',code:"function init() { console.log('init'); return 0; }\nfunction App() {\n  const [n, setN] = useState(init);\n  useEffect(() => { setN(1); }, []);\n  console.log('n', n);\n  return null;\n}",options:['init\nn 0\nn 1','init\nn 0\ninit\nn 1','n 0\nn 1','init\nn 1'],answer:0,why:'Passing the function itself (<code>useState(init)</code>) makes it a lazy initialiser that runs once on mount.'},
+    {id:'q3',code:"function init() { console.log('init'); return 0; }\nfunction App() {\n  const [n, setN] = useState(init());\n  useEffect(() => { setN(1); }, []);\n  console.log('n', n);\n  return null;\n}",options:['init\nn 0\ninit\nn 1','init\nn 0\nn 1','init\nn 1','n 0\nn 1'],answer:0,why:'<code>init()</code> is called by <em>your</em> code on every render; React just ignores the result after the first one. Expensive initialisers belong in the lazy form.'}
+  ],
+  cheat:{keys:['Controlled: <code>value</code> + <code>onChange</code>; state is the truth.','Uncontrolled: <code>defaultValue</code> + a ref; read when you need it.','Checkboxes use <code>checked</code>/<code>onChange</code>; selects use <code>value</code> on the <code>&lt;select&gt;</code>.','Keep related fields in one object and update with a spread.','<code>useState(fn)</code> runs <code>fn</code> once; <code>useState(fn())</code> runs it every render.'],mistakes:['<code>value</code> without <code>onChange</code>: the field cannot be typed into.','Switching between <code>value</code> and <code>undefined</code>: React warns about changing controlled to uncontrolled.','Storing derived values (like <code>isValid</code>) in state instead of computing them.']}
+},
+{
+  id:'lifting',group:'State',title:'Sharing state: lifting & context',tag:'Move state to the closest common parent, or provide it',
+  explain:[
+    'Two components that must agree on a value cannot each own it. <b>Lift the state up</b> to their closest common parent and pass it down as props, together with a callback so children can request changes. Data flows down, events flow up.',
+    'When many distant components need the same value, threading props through every level ("prop drilling") gets noisy. <b>Context</b> lets a Provider make a value available to any descendant that calls <code>useContext</code>. Nested providers override outer ones; without a provider you get the default passed to <code>createContext</code>.',
+    'Every consumer re-renders when the provider\'s <code>value</code> changes, so keep context values stable (memoise objects) and split rarely-changing data from frequently-changing data.'
+  ],
+  analogy:'Lifting state is putting the <b>shared shopping list on the fridge</b> so both flatmates see it. Context is the <b>building-wide notice board</b>: anyone in the building can read it without a note being passed door to door.',
+  variants:[
+    {id:'v1',label:'Lifted state, callbacks up',code:"function Celsius({ c, onChange }) {\n  return <input value={c} onChange={e => onChange(e.target.value)} />;\n}\nfunction Fahrenheit({ c }) {\n  return <p>{c === '' ? '–' : (c * 9 / 5 + 32).toFixed(1)} °F</p>;\n}\n\nfunction App() {\n  const [c, setC] = useState('20');   // the shared value lives here\n  console.log('20 °C is', (c * 9 / 5 + 32).toFixed(1), '°F');\n  return (\n    <div>\n      <Celsius c={c} onChange={setC} />\n      <Fahrenheit c={c} />\n    </div>\n  );\n}\n",expect:'20 °C is 68.0 °F'},
+    {id:'v2',label:'Context instead of prop drilling',code:"const ThemeContext = createContext('light');\n\nfunction Button() {\n  const theme = useContext(ThemeContext);   // no props needed\n  console.log('Button sees theme:', theme);\n  return <button className={theme}>{theme} button</button>;\n}\nfunction Toolbar() { return <div><Button /></div>; }\n\nfunction App() {\n  return (\n    <>\n      <Toolbar />                                {/* default value */}\n      <ThemeContext.Provider value=\"dark\">\n        <Toolbar />                              {/* provided value */}\n      </ThemeContext.Provider>\n    </>\n  );\n}\n",expect:'Button sees theme: light\nButton sees theme: dark'},
+    {id:'v3',label:'Consumers re-render on value change',code:"const CountContext = createContext(0);\n\nfunction Display() {\n  const n = useContext(CountContext);\n  console.log('Display renders with', n);\n  return <p>{n}</p>;\n}\nconst Static = memo(function Static() {\n  console.log('Static renders');\n  return <p>no context here</p>;\n});\n\nfunction App() {\n  const [n, setN] = useState(0);\n  useEffect(() => { if (n === 0) setN(1); }, [n]);\n  return (\n    <CountContext.Provider value={n}>\n      <Display />\n      <Static />\n    </CountContext.Provider>\n  );\n}\n",expect:'Display renders with 0\nStatic renders\nDisplay renders with 1'}
+  ],
+  quiz:[
+    {id:'q1',code:"const Ctx = createContext('default');\nfunction Show() {\n  console.log(useContext(Ctx));\n  return null;\n}\nfunction App() {\n  return (\n    <Ctx.Provider value=\"outer\">\n      <Ctx.Provider value=\"inner\"><Show /></Ctx.Provider>\n      <Show />\n    </Ctx.Provider>\n  );\n}",options:['inner\nouter','outer\ninner','inner\ninner','default\ndefault'],answer:0,why:'Each consumer reads the <em>nearest</em> provider above it. The first <code>Show</code> is inside both, so it sees <code>inner</code>; the second is only inside <code>outer</code>.'},
+    {id:'q2',code:"const Ctx = createContext();\nfunction Show() {\n  console.log(useContext(Ctx));\n  return null;\n}\nfunction App() {\n  return <Show />;\n}",options:['undefined','null','(throws an error)','{}'],answer:0,why:'With no provider in the tree, <code>useContext</code> returns the default passed to <code>createContext</code>, which here is <code>undefined</code>. It does not throw.'},
+    {id:'q3',code:"function Child({ value, onChange }) {\n  useEffect(() => { onChange(value + 1); }, []);\n  console.log('Child', value);\n  return null;\n}\nfunction App() {\n  const [v, setV] = useState(1);\n  console.log('App', v);\n  return <Child value={v} onChange={setV} />;\n}",options:['App 1\nChild 1\nApp 2\nChild 2','App 1\nChild 1','Child 1\nApp 1\nChild 2\nApp 2','App 1\nChild 2'],answer:0,why:'The child asks the parent to change the lifted state via the callback; the parent re-renders and passes the new value back down.'}
+  ],
+  cheat:{keys:['Shared state lives in the closest common ancestor; pass value down, callbacks up.','<code>createContext(default)</code> + <code>&lt;Provider value&gt;</code> + <code>useContext</code>.','The nearest provider wins; no provider → the default value.','Consumers re-render whenever the provider value changes; memoise object values.'],mistakes:['Duplicating the same state in two siblings and trying to keep them in sync.','Passing a fresh object literal as the provider <code>value</code> every render.','Reaching for context for everything: props are simpler for one or two levels.']}
+},
+{
+  id:'useeffect',group:'Effects & refs',title:'useEffect lifecycle',tag:'Run code after commit; clean up before the next run',
+  explain:[
+    '<code>useEffect(fn, deps)</code> runs <code>fn</code> <b>after</b> React has committed the render to the DOM. It is where side effects belong: subscriptions, timers, fetching, manual DOM work. Effects never run during render, so the UI is already up to date when they execute.',
+    'The dependency array decides <b>when</b> the effect re-runs: no array → after every render; <code>[]</code> → once after mount; <code>[a, b]</code> → after mount and whenever <code>a</code> or <code>b</code> changes. If <code>fn</code> returns a function, React calls it as <b>cleanup</b> before the effect runs again and when the component unmounts.',
+    'Within one commit, effects run in a fixed order: <b>children before parents</b>, and inside a component in the order they are written. Cleanups for a re-run happen before the new effects of that commit.'
+  ],
+  analogy:'An effect is <b>what you do after moving into a flat</b>: plug in the router, subscribe to the paper. The cleanup is the checklist you run <b>before moving out</b> — cancel the subscription, unplug — and also whenever you change flats mid-lease.',
+  variants:[
+    {id:'v1',label:'Order: render → child effects → parent effects',code:"function Child() {\n  console.log('1. Child renders');\n  useEffect(() => console.log('3. Child effect'));\n  return <p>child</p>;\n}\n\nfunction App() {\n  console.log('0. App renders');\n  useEffect(() => console.log('4. App effect'));\n  useEffect(() => console.log('5. App second effect'));\n  return <Child />;\n}\n// (React renders the parent function first, then the child; effects run bottom-up)\n",expect:'0. App renders\n1. Child renders\n3. Child effect\n4. App effect\n5. App second effect'},
+    {id:'v2',label:'Cleanup runs before the next run',code:"function App() {\n  const [room, setRoom] = useState('general');\n  useEffect(() => { if (room === 'general') setRoom('random'); }, [room]);\n\n  useEffect(() => {\n    console.log('subscribe to', room);\n    return () => console.log('unsubscribe from', room);   // closes over THIS room\n  }, [room]);\n\n  return <p>room: {room}</p>;\n}\n",expect:'subscribe to general\nunsubscribe from general\nsubscribe to random'},
+    {id:'v3',label:'Cleanup on unmount',code:"function Timer() {\n  useEffect(() => {\n    console.log('Timer mounted: start interval');\n    const id = setInterval(() => {}, 1000);\n    return () => {\n      clearInterval(id);\n      console.log('Timer unmounted: interval cleared');\n    };\n  }, []);\n  return <p>ticking…</p>;\n}\n\nfunction App() {\n  const [show, setShow] = useState(true);\n  useEffect(() => { if (show) setShow(false); }, [show]);\n  return show ? <Timer /> : <p>gone</p>;\n}\n",expect:'Timer mounted: start interval\nTimer unmounted: interval cleared'}
+  ],
+  quiz:[
+    {id:'q1',code:"function App() {\n  const [n, setN] = useState(0);\n  useEffect(() => { console.log('every render'); });\n  useEffect(() => { console.log('mount only'); }, []);\n  useEffect(() => { if (n < 2) setN(n + 1); }, [n]);\n  return null;\n}",options:['every render\nmount only\nevery render\nevery render','every render\nmount only','every render\nmount only\nevery render\nmount only\nevery render\nmount only','mount only\nevery render'],answer:0,why:'Three renders (n = 0, 1, 2). The no-deps effect runs after each; the <code>[]</code> effect only after the first.'},
+    {id:'q2',code:"function App() {\n  const [n, setN] = useState(0);\n  useEffect(() => { if (n === 0) setN(1); }, [n]);\n  useEffect(() => {\n    console.log('effect', n);\n    return () => console.log('cleanup', n);\n  }, [n]);\n  return null;\n}",options:['effect 0\ncleanup 0\neffect 1','effect 0\neffect 1\ncleanup 0','effect 0\ncleanup 1\neffect 1','effect 0\neffect 1'],answer:0,why:'Before re-running an effect React calls the previous cleanup, which closed over the previous <code>n</code>. So the sequence is effect 0 → cleanup 0 → effect 1.'},
+    {id:'q3',code:"function Child() {\n  useEffect(() => console.log('child effect'));\n  console.log('child render');\n  return null;\n}\nfunction App() {\n  useEffect(() => console.log('parent effect'));\n  console.log('parent render');\n  return <Child />;\n}",options:['parent render\nchild render\nchild effect\nparent effect','parent render\nparent effect\nchild render\nchild effect','child render\nparent render\nchild effect\nparent effect','parent render\nchild render\nparent effect\nchild effect'],answer:0,why:'Rendering is top-down, effects are bottom-up: all rendering finishes, then children\'s effects run before their parent\'s.'}
+  ],
+  cheat:{keys:['Effects run after commit, never during render.','No deps → every render; <code>[]</code> → mount only; <code>[a]</code> → when <code>a</code> changes.','Return a cleanup; it runs before the next effect run and on unmount.','Order per commit: children\'s effects before parents\'; within a component, top to bottom.','Cleanups close over the values of the render they belong to.'],mistakes:['Forgetting cleanup for intervals, listeners and subscriptions (leaks and double handlers).','Setting state unconditionally in an effect with no deps: infinite loop.','Treating <code>useEffect</code> as "componentDidMount" and ignoring the deps warnings.']}
+},
+{
+  id:'deps',group:'Effects & refs',title:'Dependencies & stale closures',tag:'Why an effect can see old values, and how to fix it',
+  explain:[
+    'Every render creates new functions and new object literals. An effect (or callback) <b>closes over</b> the props and state of the render that created it. If you list <code>[]</code> as deps but read <code>n</code> inside, that effect keeps seeing the <code>n</code> from the first render forever: a <b>stale closure</b>.',
+    'Dependencies are compared with <code>Object.is</code>, so a new object or arrow function is "different" every render and re-triggers the effect, while a primitive with the same value does not. This is why <code>[user]</code> with <code>user = {…}</code> created in render runs every time, and why <code>useCallback</code>/<code>useMemo</code> exist.',
+    'Fixes, in order of preference: read the value <em>inside</em> the effect and list it as a dep; use an updater <code>setN(v =&gt; v + 1)</code> so the effect does not need <code>n</code>; move the object creation inside the effect; or keep a latest-value <b>ref</b> for callbacks that must not re-subscribe.'
+  ],
+  analogy:'A closure is a <b>photocopy of the variables taken at render time</b>. An effect with <code>[]</code> deps is filed once and never reprinted, so it keeps reading the first photocopy. Listing deps tells React when to reprint.',
+  variants:[
+    {id:'v1',label:'Object deps re-run every render',code:"function App() {\n  const [n, setN] = useState(0);\n  useEffect(() => { if (n === 0) setN(1); }, [n]);\n\n  const options = { page: 1 };            // new object each render\n  useEffect(() => console.log('object dep ran, n =', n), [options]);\n  useEffect(() => console.log('primitive dep ran'), [options.page]);\n\n  return null;\n}\n",expect:'object dep ran, n = 0\nprimitive dep ran\nobject dep ran, n = 1'},
+    {id:'v2',label:'Function identity and useCallback',code:"function App() {\n  const [n, setN] = useState(0);\n  useEffect(() => { if (n === 0) setN(1); }, [n]);\n\n  const plain = () => n;                          // new function every render\n  const stable = useCallback(() => 'stable', []);   // same function every render\n\n  useEffect(() => console.log('plain changed'), [plain]);\n  useEffect(() => console.log('stable changed'), [stable]);\n  return null;\n}\n",expect:'plain changed\nstable changed\nplain changed'},
+    {id:'v3',label:'Stale closure and the updater fix',code:"function App() {\n  const [n, setN] = useState(0);\n  const [log, setLog] = useState([]);\n  useEffect(() => {\n    // Runs once. `n` here is frozen at 0 for the life of this effect.\n    const stale = () => n;\n    setN(n + 1);           // 0 + 1 = 1\n    setN(n + 1);           // still 1 (stale n)\n    setN(v => v + 1);      // 2 (reads the pending value)\n    console.log('closure still sees', stale());\n  }, []);\n  console.log('render n =', n);\n  return <p>n = {n}</p>;\n}\n",expect:'render n = 0\nclosure still sees 0\nrender n = 2'}
+  ],
+  quiz:[
+    {id:'q1',code:"function App() {\n  const [n, setN] = useState(0);\n  useEffect(() => { if (n < 2) setN(n + 1); }, [n]);\n  const cfg = { size: 10 };\n  useEffect(() => { console.log('ran'); }, [cfg]);\n  return null;\n}",options:['ran\nran\nran','ran','ran\nran','(nothing)'],answer:0,why:'<code>cfg</code> is a brand-new object on each of the three renders, so the effect runs three times. Depend on <code>cfg.size</code> or build the object inside the effect.'},
+    {id:'q2',code:"function App() {\n  const [n, setN] = useState(0);\n  useEffect(() => { if (n < 2) setN(n + 1); }, [n]);\n  const fn = useCallback(() => n, []);\n  useEffect(() => { console.log('fn changed, returns', fn()); }, [fn]);\n  return null;\n}",options:['fn changed, returns 0','fn changed, returns 0\nfn changed, returns 1\nfn changed, returns 2','fn changed, returns 2','fn changed, returns 0\nfn changed, returns 2'],answer:0,why:'<code>useCallback(…, [])</code> returns the same function forever, so the effect runs once — and that function is itself a stale closure returning 0.'},
+    {id:'q3',code:"function App() {\n  const [n, setN] = useState(0);\n  useEffect(() => {\n    setN(n + 1);\n    setN(v => v + 1);\n  }, []);\n  console.log(n);\n  return null;\n}",options:['0\n2','0\n1','0\n1\n2','2'],answer:0,why:'The first update sets 1 from the snapshot; the updater then adds 1 to that pending value. One batched re-render shows 2.'}
+  ],
+  cheat:{keys:['Closures capture the render they were created in.','Deps compared with <code>Object.is</code>: primitives by value, objects/functions by identity.','New object/array/function literal in render → "changed" every render.','Fix stale reads: list the dep, use updaters, move creation inside the effect, or use a ref for "latest".','<code>useCallback</code>/<code>useMemo</code> give stable identities when a dep must stay stable.'],mistakes:['Silencing the exhaustive-deps lint rule instead of fixing the dependency.','Depending on an object created in render.','Reading state inside a <code>[]</code> effect and expecting it to be current.']}
+},
+{
+  id:'refs',group:'Effects & refs',title:'useRef & DOM access',tag:'A mutable box that survives renders without causing them',
+  explain:[
+    '<code>useRef(initial)</code> returns the <b>same object</b> on every render: <code>{ current: initial }</code>. You may read and write <code>.current</code> freely; changing it does <b>not</b> trigger a re-render. Use refs for values that need to persist but are not part of what you render: timer ids, previous values, "latest callback" holders, render counters.',
+    'Passing a ref as <code>ref={myRef}</code> on a host element makes React fill <code>myRef.current</code> with the DOM node after commit. During the first render it is still <code>null</code>; read it in an effect or event handler, not in the component body.',
+    'Because refs are mutable and invisible to React, never read or write them during render to produce output; that breaks purity. State is for rendering, refs are for remembering.'
+  ],
+  analogy:'A ref is a <b>sticky note on the component</b>. You can scribble on it any time and it stays put between renders, but nobody redraws the screen because you changed a note.',
+  variants:[
+    {id:'v1',label:'Refs persist without re-rendering',code:"function App() {\n  const renders = useRef(0);\n  const [n, setN] = useState(0);\n  renders.current += 1;                         // no re-render caused\n  console.log('render #' + renders.current + ', n =', n);\n  useEffect(() => { if (n === 0) setN(1); }, [n]);\n  return <p>rendered {renders.current} times</p>;\n}\n",expect:'render #1, n = 0\nrender #2, n = 1'},
+    {id:'v2',label:'DOM refs are filled after commit',code:"function App() {\n  const box = useRef(null);\n  console.log('during render:', box.current);\n  useEffect(() => {\n    console.log('after commit:', box.current.tagName, box.current.textContent);\n    box.current.style.borderColor = 'seagreen';\n  }, []);\n  return <div ref={box} className=\"box\">measured after mount</div>;\n}\n",expect:'during render: null\nafter commit: DIV measured after mount'},
+    {id:'v3',label:'Remembering the previous value',code:"function usePrevious(value) {\n  const ref = useRef();\n  useEffect(() => { ref.current = value; });   // update AFTER render\n  return ref.current;                            // still the old one during render\n}\n\nfunction App() {\n  const [n, setN] = useState(10);\n  const prev = usePrevious(n);\n  console.log('now', n, '| before', prev);\n  useEffect(() => { if (n === 10) setN(20); }, [n]);\n  return <p>{prev} → {n}</p>;\n}\n",expect:'now 10 | before undefined\nnow 20 | before 10'}
+  ],
+  quiz:[
+    {id:'q1',code:"function App() {\n  const r = useRef(0);\n  useEffect(() => {\n    r.current = 5;\n    console.log('ref is now', r.current);\n  }, []);\n  console.log('render', r.current);\n  return null;\n}",options:['render 0\nref is now 5','render 0\nref is now 5\nrender 5','render 5\nref is now 5','render 0'],answer:0,why:'Writing to <code>ref.current</code> does not schedule a render, so the component renders only once and the new value is never printed by the render log.'},
+    {id:'q2',code:"function App() {\n  const el = useRef(null);\n  console.log(el.current);\n  useEffect(() => { console.log(el.current.tagName); });\n  return <span ref={el}>x</span>;\n}",options:['null\nSPAN','SPAN\nSPAN','undefined\nSPAN','null\nnull'],answer:0,why:'The DOM node does not exist during the first render, so <code>current</code> is the initial <code>null</code>. React attaches it during commit, before effects run.'},
+    {id:'q3',code:"function App() {\n  const [n, setN] = useState(0);\n  const r = useRef(n);\n  useEffect(() => { if (n === 0) setN(1); }, [n]);\n  console.log('state', n, 'ref', r.current);\n  return null;\n}",options:['state 0 ref 0\nstate 1 ref 0','state 0 ref 0\nstate 1 ref 1','state 0 ref 0','state 1 ref 1'],answer:0,why:'<code>useRef(n)</code> uses its argument only on the first render, exactly like <code>useState</code>. The ref keeps 0 until you assign <code>r.current</code> yourself.'}
+  ],
+  cheat:{keys:['<code>useRef</code> → the same <code>{current}</code> object every render.','Mutating <code>.current</code> never re-renders.','<code>ref={r}</code> on a host element → <code>r.current</code> is the DOM node after commit (null during first render).','Good for timers, previous values, latest callbacks, imperative DOM (focus, scroll, measure).','State drives what you render; refs remember what you do not render.'],mistakes:['Reading a DOM ref in the component body on first render.','Using a ref where state is needed, then wondering why the UI does not update.','Assuming <code>useRef(value)</code> tracks <code>value</code> across renders.']}
+},
+{
+  id:'memo',group:'Performance & patterns',title:'memo, useMemo & useCallback',tag:'Skip work when inputs have not changed',
+  explain:[
+    '<code>React.memo(Component)</code> wraps a component so that when its parent re-renders, React <b>reuses the last result</b> if every prop is shallow-equal (<code>Object.is</code> per prop). It does not help if a prop is a fresh object, array or function on each render, which is the usual case for inline callbacks.',
+    '<code>useMemo(fn, deps)</code> caches a <b>value</b> and recomputes it only when deps change. <code>useCallback(fn, deps)</code> is <code>useMemo(() =&gt; fn, deps)</code>: it caches a <b>function identity</b>. Together they make memoised children actually skip, and keep expensive calculations from running on unrelated renders.',
+    'Memoisation is an optimisation, not a correctness tool: React may discard cached values, and every memo adds comparison cost. Measure first, and prefer fixing the structure (move state down, pass children) before sprinkling memo everywhere.'
+  ],
+  analogy:'<code>memo</code> is a <b>receptionist who checks your ID against the last visit</b>: same details, no need to fill in the form again. A new pen (fresh function) every visit makes the details look different, so the form comes out anyway.',
+  variants:[
+    {id:'v1',label:'memo skips when props are equal',code:"const Child = memo(function Child({ label }) {\n  console.log('  Child renders');\n  return <p>{label}</p>;\n});\n\nfunction App() {\n  const [n, setN] = useState(0);\n  console.log('App renders, n =', n);\n  useEffect(() => { if (n === 0) setN(1); }, [n]);\n  return <Child label=\"constant\" />;   // same string both times\n}\n",expect:'App renders, n = 0\n  Child renders\nApp renders, n = 1'},
+    {id:'v2',label:'Inline functions defeat memo; useCallback fixes it',code:"const Button = memo(function Button({ onClick, name }) {\n  console.log('  ' + name + ' renders');\n  return <button onClick={onClick}>{name}</button>;\n});\n\nfunction App() {\n  const [n, setN] = useState(0);\n  useEffect(() => { if (n === 0) setN(1); }, [n]);\n  const inline = () => setN(v => v + 1);                  // new every render\n  const stable = useCallback(() => setN(v => v + 1), []);  // same every render\n  return (\n    <>\n      <Button name=\"inline\" onClick={inline} />\n      <Button name=\"stable\" onClick={stable} />\n    </>\n  );\n}\n",expect:'  inline renders\n  stable renders\n  inline renders'},
+    {id:'v3',label:'useMemo caches a value',code:"function slowDouble(x) {\n  console.log('  computing for', x);\n  return x * 2;\n}\n\nfunction App() {\n  const [n, setN] = useState(5);\n  const [tick, setTick] = useState(0);\n  const doubled = useMemo(() => slowDouble(n), [n]);   // only when n changes\n  useEffect(() => { if (tick === 0) setTick(1); }, [tick]);\n  console.log('render: tick', tick, 'doubled', doubled);\n  return <p>{doubled}</p>;\n}\n",expect:'  computing for 5\nrender: tick 0 doubled 10\nrender: tick 1 doubled 10'}
+  ],
+  quiz:[
+    {id:'q1',code:"const Kid = memo(function Kid({ style }) {\n  console.log('Kid');\n  return null;\n});\nfunction App() {\n  const [n, setN] = useState(0);\n  useEffect(() => { if (n === 0) setN(1); }, [n]);\n  return <Kid style={{ color: 'red' }} />;\n}",options:['Kid\nKid','Kid','Kid\nKid\nKid','(nothing)'],answer:0,why:'The object literal is a new object each render, so the shallow comparison fails and <code>memo</code> cannot skip. Hoist the object or <code>useMemo</code> it.'},
+    {id:'q2',code:"const Kid = memo(function Kid({ n }) {\n  console.log('Kid', n);\n  return null;\n});\nfunction App() {\n  const [a, setA] = useState(0);\n  const [b, setB] = useState(0);\n  useEffect(() => { if (a === 0) setA(1); }, [a]);\n  useEffect(() => { if (a === 1 && b === 0) setB(1); }, [a, b]);\n  return <Kid n={b} />;\n}",options:['Kid 0\nKid 1','Kid 0\nKid 0\nKid 1','Kid 0','Kid 1'],answer:0,why:'Three renders of <code>App</code> (a: 0→1, then b: 0→1), but <code>Kid</code> only re-renders when its prop <code>n</code> (= b) actually changes.'},
+    {id:'q3',code:"function App() {\n  const [n, setN] = useState(0);\n  useEffect(() => { if (n < 2) setN(n + 1); }, [n]);\n  const v = useMemo(() => { console.log('compute'); return n * 10; }, []);\n  console.log('v =', v);\n  return null;\n}",options:['compute\nv = 0\nv = 0\nv = 0','compute\nv = 0\ncompute\nv = 10\ncompute\nv = 20','compute\nv = 0','v = 0\nv = 10\nv = 20'],answer:0,why:'With <code>[]</code> deps the memoised value is computed once and never updated, so it stays at 0 even as <code>n</code> grows. Missing deps make memos stale, just like effects.'}
+  ],
+  cheat:{keys:['<code>memo</code> skips a re-render if every prop is <code>Object.is</code>-equal.','Fresh objects/arrays/functions per render defeat <code>memo</code>.','<code>useMemo</code> caches a value; <code>useCallback</code> caches a function.','Deps rules are the same as for effects; missing deps → stale values.','Optimise after measuring; restructure (state down, children props) first.'],mistakes:['Wrapping everything in <code>memo</code> and gaining nothing because callbacks are inline.','Using <code>useMemo</code> for correctness (React may drop the cache).','Memoising cheap calculations; the comparison can cost more than the work.']}
+},
+{
+  id:'customhooks',group:'Performance & patterns',title:'Custom hooks & the rules of hooks',tag:'Reuse stateful logic, not state',
+  explain:[
+    'A <b>custom hook</b> is a plain function whose name starts with <code>use</code> and that calls other hooks. It lets you extract stateful logic (a counter, a fetch, a media query) and reuse it in many components. Each component that calls it gets its <b>own independent state</b>; hooks share logic, never state.',
+    'The <b>rules of hooks</b> exist because React identifies each hook call by its <b>order</b> within a component. So hooks must be called at the top level of a component or another hook — never inside conditions, loops or nested functions — and always in the same order on every render.',
+    'Return whatever shape is convenient: an array for pairs like <code>[value, setValue]</code>, an object when there are several named things. Keep returned functions stable with <code>useCallback</code> if consumers will put them in dependency arrays.'
+  ],
+  analogy:'A custom hook is a <b>recipe</b>, not a <b>cake</b>. Two kitchens following the same recipe each bake their own cake; changing the frosting in one kitchen does nothing to the other.',
+  variants:[
+    {id:'v1',label:'Same hook, independent state',code:"function useCounter(start = 0) {\n  const [n, setN] = useState(start);\n  const inc = useCallback(() => setN(v => v + 1), []);\n  return [n, inc];\n}\n\nfunction A() {\n  const [n, inc] = useCounter();\n  useEffect(() => { inc(); }, [inc]);        // only A increments\n  console.log('A:', n);\n  return <p>A = {n}</p>;\n}\nfunction B() {\n  const [n] = useCounter(100);\n  console.log('B:', n);\n  return <p>B = {n}</p>;\n}\nfunction App() { return <><A /><B /></>; }\n",expect:'A: 0\nB: 100\nA: 1'},
+    {id:'v2',label:'Composing hooks (effect + state)',code:"function useDocumentTitle(title) {\n  useEffect(() => {\n    const prev = document.title;\n    document.title = title;\n    console.log('title set to:', document.title);\n    return () => { document.title = prev; };\n  }, [title]);\n}\n\nfunction useToggle(initial = false) {\n  const [on, setOn] = useState(initial);\n  const toggle = useCallback(() => setOn(v => !v), []);\n  return [on, toggle];\n}\n\nfunction App() {\n  const [on, toggle] = useToggle();\n  useDocumentTitle(on ? 'ON' : 'OFF');\n  return <button onClick={toggle}>Switch is {on ? 'on' : 'off'} (click me)</button>;\n}\n",expect:'title set to: OFF'},
+    {id:'v3',label:'Hooks run in call order',code:"function useLog(label, value) {\n  useEffect(() => console.log(label, 'changed to', value), [value]);\n}\n\nfunction App() {\n  const [a, setA] = useState(1);\n  const [b, setB] = useState('x');\n  useLog('a', a);\n  useLog('b', b);\n  useEffect(() => { if (a === 1) setA(2); }, [a]);\n  return <p>{a} {b}</p>;\n}\n",expect:'a changed to 1\nb changed to x\na changed to 2'}
+  ],
+  quiz:[
+    {id:'q1',code:"function useCount() {\n  const [n, setN] = useState(0);\n  return [n, () => setN(v => v + 1)];\n}\nfunction A() {\n  const [n, inc] = useCount();\n  useEffect(() => { inc(); }, []);\n  console.log('A', n);\n  return null;\n}\nfunction B() {\n  const [n] = useCount();\n  console.log('B', n);\n  return null;\n}\nfunction App() { return <><A /><B /></>; }",options:['A 0\nB 0\nA 1','A 0\nB 0\nA 1\nB 1','A 1\nB 1','A 0\nB 0'],answer:0,why:'Each call to <code>useCount</code> owns its own <code>useState</code>. Incrementing in <code>A</code> re-renders only <code>A</code>.'},
+    {id:'q2',code:"function useTwice(v) {\n  const [x] = useState(v * 2);\n  return x;\n}\nfunction App() {\n  const [n, setN] = useState(1);\n  const d = useTwice(n);\n  useEffect(() => { if (n === 1) setN(5); }, [n]);\n  console.log(n, d);\n  return null;\n}",options:['1 2\n5 2','1 2\n5 10','1 2','5 10'],answer:0,why:'The hook\'s <code>useState(v * 2)</code> initial value is used only on the first render, so <code>x</code> stays 2. To derive from the argument, compute it during render instead of storing it.'},
+    {id:'q3',code:"function useLog(label, v) {\n  useEffect(() => console.log(label, v), [v]);\n}\nfunction App() {\n  const [n, setN] = useState(0);\n  useLog('first', n);\n  useLog('second', 'k');\n  useEffect(() => { if (n === 0) setN(1); }, [n]);\n  return null;\n}",options:['first 0\nsecond k\nfirst 1','first 0\nfirst 1\nsecond k','second k\nfirst 0\nfirst 1','first 0\nsecond k\nfirst 1\nsecond k'],answer:0,why:'Effects inside custom hooks run in the order the hooks are called. On the second render only the effect whose dep changed (<code>n</code>) runs again.'}
+  ],
+  cheat:{keys:['Custom hook = <code>useSomething()</code> that calls other hooks; reuses logic, not state.','Every component calling a hook gets independent state.','Call hooks only at the top level, in the same order every render.','Return arrays for pairs, objects for several named values; stabilise returned functions with <code>useCallback</code>.'],mistakes:['Calling a hook inside an <code>if</code>, a loop or a callback.','Expecting two components using the same hook to share data (use lifting or context instead).','Storing a derived value from the hook argument in state, then wondering why it never updates.']}
+}
+];
+
+/* ==========================================================================
+   UI
+   ========================================================================== */
+let CUR=null, runHandle=null, quizRuns={};
+function renderSidebar(){
+  const total=TOPICS.reduce((a,t)=>a+t.quiz.length,0);
+  const done=TOPICS.reduce((a,t)=>a+t.quiz.filter(q=>isDone(t,q.id)).length,0);
+  const pct=total?Math.round(done/total*100):0;
+  $('#progress').innerHTML=`<div class="progress-row"><span>${done}/${total} quizzes</span><span>${pct}%</span></div><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>`;
+  const item=(t,i)=>{ const d=t.quiz.filter(q=>isDone(t,q.id)).length; return `<a class="topic${CUR&&CUR.id===t.id?' active':''}" href="#${t.id}" data-id="${t.id}" ${CUR&&CUR.id===t.id?'aria-current="page"':''}><span class="tn">${i+1}</span><span class="tt"><span class="tl">${esc(t.title)}</span><span class="ts">${esc(t.tag)}</span></span><span class="td${d===t.quiz.length?' ok':''}">${d===t.quiz.length?ic('check',12):d+'/'+t.quiz.length}</span></a>`; };
+  $('#topics').innerHTML=GROUPS.map((g,gi)=>{ const ts=TOPICS.filter(t=>t.group===g); const gd=ts.reduce((a,t)=>a+t.quiz.filter(q=>isDone(t,q.id)).length,0), gt=ts.reduce((a,t)=>a+t.quiz.length,0);
+    return `<div class="grp" role="group" aria-labelledby="grp-${gi}"><div class="grp-h" id="grp-${gi}"><span>${esc(g)}</span><span class="n">${gd}/${gt}</span></div>${ts.map(t=>item(t,TOPICS.indexOf(t))).join('')}</div>`; }).join('');
+}
+
+function lessonHTML(t){
+  const n=TOPICS.indexOf(t)+1, next=TOPICS[n];
+  return `<header class="l-head"><p class="hint" style="margin-bottom:2px">Lesson ${n} of ${TOPICS.length} · ${esc(t.group)}</p><h1 id="lesson-title" tabindex="-1">${esc(t.title)}</h1><p class="muted">${esc(t.tag)}</p></header>
+
+  <section class="card sec explain" aria-labelledby="h-exp">
+    <h2 id="h-exp"><span class="num" aria-hidden="true">1</span>Explanation</h2>
+    ${t.explain.map(p=>`<p>${p}</p>`).join('')}
+    <div class="analogy"><span><b>Everyday analogy.</b> ${t.analogy}</span></div>
+  </section>
+
+  <section class="card sec" aria-labelledby="h-ex">
+    <h2 id="h-ex"><span class="num" aria-hidden="true">2</span>Try it: edit and run</h2>
+    <div class="row between">
+      <div class="seg" role="group" aria-label="Example variants" id="variants">${t.variants.map((v,i)=>`<button type="button" data-v="${v.id}" aria-pressed="${i===0}">${esc(v.label)}</button>`).join('')}</div>
+      <span class="hint">${RUN_KEY} runs · hooks and <code>root</code> are already in scope · a component named <code>App</code> renders automatically</span>
+    </div>
+    <div class="editor-wrap" style="margin-top:10px"><label class="sr-only" for="code">Editable example code</label>
+      <textarea class="code" id="code" spellcheck="false" wrap="off" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea></div>
+    <div class="ctl">
+      <button type="button" class="btn primary" id="run">${ic('play',14)}<span>Run</span></button>
+      <button type="button" class="btn ghost" id="reset-code">${ic('reset',14)}<span>Reset code</span></button>
+      <button type="button" class="btn ghost" id="clear-out">Clear console</button>
+      <span class="hint" id="expect-hint"></span>
+    </div>
+    <div class="out-grid">
+      <div class="preview"><div class="console-h"><span>Rendered output</span><span class="st muted">interactive</span></div><div class="preview-b" id="preview"><div class="empty">Press Run to render the component here.</div></div></div>
+      <div class="console"><div class="console-h"><span>Console</span><span class="st" id="cstatus"></span></div>
+        <div class="console-b" id="cout" role="log" aria-live="off" aria-label="Console output"><div class="empty">Press Run to see the output.</div></div></div>
+    </div>
+  </section>
+
+  <section class="card sec" aria-labelledby="h-quiz">
+    <h2 id="h-quiz"><span class="num" aria-hidden="true">3</span>Predict the output <span class="pill" id="quiz-count"></span></h2>
+    <p class="hint">Pick what you expect each snippet to log. The lab then really runs it in the sandbox and shows the true output next to your answer.</p>
+    <div class="qz" id="quiz">${t.quiz.map((q,i)=>`<div class="rq" data-q="${q.id}"><div class="rq-h"><span class="rq-n">Q${i+1}</span><span class="rq-st" data-st></span></div><pre class="codeblock"><code>${esc(q.code)}</code></pre><div class="rq-opts" role="group" aria-label="Answer options for question ${i+1}">${q.options.map((o,oi)=>`<button type="button" class="rq-opt" data-o="${oi}"><span class="rq-k">${String.fromCharCode(65+oi)}</span><pre>${esc(o)}</pre></button>`).join('')}</div><div class="rq-result" hidden></div></div>`).join('')}</div>
+  </section>
+
+  <section class="card sec cheat" aria-labelledby="h-cheat">
+    <h2 id="h-cheat"><span class="num" aria-hidden="true">4</span>Cheat sheet</h2>
+    <div class="cheat-grid">
+      <div><h3>Key points</h3><ul>${t.cheat.keys.map(k=>`<li>${k}</li>`).join('')}</ul></div>
+      <div><h3>Common mistakes</h3><ul class="bad">${t.cheat.mistakes.map(k=>`<li>${k}</li>`).join('')}</ul></div>
+    </div>
+    <div class="row between" style="margin-top:14px">
+      <span class="hint">Progress is saved on this device.</span>
+      ${next?`<button type="button" class="btn primary" id="next-lesson">Next: ${esc(next.title)} ${ic('next',14)}</button>`:'<span class="pill ok">You have reached the last lesson</span>'}
+    </div>
+  </section>`;
+}
+
+function logLine(out,l){
+  if(out.querySelector('.empty')) out.innerHTML='';
+  const d=document.createElement('div'); d.className='log log-'+(l.kind||'log'); d.textContent=l.text; out.appendChild(d); out.scrollTop=out.scrollHeight;
+}
+function runExample(){
+  if(!CUR) return;
+  if(runHandle){ runHandle.cancel(); runHandle=null; }
+  const code=$('#code').value, out=$('#cout'), prev=$('#preview'), st=$('#cstatus');
+  out.innerHTML=''; prev.innerHTML=''; st.textContent='running…'; st.className='st'; $('#run').disabled=true;
+  const lines=[];
+  runHandle=run(code,{mount:prev,onLog:l=>{ lines.push(l); logLine(out,l); },onDone:err=>{
+    runHandle=null; $('#run').disabled=false;
+    if(err){ logLine(out,{kind:'error',text:err}); st.textContent='error'; st.className='st bad'; return; }
+    if(!lines.length) logLine(out,{kind:'meta',text:'(no console output)'});
+    st.textContent='done'; st.className='st ok';
+    const v=CUR.variants.find(x=>x.id===$('#variants [aria-pressed="true"]').dataset.v);
+    const hint=$('#expect-hint');
+    if(v&&v.expect!=null&&$('#code').value===v.code){ const got=normOut(lines.filter(l=>l.kind!=='warn').map(l=>l.text).join('\n')); hint.innerHTML=got===normOut(v.expect)?'<span class="ok">✓ matches the expected output</span>':'<span class="warn">Output differs from what the lesson expected — read the explanation again, or check the console for React warnings.</span>'; }
+    else hint.textContent='';
+    announce('Run finished');
+  }});
+}
+function loadVariant(id){
+  const v=CUR.variants.find(x=>x.id===id)||CUR.variants[0];
+  $$('#variants button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===v.id)));
+  $('#code').value=v.code; $('#expect-hint').textContent=''; $('#cout').innerHTML='<div class="empty">Press Run to see the output.</div>'; $('#preview').innerHTML='<div class="empty">Press Run to render the component here.</div>'; $('#cstatus').textContent='';
+  autosize();
+}
+function autosize(){ const ta=$('#code'); if(!ta) return; ta.style.height='auto'; ta.style.height=Math.max(160,ta.scrollHeight+4)+'px'; }
+
+function answerQuiz(q,oi,card){
+  const t=CUR; const opts=$$('.rq-opt',card); opts.forEach(b=>b.disabled=true);
+  const res=$('.rq-result',card); res.hidden=false; res.innerHTML='<span class="muted">Running the snippet in the sandbox…</span>';
+  const lines=[];
+  const wrapped=q.code+'\n;if(typeof App!=="undefined"){ root.render(<App />); }';
+  run(wrapped,{onLog:l=>{ if(l.kind!=='warn') lines.push(l.text); },onDone:err=>{
+    const actual=err?null:normOut(lines.join('\n'));
+    const truth=actual!=null&&actual!==''?actual:normOut(q.options[q.answer]);
+    const chosen=normOut(q.options[oi]);
+    const correct=chosen===truth;
+    opts.forEach((b,i)=>{ b.classList.toggle('right',normOut(q.options[i])===truth); b.classList.toggle('wrong',i===oi&&!correct); });
+    $('[data-st]',card).innerHTML=correct?`<span class="ok">${ic('check',12)} correct</span>`:`<span class="bad">${ic('x',12)} not quite</span>`;
+    res.innerHTML=`<div class="rq-actual"><span class="hint">${err?'Sandbox unavailable — showing the expected answer':'Actual output'}</span><pre>${esc(truth||'(nothing)')}</pre></div><div class="why">${q.why}</div>`;
+    if(correct){ markDone(t,q.id); toast('Correct!'); } 
+    updateQuizCount();
+  }});
+}
+function updateQuizCount(){ if(!CUR) return; const d=CUR.quiz.filter(q=>isDone(CUR,q.id)).length; const el=$('#quiz-count'); if(el){ el.textContent=`${d}/${CUR.quiz.length} done`; el.classList.toggle('ok',d===CUR.quiz.length); } }
+
+function selectTopic(id,opts){
+  opts=opts||{};
+  const t=TOPICS.find(x=>x.id===id)||TOPICS[0];
+  if(runHandle){ runHandle.cancel(); runHandle=null; }
+  CUR=t; PR.topic=t.id; saveProgress();
+  if(location.hash!=='#'+t.id) history.replaceState(null,'','#'+t.id);
+  document.title=t.title+' · React Concepts Lab · Levelup';
+  $('#lesson').innerHTML=lessonHTML(t);
+  loadVariant(t.variants[0].id);
+  // pre-mark quizzes already done
+  t.quiz.forEach(q=>{ if(isDone(t,q.id)){ const card=$(`.rq[data-q="${q.id}"]`); $('[data-st]',card).innerHTML=`<span class="ok">${ic('check',12)} done</span>`; } });
+  updateQuizCount(); renderSidebar();
+  $('#main').scrollTop=0;
+  if(opts.focus!==false){ const h=$('#lesson-title'); h&&h.focus({preventScroll:true}); }
+}
+
+function bind(){
+  $('#topics').addEventListener('click',e=>{ const a=e.target.closest('a[data-id]'); if(!a) return; e.preventDefault(); selectTopic(a.dataset.id); });
+  $('#lesson').addEventListener('click',e=>{
+    const vb=e.target.closest('#variants button'); if(vb){ loadVariant(vb.dataset.v); return; }
+    if(e.target.closest('#run')){ runExample(); return; }
+    if(e.target.closest('#reset-code')){ loadVariant($('#variants [aria-pressed="true"]').dataset.v); return; }
+    if(e.target.closest('#clear-out')){ $('#cout').innerHTML='<div class="empty">Console cleared.</div>'; return; }
+    if(e.target.closest('#next-lesson')){ const i=TOPICS.indexOf(CUR); if(TOPICS[i+1]) selectTopic(TOPICS[i+1].id); return; }
+    const ob=e.target.closest('.rq-opt'); if(ob&&!ob.disabled){ const card=ob.closest('.rq'); const q=CUR.quiz.find(x=>x.id===card.dataset.q); answerQuiz(q,+ob.dataset.o,card); }
+  });
+  $('#lesson').addEventListener('input',e=>{ if(e.target.id==='code') autosize(); });
+  $('#lesson').addEventListener('keydown',e=>{
+    if(e.target.id!=='code') return;
+    if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){ e.preventDefault(); runExample(); return; }
+    if(e.key==='Escape'){ e.target.dataset.esc='1'; return; }
+    if(e.key==='Tab'){ if(e.target.dataset.esc){ delete e.target.dataset.esc; return; } e.preventDefault(); const ta=e.target,s=ta.selectionStart,en=ta.selectionEnd; ta.value=ta.value.slice(0,s)+'  '+ta.value.slice(en); ta.selectionStart=ta.selectionEnd=s+2; }
+    else delete e.target.dataset.esc;
+  });
+  $('#reset-progress').addEventListener('click',()=>{ if(!confirm('Clear all saved quiz progress for React Concepts?')) return; PR.done={}; saveProgress(); selectTopic(CUR.id,{focus:false}); toast('Progress cleared'); });
+  $('#theme-btn').addEventListener('click',()=>{ themeState=isDark()?'light':'dark'; setTheme(themeState); applyTheme(); });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{ if(!themeState) applyTheme(); });
+  window.addEventListener('hashchange',()=>{ const h=location.hash.slice(1); if(h&&h!==CUR.id&&TOPICS.some(t=>t.id===h)) selectTopic(h); });
+}
+
+/* ---------- boot ---------- */
+$('#logo').innerHTML=ic('react',18);
+loadProgress(); applyTheme(); bind();
+const h0=location.hash.slice(1);
+selectTopic(TOPICS.some(t=>t.id===h0)?h0:PR.topic,{focus:false});
+window.__RC__={TOPICS,run,normOut,selectTopic,PR:()=>PR};
+</script>
+<script src="levelup-nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,1344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Algorithms - Levelup</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f5f8; --panel:#ffffff; --panel-2:#f1f3f7; --border:#e1e4ea; --text:#1a1e27; --muted:#667085;
+  --accent:#4f46e5; --accent-h:#4338ca; --accent-soft:#eceeff; --on-accent:#ffffff;
+  --good:#137a4b; --good-bg:#e5f6ed; --bad:#c0362c; --bad-bg:#fdecea; --warn:#9a5b06; --warn-bg:#fff3de;
+  --code-bg:#fbfbfd; --gutter:#f1f3f7; --shadow:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.06);
+  --mono: ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+    --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+    --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+    --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+  --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+  --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+  --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono)}
+code{font-family:var(--mono);font-size:.9em;background:var(--panel-2);border:1px solid var(--border);border-radius:5px;padding:1px 5px}
+.sr-only{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+h1,h2,h3{margin:0}
+
+/* ---- header ---- */
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;padding:8px 16px;min-height:56px;background:var(--panel);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;color:var(--text);text-decoration:none}
+.logo{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--accent);color:var(--on-accent)}
+.brand-name{font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.spacer{flex:1}
+.nav{display:flex;gap:2px;min-width:0;margin-left:8px;overflow-x:auto;scrollbar-width:thin}
+.nav a{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;color:var(--muted);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap}
+.nav a:hover{background:var(--panel-2);color:var(--text)}
+.nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:700;box-shadow:inset 0 -2px 0 var(--accent)}
+.icon-btn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--panel-2);color:var(--text)}
+
+/* ---- shared widgets (same as index.html) ---- */
+.btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel);font-weight:600;font-size:13px;white-space:nowrap;transition:background .15s,border-color .15s,box-shadow .15s}
+.btn:hover:not(:disabled){background:var(--panel-2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover:not(:disabled){background:var(--accent-h);border-color:var(--accent-h)}
+.btn.danger{color:var(--bad)}
+.btn.sm{height:28px;padding:0 10px;font-size:12px}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover:not(:disabled){background:var(--panel-2)}
+.input,.select{width:100%;border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:7px 10px;min-height:34px;transition:border-color .15s,box-shadow .15s}
+.input:focus,.select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.input[aria-invalid="true"]{border-color:var(--bad)}
+.select{padding-right:6px}
+.pill{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:99px;font-size:11px;font-weight:600;background:var(--panel-2);color:var(--muted);border:1px solid var(--border);white-space:nowrap}
+.pill b{color:var(--text);font-weight:700;margin-left:3px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+.pad{padding:14px 16px}
+.seg{display:inline-flex;padding:3px;border-radius:9px;background:var(--panel-2);border:1px solid var(--border);gap:2px}
+.seg button{border:0;background:transparent;border-radius:7px;padding:5px 14px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--accent);box-shadow:var(--shadow)}
+.kbd{font-family:var(--mono);font-size:10px;opacity:.85;border:1px solid currentColor;border-radius:4px;padding:0 4px;margin:0 1px}
+#toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;z-index:60}
+.toast{background:var(--text);color:var(--bg);padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);font-weight:600;font-size:13px;animation:fade .2s;max-width:340px}
+.toast.bad{background:var(--bad);color:#fff}
+@keyframes fade{from{opacity:0}}
+.ferr{color:var(--bad);font-size:12.5px;margin-top:4px}
+.small{font-size:12px;color:var(--muted)}
+
+/* ---- page layout ---- */
+.page{max-width:1280px;margin:0 auto;padding:16px}
+.page-h{margin-bottom:12px}
+.page-h h1{font-size:20px;line-height:1.3;letter-spacing:-.01em}
+.page-h p{margin:2px 0 0;color:var(--muted)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:12px;align-items:start;margin-top:12px}
+.stack-col{display:grid;gap:12px;min-width:0}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;margin-bottom:10px}
+.card-h h2{font-size:15px;letter-spacing:-.01em}
+.card-h h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+
+/* ---- controls ---- */
+.ctl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px 16px}
+.ctl-grid .wide{grid-column:span 2}
+.fld{display:grid;gap:4px;align-content:start;min-width:0}
+.fld>label,.fld>.lbl{font-size:12px;font-weight:600;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.fld>label output{color:var(--text);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:8px;align-items:center;min-width:0}
+.row>.input,.row>.select{flex:1;min-width:0}
+input[type=range]{width:100%;height:34px;margin:0;accent-color:var(--accent);background:transparent}
+
+/* ---- visualization ---- */
+.viz-head{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;margin-bottom:8px}
+.viz-head h2{font-size:15px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 10px;padding:0;list-style:none;font-size:12px;color:var(--muted)}
+.legend li{display:inline-flex;align-items:center;gap:6px}
+.legend .g{font-weight:700;color:var(--text);font-size:12px}
+.sw{display:inline-block;width:16px;height:16px;border-radius:4px;flex:none}
+.viz{position:relative;min-width:0;border:1px solid var(--border);border-radius:10px;background:var(--code-bg);padding:10px 8px 6px}
+.bars{display:flex;align-items:stretch;height:clamp(230px,42vh,360px);padding-top:22px;gap:2px}
+.viz.dense .bars{gap:1px}
+.col{flex:1 1 0;min-width:0;display:flex;flex-direction:column;position:relative}
+.plot{flex:1;position:relative;min-height:0}
+.bar{position:absolute;left:0;right:0;bottom:0;height:2%;border-radius:3px 3px 0 0;transition:height var(--dur,.18s) ease,opacity .15s}
+.val{position:absolute;left:50%;transform:translateX(-50%);top:-17px;font:600 11px/14px var(--mono);color:var(--text);display:none;white-space:nowrap}
+.viz.showvals .val{display:block}
+.gl,.mk{height:15px;font:700 11px/15px var(--mono);text-align:center;white-space:nowrap;overflow:visible;position:relative}
+.gl{color:var(--text)}
+.mk{color:var(--accent);font-size:10.5px}
+.viz.dense .gl,.viz.dense .mk{font-size:0}
+.col.out{opacity:.38}
+.cells{display:flex;flex-wrap:wrap;gap:6px 8px;justify-content:center;padding:6px 0}
+.cw{width:46px;display:flex;flex-direction:column;align-items:center}
+.cw .mk{min-width:100%}
+.cell{width:46px;height:46px;border-radius:8px;border-width:2px;display:grid;place-items:center;transition:opacity .15s}
+.cv{background:var(--panel);color:var(--text);border-radius:4px;padding:0 4px;font:700 13px/18px var(--mono);border:1px solid var(--border)}
+.ci{font:11px/14px var(--mono);color:var(--muted)}
+.cw.out{opacity:.42}
+.cw.out .cell{border-style:dashed}
+.cw.out .cv{text-decoration:line-through}
+
+/* state visuals: colour + pattern + outline (never colour alone) */
+.bar,.cell,.sw{background:var(--accent-soft);background:color-mix(in srgb,var(--accent) 38%,var(--panel));border:1px solid var(--accent);border:1px solid color-mix(in srgb,var(--accent) 75%,var(--panel))}
+.cell{border-width:2px}
+.st-compare{background:repeating-linear-gradient(45deg,var(--warn) 0 3px,var(--warn-bg) 3px 7px);border-color:var(--warn);outline:2px dashed var(--warn);outline-offset:0}
+.st-swap{background:repeating-linear-gradient(45deg,var(--bad) 0 2px,transparent 2px 5px),repeating-linear-gradient(-45deg,var(--bad) 0 2px,var(--bad-bg) 2px 5px);border-color:var(--bad);outline:2px solid var(--bad)}
+.st-write{background:repeating-linear-gradient(0deg,var(--accent) 0 3px,var(--accent-soft) 3px 6px);border-color:var(--accent);outline:2px solid var(--accent)}
+.st-pivot{background:var(--accent);border-color:var(--text);outline:3px double var(--text)}
+.st-sorted{background-color:var(--good);background-image:radial-gradient(var(--good-bg) 1.2px,transparent 1.6px);background-size:6px 6px;border-color:var(--good)}
+.st-found{background-color:var(--good);background-image:radial-gradient(var(--good-bg) 1.2px,transparent 1.6px);background-size:6px 6px;border-color:var(--good);outline:3px solid var(--good);outline-offset:1px}
+.viz.dense .bar{outline-width:1px}
+.sw.st-compare,.sw.st-swap,.sw.st-write,.sw.st-pivot,.sw.st-found{outline-width:1px;outline-offset:0}
+.sw.out{opacity:.38;border-style:dashed}
+
+.note{display:flex;gap:10px;align-items:flex-start;margin:10px 0;padding:10px 12px;border-radius:10px;background:var(--panel-2);border:1px solid var(--border);min-height:58px}
+.note-ic{flex:none;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--on-accent);font:700 12px/1 var(--mono);margin-top:1px}
+.note p{margin:0;font-size:14px}
+.note.done{background:var(--good-bg);border-color:transparent}
+.note.done .note-ic{background:var(--good);color:#fff}
+.note.miss{background:var(--warn-bg);border-color:transparent}
+
+.playback{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.playback .scrub{flex:1 1 200px;min-width:140px}
+.steplbl{font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--muted);white-space:nowrap;min-width:110px;text-align:right}
+details.help{margin-top:12px;border:1px solid var(--border);border-radius:10px;background:var(--panel-2)}
+details.help>summary{cursor:pointer;padding:9px 12px;font-weight:600;font-size:13px}
+details.help>div{padding:2px 14px 12px;font-size:13px}
+details.help ul{margin:6px 0;padding-left:18px}
+details.help li{margin:3px 0}
+.valtext{margin-top:8px;font-size:12.5px}
+.valtext summary{cursor:pointer;color:var(--muted)}
+.valtext p{margin:6px 0 0;font-family:var(--mono);word-break:break-word}
+
+/* ---- side panel ---- */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tile{border:1px solid var(--border);border-radius:10px;padding:8px 10px;background:var(--panel)}
+.tile-l{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tile-v{font-size:22px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.pseudo{list-style:none;margin:0;padding:6px 0;border:1px solid var(--border);border-radius:10px;background:var(--code-bg);font:12.5px/1.65 var(--mono);overflow-x:auto}
+.pseudo li{display:flex;gap:8px;padding:0 10px 0 6px;border-left:3px solid transparent;white-space:pre}
+.pseudo .ln{flex:none;width:2.2em;text-align:right;color:var(--muted);user-select:none}
+.pseudo .tx{padding-left:calc(var(--d,0) * 1.6em)}
+.pseudo li::before{content:"";flex:none;width:1em;color:var(--accent);font-weight:700}
+.pseudo li.cur{background:var(--accent-soft);border-left-color:var(--accent);font-weight:700}
+.pseudo li.cur::before{content:"\25B6"}
+.about h3{font-size:14px;margin-bottom:4px}
+.about p{margin:0 0 8px}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.when{padding:8px 10px;border-radius:8px;background:var(--panel-2);font-size:13px}
+
+/* ---- compare table ---- */
+.tscroll{overflow-x:auto}
+table.cmp{width:100%;border-collapse:collapse;font-size:13px;min-width:460px}
+.cmp th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--border)}
+.cmp td{padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+.cmp tbody tr{cursor:pointer}
+.cmp tbody tr:hover{background:var(--panel-2)}
+.cmp tbody tr.sel{background:var(--accent-soft)}
+.cmp tbody tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+.rowbtn{border:0;background:none;padding:2px 0;font-weight:600;text-align:left;border-radius:4px}
+.cmp .num{display:block;font:600 12.5px/1.3 var(--mono);font-variant-numeric:tabular-nums}
+.mbar{display:block;height:7px;border-radius:99px;background:var(--panel-2);border:1px solid var(--border);overflow:hidden;margin-top:3px}
+.mbar i{display:block;height:100%;background:var(--accent);border-radius:99px;min-width:1px}
+.mbar.b2 i{background-image:repeating-linear-gradient(45deg,transparent 0 3px,rgba(255,255,255,.55) 3px 5px)}
+.mbar.b3 i{background-image:radial-gradient(rgba(255,255,255,.6) 1px,transparent 1.5px);background-size:4px 4px}
+
+/* ---- data-structure lab ---- */
+.lab-form{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin:8px 0}
+.lab-form .fld{flex:1 1 150px}
+.lab-stage{min-height:160px;border:1px solid var(--border);border-radius:10px;background:var(--code-bg);padding:14px;overflow-x:auto;display:flex;align-items:center;justify-content:center}
+.opres{margin:8px 0 0;min-height:22px;font-size:13px;font-weight:600}
+.opres.bad{color:var(--bad)}
+.stack{display:flex;flex-direction:column;align-items:stretch;width:min(220px,100%);gap:4px}
+.stack .base{height:8px;border-radius:4px;background:var(--border);margin-top:2px}
+.qwrap{display:flex;flex-wrap:wrap;gap:6px 6px;align-items:flex-start;justify-content:center}
+.item{position:relative;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:38px;padding:4px 12px;border-radius:8px;border:2px solid var(--accent);background:var(--accent-soft);font:700 14px/1.3 var(--mono)}
+.qwrap .item{flex-direction:column;justify-content:center;min-width:64px;padding:6px 10px 4px;gap:2px}
+.itag{font:700 11px/1.2 var(--sans);color:var(--accent);white-space:nowrap}
+.item.fresh{animation:pop .3s ease-out;background:var(--good-bg);border-color:var(--good)}
+.item.peeked{border-style:dashed;border-width:3px;background:var(--warn-bg);border-color:var(--warn)}
+.item .ix{font:11px/1 var(--mono);color:var(--muted);font-weight:400}
+@keyframes pop{from{transform:scale(.7);opacity:0}}
+.emptyph{border:2px dashed var(--border);border-radius:8px;padding:18px 24px;color:var(--muted);text-align:center}
+.oplog{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:340px;overflow:auto;font-size:13px}
+.oplog li{padding:6px 10px;border-radius:8px;background:var(--panel-2);display:grid;gap:1px}
+.oplog li.err{background:var(--bad-bg);color:var(--bad)}
+.oplog li .ot{font:600 12.5px var(--mono);display:flex;gap:8px;justify-content:space-between}
+.oplog li .om{color:var(--text)}
+.oplog li.err .om{color:var(--bad)}
+.kvgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px}
+.kvgrid div{border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:var(--panel)}
+.kvgrid b{display:block;font-size:16px;font-family:var(--mono);word-break:break-word}
+.kvgrid span{font-size:12px;color:var(--muted)}
+table.ops{width:100%;border-collapse:collapse;font-size:13px}
+.ops th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;padding:5px 6px;border-bottom:1px solid var(--border)}
+.ops td{padding:6px;border-bottom:1px solid var(--border);vertical-align:top}
+
+@media (max-width:960px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .ctl-grid .wide{grid-column:1/-1}
+}
+@media (max-width:760px){
+  .topbar{position:static}
+  .spacer{order:2}
+  #theme-btn{order:3}
+  .nav{order:5;flex:0 0 100%;margin-left:0}
+}
+@media (max-width:560px){
+  .page{padding:16px}
+  .btn .lbl-long{display:none}
+  .tiles{gap:6px}
+  .steplbl{text-align:left}
+  .topbar{padding:8px 16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html" aria-label="Levelup home">
+    <span class="logo" id="logo"></span>
+    <span class="brand-name">Levelup</span>
+  </a>
+  <nav class="nav" aria-label="Levelup pages" data-levelup-nav></nav>
+  <div class="spacer"></div>
+  <button class="icon-btn" id="theme-btn" aria-label="Toggle light/dark theme"></button>
+</header>
+
+<main class="page">
+  <div class="page-h">
+    <h1>Algorithm visualizer</h1>
+    <p>Watch sorting, searching, stacks and queues run one step at a time.</p>
+  </div>
+
+  <!-- ===================== controls ===================== -->
+  <section class="card pad" aria-label="Controls">
+    <div class="ctl-grid">
+      <div class="fld">
+        <label for="algo">Algorithm</label>
+        <select class="select" id="algo">
+          <optgroup label="Sorting">
+            <option value="bubble">Bubble sort</option>
+            <option value="selection">Selection sort</option>
+            <option value="insertion">Insertion sort</option>
+            <option value="merge">Merge sort</option>
+            <option value="quick">Quick sort</option>
+          </optgroup>
+          <optgroup label="Searching">
+            <option value="linear">Linear search</option>
+            <option value="binary">Binary search</option>
+          </optgroup>
+          <optgroup label="Data structures">
+            <option value="stack">Stack (LIFO)</option>
+            <option value="queue">Queue (FIFO)</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="fld arr-only">
+        <label for="size">Array size <output id="size-out" for="size">20</output></label>
+        <input type="range" id="size" min="5" max="60" value="20" aria-describedby="size-hint">
+        <span class="sr-only" id="size-hint">Between 5 and 60 numbers. Changing it makes a new array.</span>
+      </div>
+      <div class="fld arr-only">
+        <label for="speed">Speed <output id="speed-out" for="speed"></output></label>
+        <input type="range" id="speed" min="1" max="10" value="5">
+      </div>
+      <div class="fld arr-only">
+        <label for="preset">New array</label>
+        <div class="row">
+          <select class="select" id="preset" aria-label="Array preset">
+            <option value="random">Random</option>
+            <option value="nearly">Nearly sorted</option>
+            <option value="reversed">Reversed</option>
+            <option value="few">Few unique</option>
+          </select>
+          <button class="btn" id="new-btn" type="button" aria-label="New array"><span id="new-ic"></span><span>New array</span></button>
+        </div>
+      </div>
+      <div class="fld wide arr-only">
+        <label for="custom">Or type your own numbers</label>
+        <div class="row">
+          <input class="input mono" id="custom" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="e.g. 34, 7, 23, 32, 5, 62" aria-describedby="custom-err custom-hint">
+          <button class="btn" id="apply-btn" type="button">Use these</button>
+        </div>
+        <span class="small" id="custom-hint">2 to 60 whole numbers from 1 to 999, separated by commas.</span>
+        <div class="ferr" id="custom-err" role="alert" hidden></div>
+      </div>
+      <div class="fld search-only" id="target-fld" hidden>
+        <label for="target">Target to find</label>
+        <div class="row">
+          <input class="input mono" id="target" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-describedby="target-err">
+          <button class="btn" id="miss-btn" type="button" title="Pick a value that is not in the array">Not in array</button>
+        </div>
+        <div class="ferr" id="target-err" role="alert" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== array algorithms ===================== -->
+  <div class="layout" id="algo-view">
+    <div class="stack-col">
+      <section class="card pad" id="viz-card" aria-labelledby="viz-title">
+        <div class="viz-head">
+          <h2 id="viz-title">Bubble sort</h2>
+          <div class="chips" id="viz-chips"></div>
+        </div>
+        <ul class="legend" id="legend" aria-label="Legend">
+          <li data-m="all"><span class="sw st-compare" aria-hidden="true"></span><span class="g" aria-hidden="true">?</span> Comparing</li>
+          <li data-m="sort"><span class="sw st-swap" aria-hidden="true"></span><span class="g" aria-hidden="true">&#8644;</span> Swapping</li>
+          <li data-m="merge"><span class="sw st-write" aria-hidden="true"></span><span class="g" aria-hidden="true">&#8595;</span> Written (merge)</li>
+          <li data-m="sort"><span class="sw st-pivot" aria-hidden="true"></span><span class="g" aria-hidden="true">&#9670;</span> Pivot / current minimum</li>
+          <li data-m="sort"><span class="sw st-sorted" aria-hidden="true"></span><span class="g" aria-hidden="true">&#10003;</span> Sorted</li>
+          <li data-m="search"><span class="sw st-found" aria-hidden="true"></span><span class="g" aria-hidden="true">&#9733;</span> Found</li>
+          <li data-m="range"><span class="sw out" aria-hidden="true"></span> Dimmed = outside the range being worked on</li>
+        </ul>
+        <div class="viz" id="viz" role="img" aria-label="Array visualization"></div>
+        <details class="valtext"><summary>Show the values as text</summary><p id="values-text"></p></details>
+        <div class="note" id="note"><span class="note-ic" aria-hidden="true">i</span><p id="note-text"></p></div>
+        <div class="playback" role="group" aria-label="Playback controls">
+          <button class="btn" id="restart-btn" type="button" aria-label="Restart" title="Restart"></button>
+          <button class="btn" id="back-btn" type="button" aria-label="Step back" title="Step back (Left arrow)"></button>
+          <button class="btn primary" id="play-btn" type="button" aria-label="Play" title="Play / pause (Space)"></button>
+          <button class="btn" id="fwd-btn" type="button" aria-label="Step forward" title="Step forward (Right arrow)"></button>
+          <input class="scrub" type="range" id="scrub" min="0" max="0" value="0" aria-label="Scrub through steps">
+          <span class="steplbl" id="steplbl" aria-hidden="true">Step 0 of 0</span>
+        </div>
+        <p class="small" id="rm-note" hidden>Reduced motion is on: animations are off and playback starts slow. Use the step buttons or the arrow keys to move one step at a time.</p>
+        <details class="help">
+          <summary>How to read this</summary>
+          <div>
+            <ul>
+              <li><strong>Sorting:</strong> each bar is a number and its height is its value. <strong>Searching:</strong> each box is a number with its index below.</li>
+              <li><strong>States use a pattern, a symbol and a colour</strong> (see the legend): <code>?</code> striped = being compared, <code>&#8644;</code> cross-hatched = swapped, <code>&#8595;</code> lined = written (merge), <code>&#9670;</code> outlined = pivot or current minimum, <code>&#10003;</code> dotted = sorted, <code>&#9733;</code> = found.</li>
+              <li><strong>Small labels under the bars</strong> are pointers: <code>i</code>, <code>j</code>, <code>min</code>, <code>lo</code>, <code>mid</code>, <code>hi</code>, <code>L</code>/<code>R</code> (left and right run). They are hidden when there are too many bars; the step sentence still says what is happening.</li>
+              <li><strong>Dimmed items</strong> are outside the range currently being worked on (binary search: eliminated; quick and merge sort: outside the current part).</li>
+              <li><strong>Counters</strong> count comparisons, swaps and array writes (a swap is two writes). The highlighted line in the pseudocode is the line being run.</li>
+              <li><strong>Merge sort</strong> shows the range being merged as: merged so far, then what is left of the left run, then the right run. That keeps the array a permutation at every step. A real merge copies into a temporary buffer and writes back one value at a time, and the counters count it that way.</li>
+              <li><strong>Binary search</strong> needs sorted data, so the page sorts a copy first (a clearly labelled pre-step that is not counted).</li>
+              <li><strong>Keyboard</strong> (when focus is not in a text box): <span class="kbd">Space</span> play / pause, <span class="kbd">&larr;</span> step back, <span class="kbd">&rarr;</span> step forward.</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+
+      <section class="card pad" id="compare-card" aria-labelledby="cmp-h">
+        <div class="card-h">
+          <h2 id="cmp-h">Compare algorithms</h2>
+          <span class="small" id="cmp-cap"></span>
+        </div>
+        <div class="tscroll">
+          <table class="cmp">
+            <caption class="sr-only">Comparisons, swaps and writes for each sorting algorithm on the current array. Select a row to switch to that algorithm.</caption>
+            <thead><tr><th scope="col">Algorithm</th><th scope="col">Comparisons</th><th scope="col">Swaps</th><th scope="col">Writes</th></tr></thead>
+            <tbody id="cmp-body"></tbody>
+          </table>
+        </div>
+        <p class="small" style="margin:8px 0 0">Each sort runs silently on the same array. Click a row to watch that algorithm. Merge sort never swaps: it writes merged values back into the array.</p>
+      </section>
+    </div>
+
+    <aside class="stack-col" id="side" aria-label="Details">
+      <section class="card pad" aria-label="Counters">
+        <div class="tiles">
+          <div class="tile"><div class="tile-l">Comparisons</div><div class="tile-v" id="c-cmp">0</div></div>
+          <div class="tile sort-only"><div class="tile-l">Swaps</div><div class="tile-v" id="c-swp">0</div></div>
+          <div class="tile sort-only"><div class="tile-l">Writes</div><div class="tile-v" id="c-wr">0</div></div>
+        </div>
+      </section>
+      <section class="card pad" aria-labelledby="pseudo-h">
+        <div class="card-h"><h3 id="pseudo-h">Pseudocode</h3></div>
+        <ol class="pseudo" id="pseudo"></ol>
+      </section>
+      <section class="card pad about" id="about" aria-live="off"></section>
+    </aside>
+  </div>
+
+  <!-- ===================== stack / queue lab ===================== -->
+  <div class="layout" id="lab" hidden>
+    <div class="stack-col">
+      <section class="card pad" aria-labelledby="lab-title">
+        <div class="card-h">
+          <h2 id="lab-title">Stack</h2>
+          <div class="seg" role="group" aria-label="Choose a structure">
+            <button type="button" id="seg-stack" aria-pressed="true">Stack</button>
+            <button type="button" id="seg-queue" aria-pressed="false">Queue</button>
+          </div>
+        </div>
+        <p class="small" id="lab-desc" style="margin:0"></p>
+        <div class="lab-form">
+          <div class="fld">
+            <label for="lab-val">Value</label>
+            <input class="input mono" id="lab-val" type="text" maxlength="10" autocomplete="off" spellcheck="false" placeholder="e.g. 42 or A" aria-describedby="lab-err">
+          </div>
+          <button class="btn primary" id="lab-add" type="button">Push</button>
+          <button class="btn" id="lab-rem" type="button">Pop</button>
+          <button class="btn" id="lab-peek" type="button">Peek</button>
+          <button class="btn ghost" id="lab-sample" type="button">Add samples</button>
+          <button class="btn ghost danger" id="lab-reset" type="button">Reset</button>
+        </div>
+        <div class="ferr" id="lab-err" role="alert" hidden></div>
+        <div class="lab-stage" id="lab-stage"></div>
+        <p class="opres" id="lab-res"></p>
+        <div class="kvgrid" id="lab-stats"></div>
+      </section>
+    </div>
+    <aside class="stack-col">
+      <section class="card pad" aria-labelledby="log-h">
+        <div class="card-h"><h3 id="log-h">Operation log</h3></div>
+        <ol class="oplog" id="lab-log" role="log" aria-live="polite" aria-label="Operation log"></ol>
+      </section>
+      <section class="card pad" aria-labelledby="ops-h">
+        <div class="card-h"><h3 id="ops-h">Cost of each operation</h3></div>
+        <table class="ops">
+          <thead><tr><th scope="col">Operation</th><th scope="col">Time</th><th scope="col">What it does</th></tr></thead>
+          <tbody id="lab-ops"></tbody>
+        </table>
+        <p class="small" id="lab-ops-note" style="margin:8px 0 0"></p>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<div id="live" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ==========================================================================
+   CORE: pure logic, no DOM. Algorithms are generators that yield frames:
+   { arr:[...copy], hi:{compare,swap,write,pivot,sorted,active,found,marks,notFound},
+     line:<pseudocode line index, -1 = none>, counters:{comparisons,swaps,writes}, note:'sentence' }
+   ========================================================================== */
+/* @@CORE-START */
+const Core=(function(){
+  const MAX_N=60, MIN_N=2, MIN_V=1, MAX_V=999;
+
+  /* ---------- array generation + parsing ---------- */
+  function genArray(kind,n,rng){
+    rng=rng||Math.random;
+    n=Math.max(0,Math.min(MAX_N,Math.floor(n)||0));
+    const out=[];
+    const lin=(i,dir)=>n===1?50:Math.round(5+94*(dir>0?i:n-1-i)/(n-1));
+    if(kind==='reversed'){ for(let i=0;i<n;i++) out.push(lin(i,-1)); return out; }
+    if(kind==='nearly'){
+      for(let i=0;i<n;i++) out.push(lin(i,1));
+      if(n>1){
+        const sw=Math.max(1,Math.round(n*0.08));
+        for(let k=0;k<sw;k++){
+          const i=Math.floor(rng()*(n-1)), j=Math.min(n-1,i+1+Math.floor(rng()*3));
+          const t=out[i]; out[i]=out[j]; out[j]=t;
+        }
+      }
+      return out;
+    }
+    if(kind==='few'){
+      const pool=[12,37,64,91].slice(0,n<=8?3:4);
+      for(let i=0;i<n;i++) out.push(pool[Math.floor(rng()*pool.length)]);
+      return out;
+    }
+    for(let i=0;i<n;i++) out.push(3+Math.floor(rng()*97));
+    return out;
+  }
+  function short(s){ s=String(s); return s.length>14?s.slice(0,13)+'…':s; }
+  function parseList(text){
+    const src=String(text==null?'':text).trim();
+    if(!src) return {ok:false,error:'Type some numbers first, separated by commas (for example 5, 3, 8, 1).'};
+    const toks=src.split(/[,;\s]+/).filter(Boolean);
+    const vals=[];
+    for(let i=0;i<toks.length;i++){
+      const t=toks[i];
+      if(!/^[+-]?\d+$/.test(t)) return {ok:false,error:'Entry '+(i+1)+' (“'+short(t)+'”) is not a whole number. Use integers from '+MIN_V+' to '+MAX_V+', separated by commas.'};
+      const v=parseInt(t,10);
+      if(v<MIN_V||v>MAX_V) return {ok:false,error:'Entry '+(i+1)+' ('+short(t)+') is outside the allowed range '+MIN_V+' to '+MAX_V+'.'};
+      vals.push(v);
+    }
+    if(vals.length<MIN_N) return {ok:false,error:'Enter at least '+MIN_N+' numbers so there is something to '+'work on.'};
+    if(vals.length>MAX_N) return {ok:false,error:'That is '+vals.length+' numbers. The most this page can show is '+MAX_N+'.'};
+    return {ok:true,values:vals};
+  }
+  function parseTarget(text){
+    const s=String(text==null?'':text).trim();
+    if(!s) return {ok:false,error:'Enter the number to look for.'};
+    if(!/^[+-]?\d+$/.test(s)) return {ok:false,error:'The target must be a whole number from '+MIN_V+' to '+MAX_V+'.'};
+    const v=parseInt(s,10);
+    if(v<MIN_V||v>MAX_V) return {ok:false,error:'The target must be between '+MIN_V+' and '+MAX_V+'.'};
+    return {ok:true,value:v};
+  }
+  function isSorted(a){ for(let i=1;i<a.length;i++) if(a[i-1]>a[i]) return false; return true; }
+
+  /* ---------- run context ---------- */
+  function mk(m,i,label){ if(i<0) return; m[i]=m[i]?m[i]+','+label:label; }
+  function makeCtx(input,opts){
+    const a=input.slice(), n=a.length;
+    const c={comparisons:0,swaps:0,writes:0};
+    const silent=!!(opts&&opts.silent);
+    const srt=new Array(n).fill(false);
+    const ctx={a:a,n:n,c:c,silent:silent,srt:srt,target:opts&&opts.target,result:null};
+    ctx.f=function(hi,line,note){
+      if(silent) return null;
+      hi=hi||{};
+      if(!hi.sorted){ const s=[]; for(let i=0;i<srt.length;i++) if(srt[i]) s.push(i); hi.sorted=s; }
+      return {arr:a.slice(),hi:hi,line:line,counters:{comparisons:c.comparisons,swaps:c.swaps,writes:c.writes},note:note};
+    };
+    ctx.swap=function(i,j){ const t=a[i]; a[i]=a[j]; a[j]=t; c.swaps++; c.writes+=2; };
+    ctx.done=function(line,note){ srt.fill(true); return ctx.f({},line,note); };
+    return ctx;
+  }
+
+  /* ---------- sorting generators ---------- */
+  function* bubble(ctx){
+    const a=ctx.a,n=ctx.n,c=ctx.c,f=ctx.f;
+    yield f({},-1,'Start: '+n+' numbers to sort. Bubble sort compares neighbours and swaps them when they are in the wrong order.');
+    for(let i=0;i<n-1;i++){
+      let swapped=false; const last=n-i-1;
+      yield f({active:[0,last]},1,'Pass '+(i+1)+': walk left to right; the biggest value in positions 0 to '+last+' will bubble up to position '+last+'.');
+      for(let j=0;j<last;j++){
+        c.comparisons++;
+        const m={}; mk(m,j,'j'); mk(m,j+1,'j+1');
+        const gt=a[j]>a[j+1];
+        yield f({compare:[j,j+1],active:[0,last],marks:m},3,'Compare '+a[j]+' and '+a[j+1]+': '+(gt?a[j]+' is bigger, so they are out of order.':'already in order, leave them.'));
+        if(gt){
+          ctx.swap(j,j+1); swapped=true;
+          yield f({swap:[j,j+1],active:[0,last],marks:m},4,'Swap them: '+a[j]+' now comes before '+a[j+1]+'.');
+        }
+      }
+      ctx.srt[last]=true;
+      if(!swapped){
+        yield f({},5,'No swaps happened in this pass, so the array is already sorted. Stop early.');
+        break;
+      }
+      yield f({},5,a[last]+' is now in its final place at position '+last+'.');
+    }
+    yield ctx.done(-1,'Done: the array is sorted ('+ctx.c.comparisons+' comparisons, '+ctx.c.swaps+' swaps).');
+  }
+
+  function* selection(ctx){
+    const a=ctx.a,n=ctx.n,c=ctx.c,f=ctx.f;
+    yield f({},-1,'Start: '+n+' numbers to sort. Selection sort finds the smallest remaining value and puts it next in line.');
+    for(let i=0;i<n-1;i++){
+      let min=i;
+      let m={}; mk(m,i,'i'); mk(m,min,'min');
+      yield f({pivot:min,active:[i,n-1],marks:m},1,'Round '+(i+1)+': the smallest value from position '+i+' onward goes to position '+i+'. Start by assuming '+a[i]+' is the minimum.');
+      for(let j=i+1;j<n;j++){
+        c.comparisons++;
+        const less=a[j]<a[min];
+        m={}; mk(m,i,'i'); mk(m,min,'min'); mk(m,j,'j');
+        yield f({compare:[j,min],pivot:min,active:[i,n-1],marks:m},3,'Compare '+a[j]+' with the current minimum '+a[min]+': '+(less?a[j]+' is smaller, so it becomes the new minimum.':'no change.'));
+        if(less) min=j;
+      }
+      ctx.srt[i]=true;
+      m={}; mk(m,i,'i'); mk(m,min,'min');
+      if(min!==i){
+        const x=a[i],y=a[min];
+        ctx.swap(i,min);
+        yield f({swap:[i,min],active:[i,n-1],marks:m},4,'Swap '+x+' and '+y+': the smallest value, '+y+', now sits at position '+i+' for good.');
+      } else {
+        yield f({active:[i,n-1],marks:m},4,a[i]+' is already the smallest remaining value, so no swap is needed.');
+      }
+    }
+    yield ctx.done(-1,'Done: the array is sorted ('+c.comparisons+' comparisons, '+c.swaps+' swaps).');
+  }
+
+  function* insertion(ctx){
+    const a=ctx.a,n=ctx.n,c=ctx.c,f=ctx.f;
+    yield f({},-1,'Start: '+n+' numbers to sort. Insertion sort grows a sorted section on the left and slides each new value into place.');
+    if(n>0) ctx.srt[0]=true;
+    for(let i=1;i<n;i++){
+      let j=i;
+      let m={}; mk(m,j,'key');
+      yield f({marks:m},1,'Take '+a[i]+' (position '+i+') and slide it left into the sorted section (positions 0 to '+(i-1)+').');
+      while(j>0){
+        c.comparisons++;
+        const gt=a[j-1]>a[j];
+        m={}; mk(m,j,'key');
+        yield f({compare:[j-1,j],marks:m},2,'Compare '+a[j-1]+' with '+a[j]+': '+(gt?a[j-1]+' is bigger, so '+a[j]+' must move left.':'the left neighbour is not bigger, so '+a[j]+' stays here.'));
+        if(!gt) break;
+        ctx.swap(j-1,j); j--;
+        m={}; mk(m,j,'key');
+        yield f({swap:[j,j+1],marks:m},3,'Swap: '+a[j]+' moved one step left.');
+      }
+      ctx.srt[i]=true;
+      yield f({},4,'Positions 0 to '+i+' are now sorted.');
+    }
+    yield ctx.done(-1,'Done: the array is sorted ('+c.comparisons+' comparisons, '+c.swaps+' swaps).');
+  }
+
+  function* msort(ctx,lo,hi){
+    const a=ctx.a,f=ctx.f;
+    if(lo>=hi) return;
+    const mid=(lo+hi)>>1;
+    let m={}; mk(m,lo,'lo'); mk(m,mid,'mid'); mk(m,hi,'hi');
+    yield f({active:[lo,hi],marks:m},2,'Split positions '+lo+' to '+hi+' into two halves: '+lo+' to '+mid+' and '+(mid+1)+' to '+hi+'.');
+    yield* msort(ctx,lo,mid);
+    yield* msort(ctx,mid+1,hi);
+    yield* merge(ctx,lo,mid,hi);
+  }
+  function* merge(ctx,lo,mid,hi){
+    const a=ctx.a,c=ctx.c,f=ctx.f,n=ctx.n;
+    const L=a.slice(lo,mid+1), R=a.slice(mid+1,hi+1);
+    let li=0, ri=0; const out=[];
+    const finalPass=(lo===0&&hi===n-1);
+    const layout=()=>{ const v=out.concat(L.slice(li),R.slice(ri)); for(let t=0;t<v.length;t++) a[lo+t]=v[t]; };
+    yield f({active:[lo,hi]},6,'Merge two sorted runs: left ['+L.join(', ')+'] and right ['+R.join(', ')+']. Repeatedly take the smaller front value.');
+    for(let k=lo;k<=hi;k++){
+      const lpos=lo+out.length, rpos=lpos+(L.length-li);
+      let takeLeft;
+      if(li<L.length&&ri<R.length){
+        c.comparisons++;
+        takeLeft=L[li]<=R[ri];
+        const m={}; mk(m,lpos,'L'); mk(m,rpos,'R');
+        yield f({compare:[lpos,rpos],active:[lo,hi],marks:m,sorted:mergedIdx(ctx,lo,out.length)},8,'Compare the front of the left run ('+L[li]+') with the front of the right run ('+R[ri]+'): take '+(takeLeft?L[li]+' from the left (ties go left, which keeps equal values in order).':R[ri]+' from the right.'));
+      } else {
+        takeLeft=li<L.length;
+      }
+      const val=takeLeft?L[li++]:R[ri++];
+      out.push(val); c.writes++;
+      layout();
+      const w=lo+out.length-1;
+      if(finalPass) ctx.srt[w]=true;
+      const m2={}; mk(m2,w,'k');
+      yield f({write:[w],active:[lo,hi],marks:m2,sorted:mergedIdx(ctx,lo,out.length)},takeLeft?9:10,'Write '+val+' into position '+w+(k===hi?'. This range is now sorted.':'.'));
+    }
+  }
+  function mergedIdx(ctx,lo,count){
+    const s=[]; for(let i=0;i<ctx.n;i++) if(ctx.srt[i]||(i>=lo&&i<lo+count)) s.push(i);
+    return s;
+  }
+  function* mergeSort(ctx){
+    const n=ctx.n;
+    yield ctx.f({},-1,'Start: '+n+' numbers to sort. Merge sort splits the array in halves, sorts each half, then merges the halves.');
+    yield* msort(ctx,0,n-1);
+    yield ctx.done(-1,'Done: the array is sorted ('+ctx.c.comparisons+' comparisons, '+ctx.c.writes+' writes).');
+  }
+
+  function* qs(ctx,lo,hi){
+    const a=ctx.a,c=ctx.c,f=ctx.f;
+    if(lo>hi) return;
+    if(lo===hi){
+      ctx.srt[lo]=true;
+      yield f({active:[lo,hi]},1,'Only one value ('+a[lo]+') left in this part, so it is already in its final place.');
+      return;
+    }
+    const pivot=a[hi];
+    let m={}; mk(m,hi,'pivot');
+    yield f({pivot:hi,active:[lo,hi],marks:m},4,'Partition positions '+lo+' to '+hi+': the last value, '+pivot+', is the pivot. Smaller values will be collected on the left.');
+    let i=lo-1;
+    for(let j=lo;j<hi;j++){
+      c.comparisons++;
+      const less=a[j]<pivot;
+      if(less) i++;
+      m={}; mk(m,hi,'pivot'); mk(m,i,'i'); mk(m,j,'j');
+      yield f({compare:[j],pivot:hi,active:[lo,hi],marks:m},6,'Is '+a[j]+' smaller than the pivot '+pivot+'? '+(less?(i===j?'Yes, and it is already next to the small values.':'Yes: swap it into the small side.'):'No: it stays on the big side.'));
+      if(less&&i!==j){
+        ctx.swap(i,j);
+        yield f({swap:[i,j],pivot:hi,active:[lo,hi],marks:m},7,'Swap positions '+i+' and '+j+' to move the small value left.');
+      }
+    }
+    const p=i+1;
+    m={}; mk(m,p,'p');
+    const hiObj={pivot:p,active:[lo,hi],marks:m};
+    if(p!==hi){ ctx.swap(p,hi); hiObj.swap=[p,hi]; }
+    ctx.srt[p]=true;
+    yield f(hiObj,8,'Put the pivot '+pivot+' between the small and big sides at position '+p+'. It is now in its final place.');
+    yield* qs(ctx,lo,p-1);
+    yield* qs(ctx,p+1,hi);
+  }
+  function* quick(ctx){
+    yield ctx.f({},-1,'Start: '+ctx.n+' numbers to sort. Quick sort picks a pivot, moves smaller values left of it, then sorts each side.');
+    yield* qs(ctx,0,ctx.n-1);
+    yield ctx.done(-1,'Done: the array is sorted ('+ctx.c.comparisons+' comparisons, '+ctx.c.swaps+' swaps).');
+  }
+
+  /* ---------- searching generators ---------- */
+  function* linear(ctx){
+    const a=ctx.a,n=ctx.n,c=ctx.c,f=ctx.f,t=ctx.target;
+    yield f({},-1,'Start: look for '+t+' by checking each position from the left.');
+    for(let i=0;i<n;i++){
+      c.comparisons++;
+      const m={}; mk(m,i,'i');
+      if(a[i]===t){
+        ctx.result={found:true,index:i};
+        yield f({found:i,marks:m},1,'Position '+i+' holds '+a[i]+', which equals '+t+'. Found it after '+c.comparisons+' comparison'+(c.comparisons===1?'':'s')+'.');
+        return;
+      }
+      yield f({compare:[i],active:[i,n-1],marks:m},1,'Is position '+i+' ('+a[i]+') equal to '+t+'? No, move on.');
+    }
+    ctx.result={found:false,index:-1};
+    yield f({notFound:true,active:[n,n-1]},2,t+' is not in the array: all '+n+' positions were checked ('+c.comparisons+' comparisons).');
+  }
+  function* binary(ctx){
+    const a=ctx.a,c=ctx.c,f=ctx.f,t=ctx.target;
+    yield f({},-1,'Start: look for '+t+'. Binary search only works on sorted data.');
+    if(!isSorted(a)){
+      a.sort((x,y)=>x-y);
+      yield f({},0,'The array was not sorted, so it has been sorted first. This is a pre-step; it is not part of binary search and is not counted.');
+    } else {
+      yield f({},0,'The array is already sorted, so binary search can begin.');
+    }
+    let lo=0, hi=a.length-1;
+    let m={}; mk(m,lo,'lo'); mk(m,hi,'hi');
+    yield f({active:[lo,hi],marks:m},0,'Search range is positions '+lo+' to '+hi+'.');
+    while(lo<=hi){
+      const mid=(lo+hi)>>1;
+      m={}; mk(m,lo,'lo'); mk(m,mid,'mid'); mk(m,hi,'hi');
+      yield f({active:[lo,hi],marks:m},2,'Look at the middle of positions '+lo+' to '+hi+': mid = '+mid+', value '+a[mid]+'.');
+      c.comparisons++;
+      if(a[mid]===t){
+        ctx.result={found:true,index:mid};
+        yield f({found:mid,active:[lo,hi],marks:m},3,a[mid]+' equals '+t+'. Found at position '+mid+' after '+c.comparisons+' comparison'+(c.comparisons===1?'':'s')+'.');
+        return;
+      }
+      const goRight=a[mid]<t;
+      yield f({compare:[mid],active:[lo,hi],marks:m},goRight?4:5,a[mid]+' is '+(goRight?'smaller':'bigger')+' than '+t+', so '+t+' can only be in the '+(goRight?'right':'left')+' half.');
+      const oldLo=lo, oldHi=hi;
+      if(goRight) lo=mid+1; else hi=mid-1;
+      m={}; mk(m,lo,'lo'); mk(m,hi,'hi');
+      if(lo<=hi) yield f({active:[lo,hi],marks:m},goRight?4:5,'Discard positions '+(goRight?oldLo+' to '+mid:mid+' to '+oldHi)+'. New range: positions '+lo+' to '+hi+'.');
+    }
+    ctx.result={found:false,index:-1};
+    yield f({notFound:true,active:[lo,hi]},6,'The range is empty (lo passed hi), so '+t+' is not in the array ('+c.comparisons+' comparisons).');
+  }
+
+  /* ---------- registry ---------- */
+  const ALGOS={
+    bubble:{id:'bubble',kind:'sort',name:'Bubble sort',gen:bubble,
+      blurb:'Repeatedly walks through the list, swapping neighbours that are in the wrong order. The biggest value "bubbles" to the end on every pass.',
+      best:'O(n)',avg:'O(n²)',worst:'O(n²)',space:'O(1)',stable:'Yes',
+      when:'Teaching, or tiny and nearly sorted lists (with the early-exit check). Rarely used in real code.',
+      pseudo:[[0,'for i ← 0 to n−2:'],[1,'swapped ← false'],[1,'for j ← 0 to n−i−2:'],[2,'if a[j] > a[j+1]:'],[3,'swap(a[j], a[j+1]); swapped ← true'],[1,'if not swapped: stop  // already sorted']]},
+    selection:{id:'selection',kind:'sort',name:'Selection sort',gen:selection,
+      blurb:'Finds the smallest remaining value and swaps it into the next position of the sorted section.',
+      best:'O(n²)',avg:'O(n²)',worst:'O(n²)',space:'O(1)',stable:'No',
+      when:'Small lists where writes are expensive: it does at most n−1 swaps.',
+      pseudo:[[0,'for i ← 0 to n−2:'],[1,'min ← i'],[1,'for j ← i+1 to n−1:'],[2,'if a[j] < a[min]: min ← j'],[1,'if min ≠ i: swap(a[i], a[min])']]},
+    insertion:{id:'insertion',kind:'sort',name:'Insertion sort',gen:insertion,
+      blurb:'Builds a sorted section from the left, sliding each new value backwards until it fits, like sorting playing cards in your hand.',
+      best:'O(n)',avg:'O(n²)',worst:'O(n²)',space:'O(1)',stable:'Yes',
+      when:'Small or nearly sorted data. Real libraries use it for small slices inside faster sorts.',
+      pseudo:[[0,'for i ← 1 to n−1:'],[1,'j ← i'],[1,'while j > 0 and a[j−1] > a[j]:'],[2,'swap(a[j−1], a[j]); j ← j−1'],[1,'// a[0..i] is now sorted']]},
+    merge:{id:'merge',kind:'sort',name:'Merge sort',gen:mergeSort,
+      blurb:'Splits the list in halves, sorts each half recursively, then merges the two sorted halves by repeatedly taking the smaller front value.',
+      best:'O(n log n)',avg:'O(n log n)',worst:'O(n log n)',space:'O(n)',stable:'Yes',
+      when:'When you need guaranteed O(n log n) speed and stability, or for linked lists and data too big for memory.',
+      pseudo:[[0,'mergeSort(lo, hi):'],[1,'if lo ≥ hi: return'],[1,'mid ← ⌊(lo + hi) / 2⌋'],[1,'mergeSort(lo, mid); mergeSort(mid+1, hi)'],[1,'merge(lo, mid, hi)'],[0,'merge(lo, mid, hi):'],[1,'copy a[lo..hi] to temp; i ← lo; j ← mid+1'],[1,'for k ← lo to hi:'],[2,'if j > hi or (i ≤ mid and temp[i] ≤ temp[j]):'],[3,'a[k] ← temp[i]; i ← i+1'],[2,'else: a[k] ← temp[j]; j ← j+1']]},
+    quick:{id:'quick',kind:'sort',name:'Quick sort',gen:quick,
+      blurb:'Picks a pivot (here the last value), moves smaller values to its left and bigger ones to its right (Lomuto partition), then sorts both sides.',
+      best:'O(n log n)',avg:'O(n log n)',worst:'O(n²)',space:'O(log n)',stable:'No',
+      when:'General-purpose in-memory sorting; usually the fastest in practice. A last-element pivot is slow on already sorted data.',
+      pseudo:[[0,'quickSort(lo, hi):'],[1,'if lo ≥ hi: return'],[1,'p ← partition(lo, hi); quickSort(lo, p−1); quickSort(p+1, hi)'],[0,'partition(lo, hi):  // Lomuto'],[1,'pivot ← a[hi]; i ← lo − 1'],[1,'for j ← lo to hi−1:'],[2,'if a[j] < pivot:'],[3,'i ← i+1; swap(a[i], a[j])'],[1,'swap(a[i+1], a[hi]); return i+1']]},
+    linear:{id:'linear',kind:'search',name:'Linear search',gen:linear,
+      blurb:'Checks each item in order until it finds the target or runs out of items.',
+      best:'O(1)',avg:'O(n)',worst:'O(n)',space:'O(1)',stable:'n/a',
+      when:'Unsorted or very small data, or when you only search once.',
+      pseudo:[[0,'for i ← 0 to n−1:'],[1,'if a[i] = target: return i'],[0,'return −1  // not found']]},
+    binary:{id:'binary',kind:'search',name:'Binary search',gen:binary,
+      blurb:'On sorted data, compares the target with the middle item and throws away the half that cannot contain it, over and over.',
+      best:'O(1)',avg:'O(log n)',worst:'O(log n)',space:'O(1)',stable:'n/a',
+      when:'Sorted data with fast random access, especially when you search many times.',
+      pseudo:[[0,'// requires a sorted array; lo \u2190 0; hi \u2190 n\u22121'],[0,'while lo \u2264 hi:'],[1,'mid \u2190 \u230a(lo + hi) / 2\u230b'],[1,'if a[mid] = target: return mid'],[1,'else if a[mid] < target: lo \u2190 mid+1'],[1,'else: hi \u2190 mid\u22121'],[0,'return \u22121  // not found']]}
+  };
+  /* binary pseudocode lines: 0 init, 2 mid, 3 equal, 4 go right, 5 go left, 6 not found */
+  const SORT_IDS=['bubble','selection','insertion','merge','quick'];
+
+  function run(id,input,opts){
+    const def=ALGOS[id];
+    if(!def) throw new Error('Unknown algorithm: '+id);
+    const ctx=makeCtx(input,opts||{});
+    const frames=[];
+    const it=def.gen(ctx);
+    for(let r=it.next(); !r.done; r=it.next()){ if(r.value) frames.push(r.value); }
+    return {frames:frames,counters:{comparisons:ctx.c.comparisons,swaps:ctx.c.swaps,writes:ctx.c.writes},result:ctx.result};
+  }
+
+  /* ---------- stack / queue model ---------- */
+  function makeLinear(kind,cap){
+    const isStack=kind==='stack';
+    const names=isStack?{add:'push',rem:'pop',Label:'Stack'}:{add:'enqueue',rem:'dequeue',Label:'Queue'};
+    const items=[], log=[]; let seq=0;
+    function rec(op,ok,msg,extra){
+      seq++; const e=Object.assign({n:seq,op:op,ok:ok,msg:msg,cost:'O(1)'},extra||{}); log.push(e); return e;
+    }
+    function clean(v){ return String(v==null?'':v).trim(); }
+    return {
+      kind:kind, cap:cap, names:names,
+      items:function(){ return items.slice(); },
+      size:function(){ return items.length; },
+      isEmpty:function(){ return items.length===0; },
+      isFull:function(){ return items.length>=cap; },
+      log:function(){ return log.slice(); },
+      reset:function(){ items.length=0; log.length=0; seq=0; },
+      add:function(v){
+        v=clean(v);
+        if(!v) return {ok:false,error:'invalid',msg:'Type a value first, then choose '+names.add+'.'};
+        if(items.length>=cap) return rec(names.add+'('+v+')',false,names.Label+' overflow: it is full ('+cap+' items), so '+v+' was not added.',{error:'overflow'});
+        items.push(v);
+        return rec(names.add+'('+v+')',true,(isStack?'Pushed '+v+' onto the top.':'Enqueued '+v+' at the rear.')+' Size is now '+items.length+'.',{value:v});
+      },
+      remove:function(){
+        if(!items.length) return rec(names.rem+'()',false,names.Label+' underflow: cannot '+names.rem+' from an empty '+kind+'.',{error:'underflow'});
+        const v=isStack?items.pop():items.shift();
+        return rec(names.rem+'()',true,(isStack?'Popped '+v+' from the top.':'Dequeued '+v+' from the front.')+' Size is now '+items.length+'.',{value:v});
+      },
+      peek:function(){
+        if(!items.length) return rec('peek()',false,names.Label+' underflow: the '+kind+' is empty, so there is nothing to peek at.',{error:'underflow'});
+        const v=isStack?items[items.length-1]:items[0];
+        return rec('peek()',true,'The '+(isStack?'top':'front')+' value is '+v+'. Nothing was removed.',{value:v});
+      }
+    };
+  }
+
+  return {MAX_N:MAX_N,MIN_N:MIN_N,MIN_V:MIN_V,MAX_V:MAX_V,ALGOS:ALGOS,SORT_IDS:SORT_IDS,
+    genArray:genArray,parseList:parseList,parseTarget:parseTarget,isSorted:isSorted,run:run,makeLinear:makeLinear};
+})();
+/* @@CORE-END */
+
+/* ==========================================================================
+   UI
+   ========================================================================== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function mm(q){ try{ return window.matchMedia(q)||{matches:false}; }catch(e){ return {matches:false}; } }
+
+/* ---------- icons ---------- */
+const P={
+  play:'<path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/>',
+  pause:'<path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor" stroke="none"/>',
+  prev:'<path d="M19 5v14L9 12z" fill="currentColor" stroke="none"/><path d="M6 5v14"/>',
+  next:'<path d="M5 5v14l10-7z" fill="currentColor" stroke="none"/><path d="M18 5v14"/>',
+  reset:'<path d="M3.5 12a8.5 8.5 0 108.5-8.5A8.5 8.5 0 006 6L3.5 8.5M3.5 3.5v5h5"/>',
+  shuffle:'<path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M20.5 14A8.5 8.5 0 1110 3.5a7 7 0 0010.5 10.5z"/>',
+  code:'<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>'
+};
+const ic=(n,s=16)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+
+/* ---------- theme (shared with index.html: localStorage 'code-playground:v1', field `theme`) ---------- */
+const KEY='code-playground:v1';
+function readStore(){
+  try{ const o=JSON.parse(localStorage.getItem(KEY)); if(o&&typeof o==='object'&&!Array.isArray(o)) return o; }catch(e){}
+  return {};
+}
+function writeTheme(t){
+  try{ const o=readStore(); o.theme=t; localStorage.setItem(KEY,JSON.stringify(o)); }catch(e){}
+}
+let theme=readStore().theme; if(theme!=='light'&&theme!=='dark') theme=null;
+const isDark=()=>theme?theme==='dark':mm('(prefers-color-scheme: dark)').matches;
+function applyTheme(){
+  if(theme) document.documentElement.dataset.theme=theme; else delete document.documentElement.dataset.theme;
+  $('#theme-btn').innerHTML=ic(isDark()?'sun':'moon',18);
+  $('#theme-btn').title=isDark()?'Switch to light theme':'Switch to dark theme';
+}
+function toast(msg,bad){
+  const t=document.createElement('div'); t.className='toast'+(bad?' bad':''); t.textContent=msg;
+  $('#toasts').appendChild(t); setTimeout(()=>t.remove(),3200);
+}
+
+/* ---------- state ---------- */
+const REDUCED=mm('(prefers-reduced-motion: reduce)').matches;
+const st={
+  algo:'bubble', kind:'sort', preset:'random', arr:[], target:null,
+  frames:[], idx:0, playing:false, timer:null, speed:REDUCED?2:5, cmp:null
+};
+let els=[];          // per-item DOM references for the current visualization
+let vizMode='bars';  // 'bars' | 'cells'
+let lastAnnounce=0;
+
+const delayFor=s=>Math.round(1100*Math.pow(0.66,s-1));
+const kindOf=id=>Core.ALGOS[id]?Core.ALGOS[id].kind:'ds';
+
+/* ---------- announce (aria-live) ---------- */
+function announce(text,force){
+  const now=Date.now();
+  if(force||!st.playing||now-lastAnnounce>=1500){ $('#live').textContent=text; lastAnnounce=now; }
+}
+
+/* ---------- visualization ---------- */
+const GLYPH={compare:'?',swap:'⇄',write:'↓',pivot:'◆',sorted:'✓',found:'★'};
+function buildViz(){
+  const viz=$('#viz'); const n=st.arr.length;
+  viz.innerHTML=''; els=[];
+  vizMode=st.kind==='search'?'cells':'bars';
+  if(vizMode==='bars'){
+    const wrap=document.createElement('div'); wrap.className='bars';
+    for(let i=0;i<n;i++){
+      const col=document.createElement('div'); col.className='col';
+      const plot=document.createElement('div'); plot.className='plot';
+      const bar=document.createElement('div'); bar.className='bar';
+      const val=document.createElement('span'); val.className='val';
+      bar.appendChild(val); plot.appendChild(bar);
+      const gl=document.createElement('div'); gl.className='gl';
+      const mk=document.createElement('div'); mk.className='mk';
+      col.appendChild(plot); col.appendChild(gl); col.appendChild(mk); wrap.appendChild(col);
+      els.push({col:col,bar:bar,val:val,gl:gl,mk:mk});
+    }
+    viz.appendChild(wrap);
+  } else {
+    const wrap=document.createElement('div'); wrap.className='cells';
+    for(let i=0;i<n;i++){
+      const cw=document.createElement('div'); cw.className='cw';
+      const mk=document.createElement('div'); mk.className='mk';
+      const gl=document.createElement('div'); gl.className='gl';
+      const cell=document.createElement('div'); cell.className='cell';
+      const cv=document.createElement('span'); cv.className='cv';
+      cell.appendChild(cv);
+      const ci=document.createElement('div'); ci.className='ci'; ci.textContent=i;
+      cw.appendChild(mk); cw.appendChild(gl); cw.appendChild(cell); cw.appendChild(ci); wrap.appendChild(cw);
+      els.push({col:cw,bar:cell,val:cv,gl:gl,mk:mk});
+    }
+    viz.appendChild(wrap);
+  }
+  layoutViz();
+}
+function layoutViz(){
+  const viz=$('#viz'); const n=st.arr.length||1;
+  const w=viz.clientWidth||700;
+  const cw=(w-16)/n;
+  viz.classList.toggle('dense',vizMode==='bars'&&cw<16);
+  viz.classList.toggle('showvals',vizMode==='bars'&&n<=25&&cw>=22);
+  viz.style.setProperty('--dur',(REDUCED?0:Math.min(220,Math.round(delayFor(st.speed)*0.8)))+'ms');
+}
+function setIf(o,k,v){ if(o[k]!==v) o[k]=v; }
+
+function paintFrame(fr){
+  const hi=fr.hi||{}; const arr=fr.arr; const n=arr.length;
+  const srt=new Uint8Array(n); (hi.sorted||[]).forEach(i=>{ if(i>=0&&i<n) srt[i]=1; });
+  const cmp=hi.compare||[], swp=hi.swap||[], wr=hi.write||[], marks=hi.marks||{};
+  let max=1; for(let i=0;i<n;i++) if(arr[i]>max) max=arr[i];
+  for(let i=0;i<n;i++){
+    let s='';
+    if(hi.found===i) s='found';
+    else if(swp.indexOf(i)>=0) s='swap';
+    else if(wr.indexOf(i)>=0) s='write';
+    else if(cmp.indexOf(i)>=0) s='compare';
+    else if(hi.pivot===i) s='pivot';
+    else if(srt[i]) s='sorted';
+    const out=hi.active?((i<hi.active[0]||i>hi.active[1])&&!srt[i]):false;
+    const e=els[i]; if(!e) continue;
+    const base=vizMode==='bars'?'col':'cw';
+    setIf(e.col,'className',base+(out?' out':''));
+    setIf(e.bar,'className',(vizMode==='bars'?'bar':'cell')+(s?' st-'+s:''));
+    if(vizMode==='bars'){
+      const h=Math.max(2,arr[i]/max*100).toFixed(2)+'%';
+      if(e.bar.style.height!==h) e.bar.style.height=h;
+    }
+    const vs=String(arr[i]);
+    if(e.val.textContent!==vs) e.val.textContent=vs;
+    setIf(e.gl,'textContent',GLYPH[s]||'');
+    setIf(e.mk,'textContent',marks[i]||'');
+  }
+  $('#viz').setAttribute('aria-label',(vizMode==='bars'?'Bar chart':'Row of boxes')+' with '+n+' values: '+arr.join(', '));
+  $('#values-text').textContent=arr.join(', ');
+}
+
+function renderFrame(){
+  const fr=st.frames[st.idx]; if(!fr) return;
+  paintFrame(fr);
+  const last=st.frames.length-1;
+  $('#note-text').textContent=fr.note;
+  const done=st.idx===last;
+  const note=$('#note');
+  note.className='note'+(done&&fr.hi&&fr.hi.notFound?' miss':(done?' done':''));
+  $$('#pseudo li').forEach((li,i)=>{
+    const cur=i===fr.line;
+    li.classList.toggle('cur',cur);
+    if(cur) li.setAttribute('aria-current','step'); else li.removeAttribute('aria-current');
+  });
+  $('#c-cmp').textContent=fr.counters.comparisons;
+  $('#c-swp').textContent=fr.counters.swaps;
+  $('#c-wr').textContent=fr.counters.writes;
+  const sc=$('#scrub');
+  sc.max=last; sc.value=st.idx;
+  sc.setAttribute('aria-valuetext','Step '+st.idx+' of '+last);
+  $('#steplbl').textContent='Step '+st.idx+' of '+last;
+  $('#back-btn').disabled=st.idx<=0;
+  $('#restart-btn').disabled=st.idx<=0;
+  $('#fwd-btn').disabled=st.idx>=last;
+  announce('Step '+st.idx+' of '+last+'. '+fr.note,done);
+}
+
+function updatePlayBtn(){
+  const b=$('#play-btn');
+  b.innerHTML=(st.playing?ic('pause',15):ic('play',15))+'<span class="lbl-long">'+(st.playing?'Pause':'Play')+'</span>';
+  b.setAttribute('aria-label',st.playing?'Pause':'Play');
+}
+function stopPlay(){
+  st.playing=false; clearTimeout(st.timer); st.timer=null; updatePlayBtn();
+}
+function schedule(){
+  clearTimeout(st.timer);
+  st.timer=setTimeout(tick,delayFor(st.speed));
+}
+function tick(){
+  if(!st.playing) return;
+  const last=st.frames.length-1;
+  if(st.idx<last){ st.idx++; renderFrame(); }
+  if(st.idx>=last){ stopPlay(); announce(st.frames[st.idx].note,true); }
+  else schedule();
+}
+function play(){
+  if(!st.frames.length) return;
+  if(st.idx>=st.frames.length-1) st.idx=0;
+  st.playing=true; updatePlayBtn(); renderFrame(); schedule();
+}
+function togglePlay(){ if(st.playing){ stopPlay(); announce(st.frames[st.idx].note,true); } else play(); }
+function stepBy(d){
+  if(st.playing) stopPlay();
+  const last=st.frames.length-1;
+  const ni=Math.max(0,Math.min(last,st.idx+d));
+  if(ni!==st.idx){ st.idx=ni; renderFrame(); }
+}
+function restart(){ stopPlay(); st.idx=0; renderFrame(); }
+
+/* ---------- side panel ---------- */
+function renderPseudo(){
+  const m=Core.ALGOS[st.algo];
+  $('#pseudo').innerHTML=m.pseudo.map((l,i)=>`<li><span class="ln" aria-hidden="true">${i+1}</span><span class="tx" style="--d:${l[0]}">${esc(l[1])}</span></li>`).join('');
+}
+function renderAbout(){
+  const m=Core.ALGOS[st.algo];
+  $('#about').innerHTML=`<h3>${esc(m.name)}</h3><p>${esc(m.blurb)}</p>
+  <div class="badges" role="list" aria-label="Complexity">
+    <span class="pill" role="listitem">Best time<b>${esc(m.best)}</b></span>
+    <span class="pill" role="listitem">Average time<b>${esc(m.avg)}</b></span>
+    <span class="pill" role="listitem">Worst time<b>${esc(m.worst)}</b></span>
+    <span class="pill" role="listitem">Space<b>${esc(m.space)}</b></span>
+    <span class="pill" role="listitem">Stable?<b>${esc(m.stable)}</b></span>
+  </div>
+  <p class="when"><strong>When to use it:</strong> ${esc(m.when)}</p>`;
+}
+function renderChips(){
+  const m=Core.ALGOS[st.algo];
+  let h=`<span class="pill">${st.arr.length} values</span>`;
+  if(m.kind==='search'&&st.target!=null) h+=`<span class="pill">Target<b>${st.target}</b></span>`;
+  $('#viz-chips').innerHTML=h;
+  $('#viz-title').textContent=m.name;
+}
+function renderLegend(){
+  const m=Core.ALGOS[st.algo];
+  const show=key=>{
+    if(key==='all') return true;
+    if(key==='sort') return m.kind==='sort';
+    if(key==='merge') return st.algo==='merge';
+    if(key==='search') return m.kind==='search';
+    if(key==='range') return st.algo!=='insertion';
+    return true;
+  };
+  $$('#legend li').forEach(li=>{ li.hidden=!show(li.dataset.m); });
+}
+
+/* ---------- compare table ---------- */
+function renderCompare(){
+  const rows=Core.SORT_IDS.map(id=>({id:id,name:Core.ALGOS[id].name,c:Core.run(id,st.arr,{silent:true}).counters}));
+  st.cmp=rows;
+  const mx={comparisons:1,swaps:1,writes:1};
+  rows.forEach(r=>{ Object.keys(mx).forEach(k=>{ if(r.c[k]>mx[k]) mx[k]=r.c[k]; }); });
+  const cell=(r,k,cls)=>`<td><span class="num">${r.c[k]}</span><span class="mbar ${cls}" aria-hidden="true"><i style="width:${(r.c[k]/mx[k]*100).toFixed(1)}%"></i></span></td>`;
+  $('#cmp-body').innerHTML=rows.map(r=>{
+    const sel=r.id===st.algo;
+    return `<tr data-id="${r.id}" class="${sel?'sel':''}"><td><button type="button" class="rowbtn" data-id="${r.id}"${sel?' aria-current="true"':''}>${sel?'▶ ':''}${esc(r.name)}${sel?'<span class="sr-only"> (selected)</span>':''}</button></td>${cell(r,'comparisons','b1')}${cell(r,'swaps','b2')}${cell(r,'writes','b3')}</tr>`;
+  }).join('');
+  $('#cmp-cap').textContent='on the current '+st.arr.length+' numbers';
+}
+function markCompareSel(){
+  $$('#cmp-body tr').forEach(tr=>{
+    const sel=tr.dataset.id===st.algo;
+    tr.classList.toggle('sel',sel);
+    const b=$('.rowbtn',tr);
+    b.innerHTML=(sel?'▶ ':'')+esc(Core.ALGOS[tr.dataset.id].name)+(sel?'<span class="sr-only"> (selected)</span>':'');
+    if(sel) b.setAttribute('aria-current','true'); else b.removeAttribute('aria-current');
+  });
+}
+
+/* ---------- rebuild everything for the current array / algorithm ---------- */
+function rebuild(){
+  stopPlay();
+  const res=Core.run(st.algo,st.arr,{target:st.target});
+  st.frames=res.frames; st.idx=0;
+  buildViz(); renderPseudo(); renderAbout(); renderChips(); renderLegend();
+  renderFrame();
+}
+function newArray(){
+  st.arr=Core.genArray(st.preset,+$('#size').value);
+  pickTarget();
+  $('#size-out').textContent=st.arr.length;
+  clearCustomErr();
+  rebuild(); renderCompare();
+}
+function pickTarget(){
+  if(!st.arr.length) return;
+  st.target=st.arr[Math.floor(Math.random()*st.arr.length)];
+  $('#target').value=st.target; clearTargetErr();
+}
+function clearCustomErr(){ const e=$('#custom-err'); e.hidden=true; e.textContent=''; $('#custom').removeAttribute('aria-invalid'); }
+function clearTargetErr(){ const e=$('#target-err'); e.hidden=true; e.textContent=''; $('#target').removeAttribute('aria-invalid'); }
+
+function applyCustom(){
+  const r=Core.parseList($('#custom').value);
+  const err=$('#custom-err');
+  if(!r.ok){ err.textContent=r.error; err.hidden=false; $('#custom').setAttribute('aria-invalid','true'); return false; }
+  clearCustomErr();
+  st.arr=r.values;
+  $('#size').value=Math.max(5,Math.min(60,r.values.length));
+  $('#size-out').textContent=r.values.length;
+  pickTarget();
+  rebuild(); renderCompare();
+  toast('Loaded '+r.values.length+' numbers');
+  return true;
+}
+function applyTarget(){
+  const r=Core.parseTarget($('#target').value);
+  const err=$('#target-err');
+  if(!r.ok){ err.textContent=r.error; err.hidden=false; $('#target').setAttribute('aria-invalid','true'); return false; }
+  clearTargetErr();
+  st.target=r.value; rebuild();
+  return true;
+}
+function missingValue(){
+  const have=new Set(st.arr);
+  let v; let tries=0;
+  do{ v=1+Math.floor(Math.random()*999); tries++; }while(have.has(v)&&tries<2000);
+  if(have.has(v)){ for(v=1;v<=999&&have.has(v);v++){} }
+  $('#target').value=v; applyTarget();
+}
+
+/* ---------- switching algorithm / mode ---------- */
+function setAlgo(id){
+  st.algo=id; st.kind=kindOf(id);
+  $('#algo').value=id;
+  const ds=st.kind==='ds';
+  $('#algo-view').hidden=ds; $('#lab').hidden=!ds;
+  $$('.arr-only').forEach(x=>x.hidden=ds);
+  $('#target-fld').hidden=st.kind!=='search';
+  $$('.sort-only').forEach(x=>x.hidden=st.kind==='search');
+  if(ds){
+    stopPlay();
+    lab.kind=id; renderLab(); announce((id==='stack'?'Stack':'Queue')+' lab. Type a value and choose an operation.',true);
+    return;
+  }
+  if(st.kind==='search'&&(st.target==null||!$('#target').value)) pickTarget();
+  $('#compare-card').hidden=false;
+  rebuild();
+  if(st.cmp) markCompareSel(); else renderCompare();
+}
+
+/* ---------- stack / queue lab ---------- */
+const lab={kind:'stack',models:{stack:Core.makeLinear('stack',12),queue:Core.makeLinear('queue',12)},last:null};
+const OPS={
+  stack:[['push(x)','O(1)','Put a value on top.'],['pop()','O(1)','Remove and return the top value.'],['peek()','O(1)','Look at the top value without removing it.'],['isEmpty()','O(1)','Check whether anything is stored.']],
+  queue:[['enqueue(x)','O(1)','Add a value at the rear.'],['dequeue()','O(1)','Remove and return the front value.'],['peek()','O(1)','Look at the front value without removing it.'],['isEmpty()','O(1)','Check whether anything is stored.']]
+};
+function labModel(){ return lab.models[lab.kind]; }
+function renderLab(){
+  const m=labModel(); const isStack=lab.kind==='stack';
+  $('#lab-title').textContent=isStack?'Stack (last in, first out)':'Queue (first in, first out)';
+  $('#seg-stack').setAttribute('aria-pressed',isStack); $('#seg-queue').setAttribute('aria-pressed',!isStack);
+  $('#lab-desc').textContent=isStack
+    ?'Like a stack of plates: you can only add or remove at the top. The last value pushed is the first one popped. Capacity is 12 so it fits on screen.'
+    :'Like a line at a shop: values join at the rear and leave from the front. The first value enqueued is the first one dequeued. Capacity is 12 so it fits on screen.';
+  $('#lab-add').textContent=m.names.add.charAt(0).toUpperCase()+m.names.add.slice(1);
+  $('#lab-rem').textContent=m.names.rem.charAt(0).toUpperCase()+m.names.rem.slice(1);
+  const items=m.items(); const L=lab.last||{};
+  const stage=$('#lab-stage');
+  if(!items.length){
+    stage.innerHTML=`<div class="emptyph"><strong>The ${lab.kind} is empty</strong><br>${isStack?'Push':'Enqueue'} a value to begin.</div>`;
+  } else if(isStack){
+    const rows=items.map((v,i)=>{
+      const top=i===items.length-1;
+      const cls='item'+(L.type==='add'&&top?' fresh':'')+(L.type==='peek'&&top?' peeked':'');
+      return `<div class="${cls}" role="listitem"><span>${esc(v)}</span><span class="itag">${top?'◀ top'+(L.type==='peek'?' (peeked)':''):'<span class="ix">'+i+'</span>'}</span></div>`;
+    }).reverse().join('');
+    stage.innerHTML=`<div class="stack" role="list" aria-label="Stack, top first: ${esc(items.slice().reverse().join(', '))}">${rows}<div class="base" aria-hidden="true"></div></div>`;
+  } else {
+    const rows=items.map((v,i)=>{
+      const front=i===0, rear=i===items.length-1;
+      const cls='item'+(L.type==='add'&&rear?' fresh':'')+(L.type==='peek'&&front?' peeked':'');
+      const tag=(front?'front':'')+(front&&rear?' / ':'')+(rear?'rear':'');
+      return `<div class="${cls}" role="listitem"><span>${esc(v)}</span><span class="itag">${tag||'<span class="ix">'+i+'</span>'}</span></div>`;
+    }).join('');
+    stage.innerHTML=`<div class="qwrap" role="list" aria-label="Queue, front first: ${esc(items.join(', '))}">${rows}</div>`;
+  }
+  const res=$('#lab-res');
+  res.className='opres'+(L.type==='error'?' bad':'');
+  res.textContent=L.text||'';
+  $('#lab-stats').innerHTML=
+    `<div><b>${items.length} / ${m.cap}</b><span>Size / capacity</span></div>`+
+    `<div><b>${items.length?esc(isStack?items[items.length-1]:items[0]):'(none)'}</b><span>${isStack?'Top':'Front'} value</span></div>`+
+    `<div><b>${m.isEmpty()}</b><span>isEmpty()</span></div>`+
+    `<div><b>${m.isFull()}</b><span>isFull()</span></div>`;
+  const log=m.log().slice().reverse();
+  $('#lab-log').innerHTML=log.length?log.map(e=>`<li class="${e.ok?'':'err'}"><span class="ot"><span>#${e.n} ${esc(e.op)}</span><span>${e.ok?'':'error · '}${e.cost}</span></span><span class="om">${esc(e.msg)}</span></li>`).join(''):'<li><span class="om">No operations yet.</span></li>';
+  $('#lab-ops').innerHTML=OPS[lab.kind].map(o=>`<tr><td><code>${esc(o[0])}</code></td><td><b>${o[1]}</b></td><td>${esc(o[2])}</td></tr>`).join('');
+  $('#lab-ops-note').textContent=isStack
+    ?'Every stack operation touches only the top, so the cost does not depend on how many items are stored.'
+    :'A queue is O(1) at both ends when built on a linked list or a circular buffer. (Removing from the front of a plain array shifts every item, which is O(n).)';
+}
+function labDo(kind){
+  const m=labModel(); const err=$('#lab-err'); const inp=$('#lab-val');
+  err.hidden=true; err.textContent=''; inp.removeAttribute('aria-invalid');
+  let r;
+  if(kind==='add'){
+    r=m.add(inp.value);
+    if(r.error==='invalid'){ err.textContent=r.msg; err.hidden=false; inp.setAttribute('aria-invalid','true'); inp.focus(); return; }
+    lab.last={type:r.ok?'add':'error',text:r.msg};
+    if(r.ok){ inp.value=''; inp.focus(); }
+  } else if(kind==='rem'){
+    r=m.remove();
+    lab.last={type:r.ok?'rem':'error',text:r.ok?m.names.rem+'() returned '+r.value+'.':r.msg};
+  } else {
+    r=m.peek();
+    lab.last={type:r.ok?'peek':'error',text:r.ok?'peek() returned '+r.value+' (still stored).':r.msg};
+  }
+  renderLab();
+  announce(r.msg,true);
+}
+function labSample(){
+  const m=labModel(); const vals=['7','12','3'];
+  let added=0;
+  vals.forEach(v=>{ const r=m.add(v); if(r.ok) added++; });
+  lab.last={type:'add',text:added?'Added '+added+' sample value'+(added>1?'s':'')+'.':'The '+lab.kind+' is full.'};
+  renderLab();
+}
+function labReset(){
+  labModel().reset(); lab.last=null; $('#lab-err').hidden=true; renderLab();
+  announce('The '+lab.kind+' was reset.',true);
+}
+
+/* ---------- wire up ---------- */
+function init(){
+  $('#logo').innerHTML=ic('code',18);
+  $('#new-ic').innerHTML=ic('shuffle',15);
+  $('#restart-btn').innerHTML=ic('reset',15)+'<span class="lbl-long">Restart</span>';
+  $('#back-btn').innerHTML=ic('prev',15)+'<span class="lbl-long">Back</span>';
+  $('#fwd-btn').innerHTML=ic('next',15)+'<span class="lbl-long">Forward</span>';
+  updatePlayBtn();
+  applyTheme();
+  $('#theme-btn').addEventListener('click',()=>{ theme=isDark()?'light':'dark'; writeTheme(theme); applyTheme(); });
+  try{ const q=mm('(prefers-color-scheme: dark)'); if(q.addEventListener) q.addEventListener('change',()=>{ if(!theme) applyTheme(); }); }catch(e){}
+
+  $('#speed').value=st.speed;
+  const syncSpeed=()=>{
+    st.speed=+$('#speed').value;
+    $('#speed-out').textContent=st.speed+' (about '+(1000/delayFor(st.speed)).toFixed(st.speed<4?1:0)+' steps/s)';
+    layoutViz();
+  };
+  syncSpeed();
+  $('#speed').addEventListener('input',syncSpeed);
+  if(REDUCED) $('#rm-note').hidden=false;
+
+  $('#algo').addEventListener('change',e=>setAlgo(e.target.value));
+  $('#size').addEventListener('input',()=>{ $('#size-out').textContent=$('#size').value; newArray(); });
+  $('#preset').addEventListener('change',e=>{ st.preset=e.target.value; newArray(); });
+  $('#new-btn').addEventListener('click',newArray);
+  $('#apply-btn').addEventListener('click',applyCustom);
+  $('#custom').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); applyCustom(); } });
+  $('#target').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); applyTarget(); } });
+  $('#target').addEventListener('change',applyTarget);
+  $('#miss-btn').addEventListener('click',missingValue);
+
+  $('#play-btn').addEventListener('click',togglePlay);
+  $('#back-btn').addEventListener('click',()=>stepBy(-1));
+  $('#fwd-btn').addEventListener('click',()=>stepBy(1));
+  $('#restart-btn').addEventListener('click',restart);
+  $('#scrub').addEventListener('input',e=>{
+    if(st.playing) stopPlay();
+    st.idx=Math.max(0,Math.min(st.frames.length-1,+e.target.value)); renderFrame();
+  });
+
+  $('#cmp-body').addEventListener('click',e=>{
+    const tr=e.target.closest('tr'); if(!tr) return;
+    const id=tr.dataset.id; if(id&&id!==st.algo){ setAlgo(id); }
+  });
+
+  $('#seg-stack').addEventListener('click',()=>{ $('#algo').value='stack'; setAlgo('stack'); });
+  $('#seg-queue').addEventListener('click',()=>{ $('#algo').value='queue'; setAlgo('queue'); });
+  $('#lab-add').addEventListener('click',()=>labDo('add'));
+  $('#lab-rem').addEventListener('click',()=>labDo('rem'));
+  $('#lab-peek').addEventListener('click',()=>labDo('peek'));
+  $('#lab-sample').addEventListener('click',labSample);
+  $('#lab-reset').addEventListener('click',labReset);
+  $('#lab-val').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); labDo('add'); } });
+
+  document.addEventListener('keydown',e=>{
+    if(e.defaultPrevented||e.ctrlKey||e.metaKey||e.altKey||st.kind==='ds') return;
+    const t=e.target; const tag=t&&t.tagName;
+    if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||(t&&t.isContentEditable)) return;
+    if(e.key===' '||e.code==='Space'){
+      if(tag==='BUTTON'||tag==='A'||tag==='SUMMARY') return;
+      e.preventDefault(); togglePlay();
+    } else if(e.key==='ArrowRight'){ e.preventDefault(); stepBy(1); }
+    else if(e.key==='ArrowLeft'){ e.preventDefault(); stepBy(-1); }
+  });
+  let rz=null;
+  window.addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout(layoutViz,100); });
+
+  st.arr=Core.genArray('random',20);
+  pickTarget();
+  setAlgo('bubble');
+  renderLab();
+}
+init();
+</script>
+<script src="levelup-nav.js"></script>
+</body>
+</html>

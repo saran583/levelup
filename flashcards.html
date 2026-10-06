@@ -1,0 +1,1875 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flashcards - Levelup</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f5f8; --panel:#ffffff; --panel-2:#f1f3f7; --border:#e1e4ea; --text:#1a1e27; --muted:#667085;
+  --accent:#4f46e5; --accent-h:#4338ca; --accent-soft:#eceeff; --on-accent:#ffffff;
+  --good:#137a4b; --good-bg:#e5f6ed; --bad:#c0362c; --bad-bg:#fdecea; --warn:#9a5b06; --warn-bg:#fff3de;
+  --code-bg:#fbfbfd; --gutter:#f1f3f7; --shadow:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.06);
+  --mono: ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+    --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+    --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+    --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+  --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+  --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+  --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{min-height:100vh;background:var(--bg);color:var(--text);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono)}
+code{font-family:var(--mono);font-size:.9em;background:var(--panel-2);border:1px solid var(--border);border-radius:5px;padding:1px 5px}
+.sr-only{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---- header ---- */
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:8px 16px;min-height:56px;background:var(--panel);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--accent);color:var(--on-accent)}
+.brand-name{font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.spacer{flex:1}
+.nav{display:flex;gap:2px;min-width:0;overflow-x:auto;scrollbar-width:thin;margin-left:8px}
+.nav a{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;color:var(--muted);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap}
+.nav a:hover{background:var(--panel-2);color:var(--text)}
+.nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+
+/* ---- shared controls (same as index.html) ---- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel);font-weight:600;font-size:13px;white-space:nowrap;transition:background .15s,border-color .15s,box-shadow .15s}
+.btn:hover:not(:disabled){background:var(--panel-2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover:not(:disabled){background:var(--accent-h);border-color:var(--accent-h)}
+.btn.danger{color:var(--bad)}
+.btn.sm{height:28px;padding:0 10px;font-size:12px}
+.btn.lg{height:44px;padding:0 22px;font-size:15px}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover:not(:disabled){background:var(--panel-2)}
+.icon-btn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--panel-2);color:var(--text)}
+.input,.select,.textarea{width:100%;border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:7px 10px;min-height:34px;transition:border-color .15s,box-shadow .15s}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.input:focus-visible,.select:focus-visible,.textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.select{padding-right:6px}
+.textarea{resize:vertical;line-height:1.5}
+.textarea.mono{font-size:12.5px}
+.input.num{width:92px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+.pill{display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:99px;font-size:11px;font-weight:600;background:var(--panel-2);color:var(--muted);white-space:nowrap}
+.pill.easy{background:var(--good-bg);color:var(--good)}
+.pill.medium{background:var(--warn-bg);color:var(--warn)}
+.pill.hard{background:var(--bad-bg);color:var(--bad)}
+.pill.state{background:var(--accent-soft);color:var(--accent)}
+.pill.susp{background:var(--warn-bg);color:var(--warn)}
+.pill.custom{border:1px dashed var(--border);background:transparent}
+.kbd{font-family:var(--mono);font-size:10px;opacity:.8;border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:2px}
+.tabs{display:flex;gap:2px}
+.tab{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-weight:600;font-size:13px}
+.tab:hover{background:var(--panel-2);color:var(--text)}
+.tab[aria-selected="true"]{background:var(--accent-soft);color:var(--accent)}
+.tab .count{font-size:11px;background:var(--panel-2);color:var(--muted);border-radius:99px;padding:0 6px}
+.tab[aria-selected="true"] .count{background:var(--panel);color:var(--accent)}
+.seg{display:inline-flex;padding:3px;border-radius:9px;background:var(--panel-2);border:1px solid var(--border);gap:2px}
+.seg button{border:0;background:transparent;border-radius:7px;padding:5px 14px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--accent);box-shadow:var(--shadow)}
+.bar{height:8px;background:var(--panel-2);border-radius:99px;overflow:hidden;display:flex}
+.bar>i{display:block;height:100%;transition:width .3s}
+.bar>i.a{background:var(--accent)}
+.bar>i.g{background:var(--good)}
+.fld{display:grid;gap:4px;margin-bottom:10px}
+.fld>span,.fld>label{font-size:12px;font-weight:600;color:var(--muted)}
+.fld [aria-invalid="true"]{border-color:var(--bad)}
+.ferr{color:var(--bad);font-size:12px;font-weight:600}
+.small{font-size:12px;color:var(--muted)}
+.check{display:inline-flex;gap:8px;align-items:center;font-weight:600;font-size:13px;cursor:pointer}
+.check input{width:16px;height:16px;accent-color:var(--accent);margin:0}
+.codeblock{margin:0;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--code-bg);font:12.5px/1.6 var(--mono);overflow:auto;white-space:pre;tab-size:2;max-height:320px;color:var(--text)}
+.codeblock code{background:none;border:0;padding:0;font-size:inherit}
+.notice{max-width:980px;margin:12px auto 0;padding:8px 12px;border-radius:10px;background:var(--warn-bg);color:var(--warn);font-weight:600;font-size:13px}
+
+/* ---- overlay / dialog / toast (same as index.html) ---- */
+.overlay{position:fixed;inset:0;background:rgba(10,12,18,.55);display:grid;place-items:center;padding:16px;z-index:50;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.dialog{width:min(640px,100%);max-height:calc(100dvh - 32px);display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden}
+.dialog.narrow{width:min(420px,100%)}
+.dialog-h{display:flex;align-items:center;padding:14px 16px 14px 20px;border-bottom:1px solid var(--border)}
+.dialog-h h2{margin:0;font-size:16px}
+.dialog-h .icon-btn{margin-left:auto}
+.dialog-b{padding:16px 20px;overflow:auto}
+.dialog-f{display:flex;gap:8px;justify-content:flex-end;align-items:center;flex-wrap:wrap;padding:12px 20px;border-top:1px solid var(--border);background:var(--panel-2)}
+.dialog-f .form-error{margin-right:auto;color:var(--bad);font-size:12.5px;font-weight:600}
+.errlist{margin:8px 0 0;padding:10px 12px 10px 28px;border-radius:8px;background:var(--bad-bg);color:var(--bad);font-size:12.5px;max-height:220px;overflow:auto}
+.errlist li{margin:2px 0}
+#toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;z-index:60}
+.toast{background:var(--text);color:var(--bg);padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);font-weight:600;font-size:13px;animation:fade .2s;max-width:340px}
+.toast.bad{background:var(--bad);color:var(--bg)}
+
+/* ---- page ---- */
+.page{max-width:980px;margin:0 auto;padding:20px 16px 56px}
+.intro h1{font-size:22px;margin:0 0 4px;letter-spacing:-.01em}
+.intro p{margin:0 0 16px;color:var(--muted);max-width:72ch}
+.tabbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;overflow-x:auto}
+.tabpanel{outline:none}
+.tabpanel:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px}
+.stack{display:grid;gap:14px}
+.stack,.session,.crow-body,.qcard,.mistake,.feedback,.toolbar,.fc-inner{grid-template-columns:minmax(0,1fr)}
+.pad{padding:16px 18px}
+.row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.sec-h{margin:0 0 10px;font-size:15px;letter-spacing:-.01em}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:10px;margin-bottom:14px}
+.tile{border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--panel)}
+.tile-l{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.tile-v{font-size:24px;font-weight:700;letter-spacing:-.02em;margin:2px 0 0;font-variant-numeric:tabular-nums}
+.tile-s{font-size:12px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{height:30px;padding:0 12px;border-radius:99px;border:1px solid var(--border);background:var(--panel);font-weight:600;font-size:12.5px;color:var(--muted)}
+.chip:hover{background:var(--panel-2);color:var(--text)}
+.chip[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.chip[aria-pressed="true"]::before{content:"\2713\00a0";font-weight:700}
+.opts{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:flex-end}
+.opts .fld{margin:0}
+.msg{margin:10px 0 0;color:var(--muted)}
+.hm-wrap{display:flex;gap:6px;align-items:flex-start;overflow-x:auto;padding-bottom:4px}
+.hm-days{display:grid;grid-template-rows:repeat(7,14px);gap:3px;font-size:10px;color:var(--muted);line-height:14px}
+.hm{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,14px);grid-auto-columns:14px;gap:3px}
+.hm-c{width:14px;height:14px;border-radius:3px;border:1px solid var(--border);background:var(--panel-2)}
+.hm-c.l1{background:color-mix(in srgb,var(--accent) 28%,var(--panel-2))}
+.hm-c.l2{background:color-mix(in srgb,var(--accent) 52%,var(--panel-2))}
+.hm-c.l3{background:color-mix(in srgb,var(--accent) 76%,var(--panel-2))}
+.hm-c.l4{background:var(--accent);border-color:var(--accent)}
+.hm-c.future{border-style:dashed;background:transparent;opacity:.45}
+.hm-legend{display:flex;gap:4px;align-items:center;font-size:11px;color:var(--muted);margin-top:8px}
+.deckrow{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) auto;gap:10px;align-items:center;margin:8px 0;font-size:13px}
+.deckrow .n{font-size:12px;color:var(--muted);white-space:nowrap}
+
+/* ---- review session + flip card ---- */
+.sess-top{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-bottom:10px}
+.sess-top .grow{flex:1;min-width:160px}
+.sess-top .lbl{font-weight:600;font-size:13px}
+.fc{perspective:1400px}
+.fc-inner{display:grid;position:relative;transition:transform .45s ease;transform-style:preserve-3d}
+.fc.flipped .fc-inner{transform:rotateY(180deg)}
+.face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;min-height:250px;padding:20px 22px;border:1px solid var(--border);border-radius:14px;background:var(--panel);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;min-width:0}
+.face-back{transform:rotateY(180deg);background:var(--panel)}
+.face-meta{display:flex;flex-wrap:wrap;gap:6px}
+.face-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.face-text{font-size:17px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.face-back .face-text{font-size:16px}
+.why{padding:10px 12px;border-radius:10px;background:var(--panel-2);font-size:13.5px;overflow-wrap:anywhere}
+.flip-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.grades{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+.grade{display:grid;gap:1px;justify-items:center;padding:9px 6px;border-radius:10px;border:1px solid var(--border);background:var(--panel);font-weight:700;font-size:14px}
+.grade small{font-weight:600;font-size:12px}
+.grade:hover{filter:brightness(.96)}
+.grade.g1{border-color:var(--bad);color:var(--bad);background:var(--bad-bg)}
+.grade.g2{border-color:var(--warn);color:var(--warn);background:var(--warn-bg)}
+.grade.g3{border-color:var(--good);color:var(--good);background:var(--good-bg)}
+.grade.g4{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:12px 0}
+.final{text-align:center;padding:10px 4px}
+.final .big{font-size:32px;font-weight:700;margin:4px 0}
+.final h2{margin:0;font-size:18px}
+
+/* ---- quiz ---- */
+.quiz-top{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.score{font-weight:700}
+.qcard{padding:18px 20px;display:grid;gap:10px;outline:none}
+.qcard .qtext{font-size:17px;white-space:pre-wrap;overflow-wrap:anywhere}
+.qopts{display:grid;gap:8px;margin:4px 0}
+.qopt{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel);font:600 13.5px/1.45 var(--sans)}
+.qopt .qtxt{display:flex;gap:10px;align-items:baseline;min-width:0;overflow-wrap:anywhere}
+.qopt .qn{flex:none;font:700 11px var(--mono);border:1px solid var(--border);border-radius:4px;padding:0 5px;color:var(--muted)}
+.qopt.mono .qt{font-family:var(--mono);font-size:13px}
+.qopt:hover:not([aria-disabled="true"]){background:var(--panel-2)}
+.qopt[aria-disabled="true"]{cursor:default}
+.qopt.right{border-color:var(--good);background:var(--good-bg);color:var(--good)}
+.qopt.wrong{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+.qopt .mark{flex:none;font:700 11px var(--sans);white-space:nowrap}
+.feedback{padding:12px 14px;border-radius:10px;background:var(--panel-2);display:grid;gap:8px}
+.feedback.ok{background:var(--good-bg)}
+.feedback.no{background:var(--bad-bg)}
+.feedback .verdict{font-weight:700}
+.feedback.ok .verdict{color:var(--good)}
+.feedback.no .verdict{color:var(--bad)}
+.timer{display:flex;align-items:center;gap:8px;min-width:120px;font-variant-numeric:tabular-nums;font-weight:600}
+.timer .bar{flex:1;min-width:60px}
+.timer.low{color:var(--bad)}
+.mistake{border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:var(--panel);display:grid;gap:6px}
+
+/* ---- cards tab ---- */
+.toolbar{display:grid;gap:10px}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:8px}
+.crow{border:1px solid var(--border);border-radius:10px;background:var(--panel);margin-bottom:6px}
+.crow>summary{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:9px 12px;cursor:pointer;list-style:none}
+.crow>summary::-webkit-details-marker{display:none}
+.crow>summary::before{content:"\25B8";color:var(--muted);flex:none}
+.crow[open]>summary::before{content:"\25BE"}
+.crow>summary:hover{background:var(--panel-2);border-radius:10px}
+.crow-title{flex:1;min-width:160px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crow-meta{display:flex;flex-wrap:wrap;gap:4px}
+.crow-body{padding:4px 14px 12px;display:grid;gap:8px;border-top:1px dashed var(--border)}
+.crow-body .face-text{font-size:14px}
+.crow-actions{display:flex;flex-wrap:wrap;gap:6px}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
+.empty strong{display:block;color:var(--text);margin-bottom:4px}
+.danger-zone{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+
+/* ---- flip card: reduced motion => no animation, swap faces instead ---- */
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .fc-inner,.fc.flipped .fc-inner{transform:none!important}
+  .face-back{transform:none;display:none}
+  .fc.flipped .face-front{display:none}
+  .fc.flipped .face-back{display:flex}
+}
+@media (max-width:720px){
+  .topbar{flex-wrap:wrap;padding:8px 16px 6px}
+  .nav{order:5;width:100%;margin-left:0;padding-bottom:2px}
+}
+@media (max-width:560px){
+  .grades{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .deckrow{grid-template-columns:minmax(0,1fr) auto}
+  .deckrow .bar{grid-column:1/-1;order:3}
+  .face{padding:16px 16px;min-height:220px}
+  .tile-v{font-size:21px}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" id="logo"></span>
+    <span class="brand-name">Levelup</span>
+  </div>
+  <nav class="nav" aria-label="Levelup pages" data-levelup-nav></nav>
+  <div class="spacer"></div>
+  <button class="icon-btn" id="theme-btn" type="button" aria-label="Toggle light/dark theme"></button>
+</header>
+
+<div class="notice" id="storage-warn" role="status" hidden>Browser storage is unavailable, so your cards and progress will be lost when you close this tab. Use the export buttons on the Cards tab to keep a copy.</div>
+
+<main class="page" id="main" tabindex="-1">
+  <div class="intro">
+    <h1>Flashcards &amp; quizzes</h1>
+    <p>Spaced-repetition review for web development. Grade each card honestly and the scheduler brings hard cards back sooner and easy ones later.</p>
+  </div>
+  <div class="tabbar">
+    <div class="tabs" id="tabs" role="tablist" aria-label="Flashcard sections">
+      <button class="tab" role="tab" type="button" id="tab-review" data-tab="review" aria-controls="panel-review">Review <span class="count" id="badge-review" hidden></span></button>
+      <button class="tab" role="tab" type="button" id="tab-quiz" data-tab="quiz" aria-controls="panel-quiz">Quiz</button>
+      <button class="tab" role="tab" type="button" id="tab-cards" data-tab="cards" aria-controls="panel-cards">Cards <span class="count" id="badge-cards"></span></button>
+    </div>
+  </div>
+  <section class="tabpanel" id="panel-review" role="tabpanel" aria-labelledby="tab-review" tabindex="-1"></section>
+  <section class="tabpanel" id="panel-quiz" role="tabpanel" aria-labelledby="tab-quiz" tabindex="-1" hidden></section>
+  <section class="tabpanel" id="panel-cards" role="tabpanel" aria-labelledby="tab-cards" tabindex="-1" hidden></section>
+  <noscript><p class="muted">Flashcards needs JavaScript to run.</p></noscript>
+</main>
+<div id="modal-root"></div>
+<div id="toasts" aria-live="polite"></div>
+<div id="live" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<script id="fc-data">
+const FC_DECKS = [{"id":"js-core","name":"JavaScript Core"},{"id":"js-adv","name":"JavaScript Advanced"},{"id":"react","name":"React"},{"id":"sql","name":"SQL"},{"id":"bigo","name":"Big-O & Algorithms"},{"id":"html-css","name":"HTML & CSS"},{"id":"git","name":"Git & Terminal"},{"id":"web","name":"Web & HTTP"}];
+const FC_CARDS = [
+  {"id":"js-core-01","deck":"js-core","front":"What does `typeof null` return?","back":"'object'","why":"A quirk from the first JavaScript engine that was kept for backward compatibility; test for null with `value === null`.","tags":["types"],"difficulty":1,"short":"'object' (a legacy quirk)"},
+  {"id":"js-core-02","deck":"js-core","front":"Name the 7 primitive types in JavaScript.","back":"string, number, bigint, boolean, undefined, symbol and null.","why":"Everything else is an object (arrays and functions included); primitives are immutable and compared by value.","tags":["types"],"difficulty":1,"short":"string, number, bigint, boolean, undefined, symbol, null"},
+  {"id":"js-core-03","deck":"js-core","front":"What does this print?","code":"console.log(0.1 + 0.2 === 0.3);\nconsole.log(0.1 + 0.2);","out":["false","0.30000000000000004"],"back":"Prints:\nfalse\n0.30000000000000004","short":"false, 0.30000000000000004","why":"Numbers are 64-bit binary floats and 0.1 and 0.2 have no exact binary form; compare with a tolerance such as Math.abs(a - b) \u003c Number.EPSILON.","tags":["numbers"],"difficulty":1},
+  {"id":"js-core-04","deck":"js-core","front":"What is the difference between `==` and `===`?","back":"`===` compares value and type with no coercion; `==` coerces the operands to a common type first.","why":"`'1' == 1` is true but `'1' === 1` is false, so prefer `===` to avoid surprising coercion rules.","tags":["operators","coercion"],"difficulty":1,"short":"=== skips type coercion; == coerces first"},
+  {"id":"js-core-05","deck":"js-core","front":"What does this print?","code":"console.log([] + {});\nconsole.log(1 + '2');\nconsole.log('3' - 1);\nconsole.log(true + 1);","out":["[object Object]","12","2","2"],"back":"Prints:\n[object Object]\n12\n2\n2","short":"[object Object], 12, 2, 2","why":"`+` concatenates when either side is a string (objects become strings first); `-` always converts to numbers, and true becomes 1.","tags":["coercion","operators"],"difficulty":2},
+  {"id":"js-core-06","deck":"js-core","front":"What does this print?","code":"console.log(null == undefined);\nconsole.log(null == 0);\nconsole.log('' == 0);\nconsole.log([] == false);","out":["true","false","true","true"],"back":"Prints:\ntrue\nfalse\ntrue\ntrue","short":"true, false, true, true","why":"`null == undefined` is a special rule; `null` only loosely equals `undefined`. The other comparisons coerce to numbers: \"\" and [] both become 0, and false is 0.","tags":["coercion","operators"],"difficulty":3},
+  {"id":"js-core-07","deck":"js-core","front":"What does this print?","code":"console.log(a);\nvar a = 5;\nconsole.log(a);","out":["undefined","5"],"back":"Prints:\nundefined\n5","short":"undefined, 5","why":"`var` declarations are hoisted and initialised to undefined; only the assignment stays where it was written.","tags":["hoisting","scope"],"difficulty":2},
+  {"id":"js-core-08","deck":"js-core","front":"What does this print?","code":"try { console.log(x); } catch (e) { console.log(e.name); }\nlet x = 1;","out":["ReferenceError"],"back":"Prints:\nReferenceError","short":"ReferenceError","why":"`let` and `const` are hoisted but sit in the temporal dead zone until their declaration runs, so reading them earlier throws.","tags":["hoisting","scope"],"difficulty":2},
+  {"id":"js-core-09","deck":"js-core","front":"Compare `var`, `let` and `const`.","back":"`var` is function-scoped and hoisted as undefined; `let` and `const` are block-scoped with a temporal dead zone; `const` forbids re-binding.","why":"`const` does not make objects immutable: `const a = []; a.push(1)` is fine.","tags":["scope","variables"],"difficulty":1,"short":"var is function-scoped; let/const are block-scoped; const cannot be re-bound"},
+  {"id":"js-core-10","deck":"js-core","front":"Which values are falsy in JavaScript?","back":"false, 0, -0, 0n, \"\" (empty string), null, undefined and NaN.","why":"Everything else is truthy, including \"0\", \"false\", [] and {}.","tags":["types","coercion"],"difficulty":1,"short":"false, 0, -0, 0n, \"\", null, undefined, NaN"},
+  {"id":"js-core-11","deck":"js-core","front":"What is the difference between `null` and `undefined`?","back":"`undefined` means a value was never assigned (or is missing); `null` is an explicit \"no value\" that a programmer sets.","why":"`typeof undefined` is 'undefined' while `typeof null` is 'object'; `null == undefined` is true but `null === undefined` is false.","tags":["types"],"difficulty":1,"short":"undefined = never assigned; null = deliberately empty"},
+  {"id":"js-core-12","deck":"js-core","front":"What does this print?","code":"console.log(NaN === NaN);\nconsole.log(Number.isNaN('abc'));\nconsole.log(isNaN('abc'));","out":["false","false","true"],"back":"Prints:\nfalse\nfalse\ntrue","short":"false, false, true","why":"NaN is not equal to itself. `Number.isNaN` only accepts real NaN, while the global `isNaN` first coerces its argument to a number.","tags":["numbers"],"difficulty":2},
+  {"id":"js-core-13","deck":"js-core","front":"What does this print?","code":"console.log(['1', '2', '3'].map(parseInt).join(','));","out":["1,NaN,NaN"],"back":"Prints:\n1,NaN,NaN","short":"1,NaN,NaN","why":"map passes (value, index), so this is parseInt(\"1\", 0), parseInt(\"2\", 1), parseInt(\"3\", 2): radix 0 means 10, radix 1 is invalid, and \"3\" is not a binary digit.","tags":["arrays","gotchas"],"difficulty":3},
+  {"id":"js-core-14","deck":"js-core","front":"What does this print?","code":"console.log([10, 9, 1].sort().join(','));\nconsole.log([10, 9, 1].sort((a, b) => a - b).join(','));","out":["1,10,9","1,9,10"],"back":"Prints:\n1,10,9\n1,9,10","short":"1,10,9, 1,9,10","why":"Without a comparator sort() compares elements as strings, so \"10\" comes before \"9\".","tags":["arrays","gotchas"],"difficulty":2},
+  {"id":"js-core-15","deck":"js-core","front":"What is the difference between `map` and `forEach`?","back":"`map` returns a new array of the callback results; `forEach` always returns undefined and is only used for side effects.","why":"Use map when you want a transformed array, forEach (or for...of) when you just want to do something for each item.","tags":["arrays"],"difficulty":1,"short":"map returns a new array; forEach returns undefined"},
+  {"id":"js-core-16","deck":"js-core","front":"How do arrow functions differ from regular functions?","back":"They have no own `this`, `arguments` or `prototype`, take `this` from the surrounding scope, and cannot be used with `new`.","why":"That lexical `this` makes them ideal for callbacks inside methods, but a poor choice for object methods that rely on `this`.","tags":["functions","this"],"difficulty":2,"short":"No own this/arguments; lexical this; not constructible"},
+  {"id":"js-core-17","deck":"js-core","front":"What does this print?","code":"const { a = 1, b = 2 } = { a: undefined, b: null };\nconsole.log(a, b);","out":["1 null"],"back":"Prints:\n1 null","short":"1 null","why":"Destructuring defaults apply only when the value is undefined, not for null or other falsy values.","tags":["destructuring"],"difficulty":2},
+  {"id":"js-core-18","deck":"js-core","front":"What does this print? (plain non-strict script)","code":"const o = Object.freeze({ n: { x: 1 } });\no.n.x = 2;\no.y = 3;\nconsole.log(o.n.x, o.y);","out":["2 undefined"],"back":"Prints:\n2 undefined","short":"2 undefined","why":"`Object.freeze` is shallow: the top level is locked (silently ignored in sloppy mode, a TypeError in strict mode) but nested objects stay mutable.","tags":["objects"],"difficulty":2},
+  {"id":"js-core-19","deck":"js-core","front":"What does this print?","code":"function f(o) { o.n = 1; o = { n: 2 }; }\nconst obj = { n: 0 };\nf(obj);\nconsole.log(obj.n);","out":["1"],"back":"Prints:\n1","short":"1","why":"JavaScript passes everything by value; for objects that value is a reference, so mutating it is visible outside but re-assigning the parameter is not.","tags":["functions","objects"],"difficulty":2},
+  {"id":"js-core-20","deck":"js-core","front":"What does this print?","code":"const cfg = { retries: 0 };\nconsole.log(cfg.retries || 3);\nconsole.log(cfg.retries ?? 3);\nconsole.log(cfg.proxy?.host);","out":["3","0","undefined"],"back":"Prints:\n3\n0\nundefined","short":"3, 0, undefined","why":"`||` falls back on any falsy value, `??` only on null or undefined, and `?.` short-circuits to undefined when the left side is null or undefined.","tags":["operators"],"difficulty":2},
+  {"id":"js-core-21","deck":"js-core","front":"What does this print?","code":"console.log(Number.MAX_SAFE_INTEGER);\nconsole.log(9007199254740992 === 9007199254740993);\nconsole.log(String(2n ** 64n));","out":["9007199254740991","true","18446744073709551616"],"back":"Prints:\n9007199254740991\ntrue\n18446744073709551616","short":"9007199254740991, true, 18446744073709551616","why":"Integers above 2^53 - 1 lose precision as numbers; use BigInt (the n suffix) for exact large integers.","tags":["numbers"],"difficulty":3},
+  {"id":"js-core-22","deck":"js-core","front":"What does this print?","code":"console.log([1, 2, 3].reduce((a, b) => a + b));\ntry { [].reduce((a, b) => a + b); } catch (e) { console.log(e.name); }\nconsole.log([].reduce((a, b) => a + b, 0));","out":["6","TypeError","0"],"back":"Prints:\n6\nTypeError\n0","short":"6, TypeError, 0","why":"reduce on an empty array with no initial value has nothing to start from and throws; always pass an initial value when the array might be empty.","tags":["arrays"],"difficulty":2},
+  {"id":"js-adv-01","deck":"js-adv","front":"What is a closure?","back":"A function bundled with references to the variables of the scope where it was created, so it keeps access to them after that scope has finished.","why":"Closures power private state, function factories, memoisation and callbacks; the captured variables live as long as the function does.","tags":["closures"],"difficulty":1,"short":"A function plus the lexical scope it was created in"},
+  {"id":"js-adv-02","deck":"js-adv","front":"What does this print?","code":"for (var i = 0; i \u003c 3; i++) {\n  setTimeout(() => console.log(i), 0);\n}","out":["3","3","3"],"back":"Prints:\n3\n3\n3","short":"3, 3, 3","why":"`var` has one function-scoped binding shared by every callback, and the loop has finished (i === 3) before any timer fires.","tags":["closures","event-loop"],"difficulty":2},
+  {"id":"js-adv-03","deck":"js-adv","front":"What does this print?","code":"for (let i = 0; i \u003c 3; i++) {\n  setTimeout(() => console.log(i), 0);\n}","out":["0","1","2"],"back":"Prints:\n0\n1\n2","short":"0, 1, 2","why":"`let` in a for loop creates a fresh binding for every iteration, so each closure captures its own i.","tags":["closures","event-loop"],"difficulty":2},
+  {"id":"js-adv-04","deck":"js-adv","front":"What does this print?","code":"console.log('A');\nsetTimeout(() => console.log('B'), 0);\nPromise.resolve().then(() => console.log('C'));\nconsole.log('D');","out":["A","D","C","B"],"back":"Prints:\nA\nD\nC\nB","short":"A, D, C, B","why":"Synchronous code runs first, then the microtask queue (promise callbacks), then the next macrotask (the timer).","tags":["event-loop","promises"],"difficulty":2},
+  {"id":"js-adv-05","deck":"js-adv","front":"What does this print?","code":"setTimeout(() => console.log('timeout'), 0);\nPromise.resolve().then(() => {\n  console.log('micro 1');\n  Promise.resolve().then(() => console.log('micro 2'));\n});\nconsole.log('sync');","out":["sync","micro 1","micro 2","timeout"],"back":"Prints:\nsync\nmicro 1\nmicro 2\ntimeout","short":"sync, micro 1, micro 2, timeout","why":"The microtask queue is drained completely, including microtasks queued by microtasks, before the event loop takes the next macrotask.","tags":["event-loop","promises"],"difficulty":3},
+  {"id":"js-adv-06","deck":"js-adv","front":"What does this print?","code":"async function f() {\n  console.log(1);\n  await null;\n  console.log(2);\n}\nf();\nconsole.log(3);","out":["1","3","2"],"back":"Prints:\n1\n3\n2","short":"1, 3, 2","why":"An async function runs synchronously until its first await; the rest of the function is queued as a microtask and runs after the current call stack empties.","tags":["event-loop","async"],"difficulty":2},
+  {"id":"js-adv-07","deck":"js-adv","front":"What do Promise.all, allSettled, race and any each do?","back":"all: fulfils when all fulfil, rejects on the first rejection. allSettled: waits for all and never rejects. race: settles with the first to settle. any: fulfils with the first fulfilment, rejects with AggregateError if all reject.","why":"Pick by the question you are asking: \"all succeeded?\", \"what happened to each?\", \"who is first?\", \"who succeeded first?\".","tags":["promises","async"],"difficulty":3,"short":"all=all fulfil; allSettled=all outcomes; race=first settled; any=first fulfilled"},
+  {"id":"js-adv-08","deck":"js-adv","front":"In what order do the `this` binding rules apply?","back":"`new` first, then explicit binding (call/apply/bind), then implicit binding (obj.method()), then the default (undefined in strict mode, globalThis in sloppy mode). Arrow functions ignore all of these and use the enclosing this.","why":"The most specific rule wins: `new` beats bind, which beats a method call, which beats a plain call.","tags":["this"],"difficulty":3,"short":"new > call/apply/bind > obj.method() > default; arrows use lexical this"},
+  {"id":"js-adv-09","deck":"js-adv","front":"What does this print?","code":"'use strict';\nconst user = { name: 'Ann', hi() { return this === undefined ? 'no this' : this.name; } };\nconst { hi } = user;\nconsole.log(user.hi());\nconsole.log(hi());\nconsole.log(hi.call({ name: 'Bo' }));","out":["Ann","no this","Bo"],"back":"Prints:\nAnn\nno this\nBo","short":"Ann, no this, Bo","why":"this is decided by how a function is called, not where it is defined: extracting the method loses the object, and call() sets this explicitly.","tags":["this"],"difficulty":2},
+  {"id":"js-adv-10","deck":"js-adv","front":"What is the prototype chain?","back":"Every object has an internal [[Prototype]] link to another object; a property lookup walks up that chain until it is found or reaches null.","why":"Methods are shared through the prototype instead of being copied onto every instance; Object.getPrototypeOf(obj) reads the link.","tags":["prototypes"],"difficulty":2,"short":"Lookup walks the [[Prototype]] links until null"},
+  {"id":"js-adv-11","deck":"js-adv","front":"What does this print?","code":"function Dog(n) { this.n = n; }\nDog.prototype.speak = function () { return this.n + ' woofs'; };\nconst d = new Dog('Rex');\nconsole.log(d.speak());\nconsole.log(Object.getPrototypeOf(d) === Dog.prototype);\nconsole.log(d.hasOwnProperty('speak'));","out":["Rex woofs","true","false"],"back":"Prints:\nRex woofs\ntrue\nfalse","short":"Rex woofs, true, false","why":"`speak` lives on Dog.prototype and is found through the chain, so it is not an own property of the instance.","tags":["prototypes","classes"],"difficulty":2},
+  {"id":"js-adv-12","deck":"js-adv","front":"What does this print?","code":"class A { static s = 1; #p = 2; get p() { return this.#p; } }\nclass B extends A {}\nconst b = new B();\nconsole.log(b.p, B.s, b instanceof A);","out":["2 1 true"],"back":"Prints:\n2 1 true","short":"2 1 true","why":"Subclasses inherit instance members through B.prototype and static members through B.__proto__ (A); #private fields are only accessible inside the class body.","tags":["classes","prototypes"],"difficulty":3},
+  {"id":"js-adv-13","deck":"js-adv","front":"What does this print?","code":"class A {}\nclass B extends A {\n  constructor() {\n    try { this.x = 1; } catch (e) { console.log(e.name); }\n    super();\n  }\n}\nnew B();","out":["ReferenceError"],"back":"Prints:\nReferenceError","short":"ReferenceError","why":"In a derived constructor `this` does not exist until super() has returned, so touching it first throws.","tags":["classes"],"difficulty":3},
+  {"id":"js-adv-14","deck":"js-adv","front":"What is a Proxy and what is it used for?","back":"A Proxy wraps a target object and intercepts operations (get, set, has, deleteProperty, apply, construct ...) through handler traps.","why":"Typical uses are validation, logging, default values and reactivity systems such as Vue 3; the Reflect API mirrors the default behaviour for each trap.","tags":["proxy"],"difficulty":2,"short":"Wraps an object and intercepts operations with traps"},
+  {"id":"js-adv-15","deck":"js-adv","front":"What does this print?","code":"const p = new Proxy({}, { get: (t, k) => (k in t ? t[k] : 'no_' + String(k)) });\np.a = 1;\nconsole.log(p.a, p.b);","out":["1 no_b"],"back":"Prints:\n1 no_b","short":"1 no_b","why":"The get trap runs for every property read; here it returns a default for missing keys, while the assignment went through to the target as usual.","tags":["proxy"],"difficulty":2},
+  {"id":"js-adv-16","deck":"js-adv","front":"What does this print?","code":"'use strict';\nconst p = new Proxy({}, {\n  set(target, key, value) {\n    if (typeof value !== 'number') return false;\n    target[key] = value;\n    return true;\n  }\n});\np.a = 1;\ntry { p.b = 'x'; } catch (e) { console.log(e.name); }\nconsole.log(Object.keys(p).join());","out":["TypeError","a"],"back":"Prints:\nTypeError\na","short":"TypeError, a","why":"A set trap that returns false makes the assignment throw a TypeError in strict mode (and silently fail in sloppy mode); only the valid assignment reached the target.","tags":["proxy"],"difficulty":3},
+  {"id":"js-adv-17","deck":"js-adv","front":"When would you use a Map instead of a plain object?","back":"When keys are not just strings (any value can be a key), when you need insertion order, a reliable `size`, frequent adds and removes, or no clash with inherited keys like \"toString\".","why":"Map compares keys with SameValueZero and has get/set/has/delete/size; plain objects only allow string and symbol keys.","tags":["map-set"],"difficulty":2,"short":"Any key type, ordered, has size, no prototype-key clashes"},
+  {"id":"js-adv-18","deck":"js-adv","front":"What does this print?","code":"const m = new Map([[NaN, 'a']]);\nm.set(0, 'zero');\nconsole.log(m.get(NaN), m.get(-0), m.size);\nconsole.log([...new Set([1, 2, 2, 3, 1])].join());","out":["a zero 2","1,2,3"],"back":"Prints:\na zero 2\n1,2,3","short":"a zero 2, 1,2,3","why":"Map and Set use SameValueZero: NaN equals NaN and -0 equals 0. Spreading a Set is the classic way to de-duplicate an array.","tags":["map-set"],"difficulty":3},
+  {"id":"js-adv-19","deck":"js-adv","front":"What is a WeakMap and why use it?","back":"A map whose keys must be objects (or non-registered symbols) and are held weakly, so an entry disappears when the key can be garbage-collected. It cannot be iterated and has no size.","why":"Use it to attach private data or caches to objects without preventing them from being collected (no memory leak).","tags":["map-set","memory"],"difficulty":3,"short":"Weakly-held object keys; not iterable; no leak"},
+  {"id":"js-adv-20","deck":"js-adv","front":"What is the iterator protocol?","back":"An iterator is an object with a next() method returning { value, done }; an iterable has a [Symbol.iterator]() method that returns an iterator.","why":"for...of, spread, destructuring, Array.from and the Map/Set constructors all consume iterables.","tags":["iterators","generators"],"difficulty":2,"short":"next() returns {value, done}; iterables expose [Symbol.iterator]()"},
+  {"id":"js-adv-21","deck":"js-adv","front":"What does this print?","code":"function* g() {\n  const x = yield 1;\n  console.log('got', x);\n  yield x * 2;\n}\nconst it = g();\nconsole.log(it.next().value);\nconsole.log(it.next(10).value);\nconsole.log(it.next().done);","out":["1","got 10","20","true"],"back":"Prints:\n1\ngot 10\n20\ntrue","short":"1, got 10, 20, true","why":"The argument of next(v) becomes the result of the paused yield expression; after the last yield the next call runs to the end and reports done: true.","tags":["generators"],"difficulty":3},
+  {"id":"js-adv-22","deck":"js-adv","front":"What does a generator function (function*) do?","back":"It returns an iterator whose body runs lazily: each next() runs until the next yield, and local state is kept between calls.","why":"That makes infinite sequences, custom iterators and step-by-step control flow simple; async generators with `for await` do the same for async values.","tags":["generators","iterators"],"difficulty":2,"short":"Returns a lazy, pausable iterator using yield"},
+  {"id":"js-adv-23","deck":"js-adv","front":"What are the three phases of DOM event propagation?","back":"Capture (window down to the target), target, then bubble (target back up to window).","why":"Listeners run in the bubble phase by default; pass `true` or `{ capture: true }` to listen during capture.","tags":["events"],"difficulty":2,"short":"Capture (down), target, bubble (up)"},
+  {"id":"js-adv-24","deck":"js-adv","front":"What is event delegation?","back":"Attaching one listener to a common ancestor and using `event.target.closest(selector)` to find which child triggered it.","why":"It relies on bubbling, uses less memory than many listeners and works for elements added later.","tags":["events"],"difficulty":2,"short":"One ancestor listener + event.target.closest()"},
+  {"id":"js-adv-25","deck":"js-adv","front":"What is the difference between event.target and event.currentTarget?","back":"`target` is the element that originated the event; `currentTarget` is the element whose listener is currently running.","why":"During delegation target may be a nested child, while currentTarget stays the ancestor you attached to.","tags":["events"],"difficulty":2,"short":"target = origin; currentTarget = listener owner"},
+  {"id":"js-adv-26","deck":"js-adv","front":"What do stopPropagation, stopImmediatePropagation and preventDefault each stop?","back":"stopPropagation stops the event travelling to other nodes; stopImmediatePropagation also stops remaining listeners on the same node; preventDefault cancels the browser default action but not propagation.","why":"They are independent: a click on a link can be default-prevented and still bubble.","tags":["events"],"difficulty":2,"short":"Stop travel; stop same-node listeners too; cancel default action"},
+  {"id":"js-adv-27","deck":"js-adv","front":"Which common events do not bubble, and what is the alternative?","back":"focus, blur, mouseenter and mouseleave do not bubble; use focusin, focusout, mouseover and mouseout when you need delegation.","why":"focusin/focusout bubble, so a single listener on a form can track focus for all its fields.","tags":["events"],"difficulty":3,"short":"focus/blur/mouseenter/mouseleave; use focusin/focusout"},
+  {"id":"js-adv-28","deck":"js-adv","front":"What is the relationship between Blob and File?","back":"A Blob is an immutable chunk of raw data with a size and MIME type; a File is a Blob subclass that adds a name and lastModified.","why":"Read them with blob.text(), blob.arrayBuffer() or the older FileReader; URL.createObjectURL(blob) makes a temporary URL (release it with URL.revokeObjectURL).","tags":["binary","files"],"difficulty":2,"short":"File extends Blob, adding name and lastModified"},
+  {"id":"js-adv-29","deck":"js-adv","front":"What is an ArrayBuffer and how do you read it?","back":"A fixed-length block of raw bytes that cannot be read directly; you access it through a view such as a typed array (Uint8Array...) or a DataView.","why":"Several views can share one buffer; DataView lets you choose byte order explicitly.","tags":["binary"],"difficulty":2,"short":"Raw bytes read through typed-array or DataView views"},
+  {"id":"js-adv-30","deck":"js-adv","front":"What does this print?","code":"const u8 = new Uint8Array([255, 256, 257]);\nconsole.log(u8.join());\nconsole.log(new Uint8ClampedArray([300, -5]).join());\nconsole.log(new Uint8Array(new ArrayBuffer(8)).length, new Uint16Array(new ArrayBuffer(8)).length);","out":["255,0,1","255,0","8 4"],"back":"Prints:\n255,0,1\n255,0\n8 4","short":"255,0,1, 255,0, 8 4","why":"Uint8Array wraps values modulo 256, Uint8ClampedArray clamps to 0-255, and the length depends on the element size (8 bytes = 8 Uint8 or 4 Uint16 elements).","tags":["binary"],"difficulty":3},
+  {"id":"js-adv-31","deck":"js-adv","front":"What does this print?","code":"const a = new Uint8Array([1, 2, 3, 4]);\nconst shared = a.subarray(1, 3);\nconst copy = a.slice(1, 3);\na[1] = 99;\nconsole.log(shared[0], copy[0]);","out":["99 2"],"back":"Prints:\n99 2","short":"99 2","why":"subarray returns a view on the same memory, while slice makes a copy.","tags":["binary"],"difficulty":3},
+  {"id":"js-adv-32","deck":"js-adv","front":"What does this print?","code":"const b = new Blob(['h\\u00e9llo'], { type: 'text/plain' });\nconsole.log(b.size, b.type);\nconsole.log(new TextEncoder().encode('\\u20ac').length);","out":["6 text/plain","3"],"back":"Prints:\n6 text/plain\n3","short":"6 text/plain, 3","why":"Blob.size counts UTF-8 bytes: the accented e takes 2 bytes, so \"h\\u00e9llo\" is 6 bytes; the euro sign encodes to 3 bytes.","tags":["binary","files"],"difficulty":3},
+  {"id":"js-adv-33","deck":"js-adv","front":"What is the difference between a shallow and a deep copy?","back":"A shallow copy (spread, Object.assign, slice) copies only the top level, so nested objects are shared; a deep copy duplicates nested structures too.","why":"Mutating a nested object of a shallow copy changes the original as well.","tags":["copying"],"difficulty":2,"short":"Shallow shares nested objects; deep duplicates them"},
+  {"id":"js-adv-34","deck":"js-adv","front":"What does this print?","code":"const src = { d: new Date(0), m: new Map([[1, 2]]), u: undefined, n: { x: 1 } };\nconst j = JSON.parse(JSON.stringify(src));\nconst s = structuredClone(src);\nconsole.log(typeof j.d, j.m instanceof Map, 'u' in j);\nconsole.log(s.d instanceof Date, s.m.get(1), 'u' in s, s.n !== src.n);","out":["string false false","true 2 true true"],"back":"Prints:\nstring false false\ntrue 2 true true","short":"string false false, true 2 true true","why":"The JSON round-trip turns Dates into strings, Maps into {} and drops undefined; structuredClone preserves Dates, Maps, Sets and undefined and handles cycles (but cannot clone functions).","tags":["copying"],"difficulty":3},
+  {"id":"js-adv-35","deck":"js-adv","front":"Debounce vs throttle: which fits search-as-you-type and which fits a scroll handler?","back":"Debounce (run after calls stop for N ms) fits search-as-you-type; throttle (run at most once every N ms) fits scroll and resize handlers.","why":"Debounce waits for quiet, throttle limits the rate; both cut down expensive work.","tags":["performance","closures"],"difficulty":2,"short":"Debounce after quiet (search); throttle by rate (scroll)"},
+  {"id":"js-adv-36","deck":"js-adv","front":"What does this print?","code":"function debounce(fn, ms) {\n  let t;\n  return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };\n}\nconst log = debounce(console.log, 20);\nlog('a'); log('b'); log('c');\nsetTimeout(() => log('d'), 60);","out":["c","d"],"back":"Prints:\nc\nd","short":"c, d","why":"Every call clears the pending timer, so only the last call in each burst runs: \"c\" after 20 ms, and \"d\" (called later) after its own 20 ms.","tags":["performance","closures","async"],"difficulty":3},
+  {"id":"react-01","deck":"react","front":"What does React do when state changes?","back":"It re-renders the component to produce a new element tree, diffs it against the previous one (reconciliation) and updates only the DOM nodes that changed.","why":"Components are cheap descriptions; React does the minimal real-DOM work.","tags":["rendering"],"difficulty":1,"short":"Re-render, diff the element trees, patch the changed DOM"},
+  {"id":"react-02","deck":"react","front":"Why do list items need a stable `key`?","back":"Keys let React match items between renders so it can preserve their state and DOM, and move rather than recreate them.","why":"Avoid array indexes as keys when items can be reordered, inserted or removed: state then attaches to the wrong item.","tags":["lists","rendering"],"difficulty":1,"short":"Identify items across renders; avoid index keys for dynamic lists"},
+  {"id":"react-03","deck":"react","front":"Why can `setCount(count + 1)` called three times in one handler add only 1?","back":"Each call uses the same `count` captured by that render, so all three set the same value. `setCount(c => c + 1)` reads the latest queued state and adds 3.","why":"State is a snapshot per render; use the updater form when the next value depends on the previous one.","tags":["state"],"difficulty":2,"short":"count is a snapshot; use setCount(c => c + 1)"},
+  {"id":"react-04","deck":"react","front":"When does a useEffect run, depending on its dependency array?","back":"No array: after every render. `[]`: after the first render only (plus cleanup on unmount). `[a, b]`: after the first render and whenever a or b changed (compared with Object.is).","why":"List every reactive value the effect uses; the lint rule react-hooks/exhaustive-deps helps.","tags":["hooks","effects"],"difficulty":1,"short":"None: every render; []: mount only; [deps]: when deps change"},
+  {"id":"react-05","deck":"react","front":"When does a useEffect cleanup function run?","back":"Before the effect re-runs because dependencies changed, and when the component unmounts.","why":"Use it to unsubscribe listeners, clear timers and abort fetches so old effects do not leak or update stale state.","tags":["hooks","effects"],"difficulty":2,"short":"Before the next run and on unmount"},
+  {"id":"react-06","deck":"react","front":"What does StrictMode do in development in React 18?","back":"It double-invokes render functions and mounts, unmounts and re-mounts each component once (re-running effects) to expose impure code and missing cleanups.","why":"This only happens in development builds and does not affect production behaviour.","tags":["rendering","effects"],"difficulty":2,"short":"Dev-only double render and extra mount/unmount/mount"},
+  {"id":"react-07","deck":"react","front":"What is useRef used for?","back":"It holds a mutable `.current` value that persists across renders without triggering a re-render; it is also used to reference DOM nodes.","why":"Changing ref.current does not update the UI, so use state for anything that must appear on screen.","tags":["hooks","refs"],"difficulty":1,"short":"Mutable value that survives renders without re-rendering"},
+  {"id":"react-08","deck":"react","front":"What is the difference between useMemo and useCallback?","back":"`useMemo(fn, deps)` caches the result of a computation; `useCallback(fn, deps)` caches the function itself (same as `useMemo(() => fn, deps)`).","why":"Both are performance hints for referential stability, for example with React.memo children; they are not semantic guarantees.","tags":["hooks","performance"],"difficulty":2,"short":"useMemo caches a value; useCallback caches a function"},
+  {"id":"react-09","deck":"react","front":"What does React.memo do?","back":"It skips re-rendering a component when its props are shallowly equal to the previous props.","why":"New object, array or function props on every render defeat it, which is where useMemo and useCallback come in.","tags":["performance"],"difficulty":2,"short":"Skips re-render when props are shallowly equal"},
+  {"id":"react-10","deck":"react","front":"What is the difference between controlled and uncontrolled inputs?","back":"A controlled input takes its value from React state (`value` + `onChange`); an uncontrolled input keeps its own DOM state, read via a ref or FormData.","why":"Controlled inputs make validation and derived UI easy; uncontrolled ones are simpler for basic forms.","tags":["forms","state"],"difficulty":1,"short":"Controlled = value in React state; uncontrolled = DOM holds it"},
+  {"id":"react-11","deck":"react","front":"Why must you not mutate state directly?","back":"React detects changes by comparing references with Object.is, so mutating in place keeps the same reference and can skip the re-render and break memoisation.","why":"Create new arrays and objects instead: `setItems([...items, x])`.","tags":["state"],"difficulty":1,"short":"Same reference means React sees no change"},
+  {"id":"react-12","deck":"react","front":"What are the Rules of Hooks?","back":"Call hooks only at the top level of a component or custom hook (not in loops, conditions or nested functions) and only from React functions.","why":"React identifies each hook by its call order, which must be identical on every render.","tags":["hooks"],"difficulty":1,"short":"Top level only; same order every render"},
+  {"id":"react-13","deck":"react","front":"What causes components using a Context to re-render?","back":"Every consumer re-renders whenever the Provider value changes (compared with Object.is), even if it uses only part of the value.","why":"Passing a new object literal as value on each render triggers this; memoise the value or split contexts.","tags":["context","performance"],"difficulty":3,"short":"A changed Provider value re-renders all consumers"},
+  {"id":"react-14","deck":"react","front":"When would you choose useReducer over useState?","back":"When state has several related fields or complex transitions, or when the next state depends on named actions; the reducer centralises the update logic.","why":"A pure reducer (state, action) => newState is easy to test and to share via dispatch.","tags":["hooks","state"],"difficulty":2,"short":"Complex or related state with named actions"},
+  {"id":"react-15","deck":"react","front":"What is the difference between useEffect and useLayoutEffect?","back":"useLayoutEffect runs synchronously after DOM updates but before the browser paints; useEffect runs after paint.","why":"Use useLayoutEffect to measure or adjust layout without flicker; default to useEffect.","tags":["hooks","effects"],"difficulty":3,"short":"Layout effect runs before paint; effect runs after"},
+  {"id":"react-16","deck":"react","front":"What does automatic batching mean in React 18?","back":"With createRoot, multiple state updates are batched into a single re-render even inside timeouts, promises and native event handlers, not just React event handlers.","why":"Fewer renders by default; flushSync opts out when you need an immediate DOM update.","tags":["state","rendering"],"difficulty":3,"short":"Updates are batched everywhere, not only in React events"},
+  {"id":"react-17","deck":"react","front":"What is a custom hook?","back":"A function whose name starts with `use` that calls other hooks to share stateful logic between components.","why":"Each component calling it gets its own isolated state; hooks share logic, not state.","tags":["hooks"],"difficulty":1,"short":"A use-prefixed function that reuses stateful logic"},
+  {"id":"react-18","deck":"react","front":"What do useTransition and useDeferredValue do?","back":"They mark some updates as non-urgent so React keeps the UI responsive: urgent updates (typing) render first, transition updates can be interrupted.","why":"They help with slow renders such as filtering a large list while typing.","tags":["performance","hooks"],"difficulty":3,"short":"Mark updates as non-urgent so typing stays responsive"},
+  {"id":"sql-01","deck":"sql","front":"What is the difference between INNER JOIN and LEFT JOIN?","back":"INNER JOIN returns only rows with a match in both tables; LEFT JOIN returns all rows from the left table, with NULLs for right-hand columns when there is no match.","why":"Use LEFT JOIN plus `WHERE right.id IS NULL` to find rows with no match.","tags":["joins"],"difficulty":1,"short":"INNER = matches only; LEFT = all left rows, NULLs when unmatched"},
+  {"id":"sql-02","deck":"sql","front":"What is the difference between WHERE and HAVING?","back":"WHERE filters rows before grouping; HAVING filters groups after aggregation, so it can use aggregates such as COUNT(*).","why":"`HAVING COUNT(*) > 1` is valid while `WHERE COUNT(*) > 1` is not.","tags":["aggregation"],"difficulty":1,"short":"WHERE filters rows; HAVING filters groups"},
+  {"id":"sql-03","deck":"sql","front":"What is the logical order in which a SELECT is evaluated?","back":"FROM/JOIN, WHERE, GROUP BY, HAVING, SELECT, DISTINCT, ORDER BY, LIMIT/OFFSET.","why":"That is why a SELECT alias can be used in ORDER BY but usually not in WHERE.","tags":["basics"],"difficulty":2,"short":"FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY, LIMIT"},
+  {"id":"sql-04","deck":"sql","front":"What is the difference between COUNT(*) and COUNT(column)?","back":"COUNT(*) counts rows; COUNT(column) counts only rows where the column is not NULL.","why":"Aggregate functions other than COUNT(*) ignore NULLs.","tags":["aggregation","nulls"],"difficulty":1,"short":"COUNT(*) counts rows; COUNT(col) skips NULLs"},
+  {"id":"sql-05","deck":"sql","front":"Why does `WHERE col = NULL` never match rows?","back":"Comparing anything with NULL yields UNKNOWN, not true; use `col IS NULL` or `IS NOT NULL`.","why":"SQL uses three-valued logic (true, false, unknown) and WHERE keeps only true rows.","tags":["nulls"],"difficulty":1,"short":"NULL comparisons are UNKNOWN; use IS NULL"},
+  {"id":"sql-06","deck":"sql","front":"What is the gotcha with NOT IN and NULL?","back":"If the subquery or list contains a NULL, `x NOT IN (...)` can never be true, so it returns no rows.","why":"Use NOT EXISTS or filter the NULLs out of the subquery.","tags":["nulls","subqueries"],"difficulty":3,"short":"A NULL in the list makes NOT IN return nothing"},
+  {"id":"sql-07","deck":"sql","front":"What is the difference between a PRIMARY KEY and a UNIQUE constraint?","back":"A table has one PRIMARY KEY, which is unique and NOT NULL; it may have many UNIQUE constraints, which generally allow NULLs (how many varies by database).","why":"Both guarantee no duplicates and are backed by an index.","tags":["constraints"],"difficulty":2,"short":"One PK (not null) vs many UNIQUEs (NULL allowed)"},
+  {"id":"sql-08","deck":"sql","front":"How does an index speed up queries and what does it cost?","back":"A (usually B-tree) index lets the database find rows without scanning the whole table, but it uses storage and slows INSERT, UPDATE and DELETE because it must be maintained.","why":"Index the columns used in WHERE, JOIN and ORDER BY of frequent queries.","tags":["indexes","performance"],"difficulty":2,"short":"Faster reads; slower writes and more storage"},
+  {"id":"sql-09","deck":"sql","front":"What is the leftmost-prefix rule for composite indexes?","back":"An index on (a, b, c) can serve filters on a, on a and b, or on a, b and c, but generally not on b or c alone.","why":"Put the most selective equality-filtered column first and match your query patterns.","tags":["indexes","performance"],"difficulty":3,"short":"Index (a,b,c) helps a; a,b; a,b,c but not b alone"},
+  {"id":"sql-10","deck":"sql","front":"Why is `LIKE '%abc'` slow?","back":"A leading wildcard prevents a normal B-tree index from being used, so the database usually scans every row; `LIKE 'abc%'` can use the index.","why":"Use full-text search or a trigram index for contains-style searches.","tags":["indexes","performance"],"difficulty":3,"short":"Leading wildcard cannot use a B-tree index"},
+  {"id":"sql-11","deck":"sql","front":"What is the difference between DELETE, TRUNCATE and DROP?","back":"DELETE removes selected rows (with WHERE); TRUNCATE quickly removes all rows but keeps the table; DROP removes the table itself.","why":"Only DELETE accepts a WHERE clause; DROP and TRUNCATE are far more destructive.","tags":["ddl"],"difficulty":2,"short":"DELETE = some rows; TRUNCATE = all rows; DROP = the table"},
+  {"id":"sql-12","deck":"sql","front":"What do the ACID properties stand for?","back":"Atomicity (all or nothing), Consistency (constraints hold), Isolation (concurrent transactions do not interfere) and Durability (committed data survives crashes).","why":"They are the guarantees of a database transaction.","tags":["transactions"],"difficulty":1,"short":"Atomicity, Consistency, Isolation, Durability"},
+  {"id":"sql-13","deck":"sql","front":"Name the three read anomalies that isolation levels prevent.","back":"Dirty read (seeing uncommitted data), non-repeatable read (a row changes between two reads) and phantom read (new rows appear in a repeated range query).","why":"Higher levels (READ COMMITTED, REPEATABLE READ, SERIALIZABLE) prevent more anomalies at more cost.","tags":["transactions"],"difficulty":3,"short":"Dirty, non-repeatable and phantom reads"},
+  {"id":"sql-14","deck":"sql","front":"What is the N+1 query problem?","back":"Running one query for a list and then one extra query per row to load related data, causing N+1 round trips.","why":"Fix it with a JOIN, an IN query, or the ORM eager-loading option.","tags":["performance","orm"],"difficulty":2,"short":"One query for the list plus one per row"},
+  {"id":"sql-15","deck":"sql","front":"What do 1NF, 2NF and 3NF require?","back":"1NF: atomic column values. 2NF: no column depends on only part of a composite key. 3NF: no non-key column depends on another non-key column.","why":"Normalisation removes redundancy and update anomalies; sometimes you denormalise on purpose for read speed.","tags":["design"],"difficulty":3,"short":"Atomic values; no partial dependencies; no transitive dependencies"},
+  {"id":"sql-16","deck":"sql","front":"What does ROW_NUMBER() OVER (PARTITION BY dept ORDER BY salary DESC) return?","back":"A number per row starting at 1 within each dept, ranked by salary from highest to lowest, without collapsing the rows.","why":"Window functions compute across related rows while keeping every row; filter for rn = 1 to get the top row per group.","tags":["window-functions"],"difficulty":3,"short":"A rank per row within each dept, keeping all rows"},
+  {"id":"sql-17","deck":"sql","front":"How do parameterised queries prevent SQL injection?","back":"The SQL text and the values are sent separately, so user input is always treated as data and never parsed as SQL.","why":"Never build SQL by concatenating user input into a string.","tags":["security"],"difficulty":1,"short":"Values are sent separately from the SQL text"},
+  {"id":"sql-18","deck":"sql","front":"Why can OFFSET pagination get slow, and what is the alternative?","back":"The database still has to walk past all the skipped rows, so deep pages get slower; keyset (seek) pagination uses `WHERE id > :last_id ORDER BY id LIMIT n` instead.","why":"Keyset pagination stays fast with an index but cannot jump to arbitrary page numbers.","tags":["performance"],"difficulty":3,"short":"OFFSET skips by scanning; keyset uses WHERE id > last"},
+  {"id":"bigo-01","deck":"bigo","front":"What does Big-O notation describe?","back":"An upper bound on how an algorithm's running time or memory grows as the input size n grows, ignoring constants and lower-order terms.","why":"O(2n + 5) simplifies to O(n); it describes growth rate, not exact speed.","tags":["basics"],"difficulty":1,"short":"The growth rate of cost as input size grows"},
+  {"id":"bigo-02","deck":"bigo","front":"What is the time complexity of binary search on a sorted array?","back":"O(log n)","why":"Each comparison halves the remaining range.","tags":["searching","complexity"],"difficulty":1,"short":"O(log n)"},
+  {"id":"bigo-03","deck":"bigo","front":"What is the time complexity of the best comparison-based sorts (merge sort, heap sort)?","back":"O(n log n)","why":"Log n levels of splitting or heap operations, each doing linear work; no comparison sort can beat this in the worst case.","tags":["sorting","complexity"],"difficulty":2,"short":"O(n log n)"},
+  {"id":"bigo-04","deck":"bigo","front":"What is the worst-case time complexity of quicksort and when does it happen?","back":"O(n^2), for example when the pivot is always the smallest or largest element (already sorted input with a naive pivot choice).","why":"Average case is O(n log n); random or median-of-three pivots make the bad case unlikely.","tags":["sorting"],"difficulty":2,"short":"O(n^2) with consistently bad pivots"},
+  {"id":"bigo-05","deck":"bigo","front":"What is the time complexity of naive recursive Fibonacci, and how do you fix it?","back":"Exponential, roughly O(2^n); memoisation or a bottom-up loop reduces it to O(n).","why":"The naive version recomputes the same subproblems over and over.","tags":["recursion","dynamic-programming","complexity"],"difficulty":2,"short":"O(2^n), fixed to O(n) with memoisation"},
+  {"id":"bigo-06","deck":"bigo","front":"What are average and worst-case operations on a hash table?","back":"Average O(1) for insert, lookup and delete; worst case O(n) when many keys collide.","why":"Good hash functions and resizing keep collisions rare.","tags":["hashing","complexity"],"difficulty":2,"short":"Average O(1), worst O(n)"},
+  {"id":"bigo-07","deck":"bigo","front":"What is the complexity of Array.prototype.shift() and unshift()?","back":"O(n), because every remaining element must move one position.","why":"A queue built on shift() can be slow for big arrays; use an index pointer or a linked structure instead.","tags":["arrays","complexity"],"difficulty":2,"short":"O(n)"},
+  {"id":"bigo-08","deck":"bigo","front":"Why is push() on a dynamic array O(1) amortised?","back":"Occasionally the array must grow and copy all elements (O(n)), but doubling the capacity makes those copies rare, so the average cost per push is constant.","why":"Amortised analysis averages the cost over a sequence of operations.","tags":["arrays","complexity"],"difficulty":3,"short":"Rare O(n) resizes average out to O(1)"},
+  {"id":"bigo-09","deck":"bigo","front":"What is the difference between BFS and DFS?","back":"BFS explores level by level using a queue and finds shortest paths in unweighted graphs; DFS goes as deep as possible first using a stack or recursion.","why":"Both run in O(V + E); pick BFS for shortest paths and DFS for exhaustive search, cycle detection and topological sort.","tags":["graphs"],"difficulty":2,"short":"BFS = queue, level by level; DFS = stack, deep first"},
+  {"id":"bigo-10","deck":"bigo","front":"When does Dijkstra's algorithm work and what is its complexity?","back":"It finds shortest paths from one source in graphs with non-negative edge weights; with a binary heap it runs in O((V + E) log V).","why":"Negative weights need Bellman-Ford instead.","tags":["graphs","complexity"],"difficulty":3,"short":"Non-negative weights; O((V + E) log V) with a heap"},
+  {"id":"bigo-11","deck":"bigo","front":"What two properties make a problem suited to dynamic programming?","back":"Overlapping subproblems and optimal substructure.","why":"Solve each subproblem once (memoisation top-down or tabulation bottom-up) and reuse the result.","tags":["dynamic-programming"],"difficulty":2,"short":"Overlapping subproblems + optimal substructure"},
+  {"id":"bigo-12","deck":"bigo","front":"What is the sliding window technique?","back":"Keep a window over a contiguous range of an array or string and slide it by adding the new element and removing the old one, instead of recomputing from scratch.","why":"It turns many O(n * k) subarray problems into O(n).","tags":["arrays","patterns"],"difficulty":2,"short":"Maintain a moving range and update it incrementally"},
+  {"id":"bigo-13","deck":"bigo","front":"How does the hash-map solution to Two Sum work and what does it cost?","back":"For each number check whether target - number was already seen in a map, then store the number; one pass gives O(n) time and O(n) extra space.","why":"It trades memory for speed compared with the O(n^2) brute force.","tags":["hashing","patterns"],"difficulty":2,"short":"One pass with a lookup map: O(n) time, O(n) space"},
+  {"id":"bigo-14","deck":"bigo","front":"What are the operation costs of a binary heap?","back":"Peek min/max is O(1); insert and extract-min are O(log n); building a heap from n items is O(n).","why":"Heaps back priority queues and heap sort.","tags":["heaps","complexity"],"difficulty":3,"short":"peek O(1); insert/extract O(log n)"},
+  {"id":"bigo-15","deck":"bigo","front":"What is the cost of operations in a binary search tree?","back":"Search, insert and delete take O(h), the tree height: O(log n) when balanced, O(n) when degenerate (like a linked list).","why":"Self-balancing trees such as AVL and red-black trees keep the height near log n.","tags":["trees","complexity"],"difficulty":2,"short":"O(h): log n balanced, n degenerate"},
+  {"id":"bigo-16","deck":"bigo","front":"How do you detect a cycle in a linked list using O(1) extra space?","back":"Floyd's tortoise and hare: move a slow pointer one step and a fast pointer two steps; if they ever meet there is a cycle.","why":"A hash set of visited nodes also works but uses O(n) memory.","tags":["linked-lists","patterns"],"difficulty":2,"short":"Slow and fast pointers meet if there is a cycle"},
+  {"id":"bigo-17","deck":"bigo","front":"What is the difference between a stack and a queue?","back":"A stack is last-in-first-out (push/pop); a queue is first-in-first-out (enqueue/dequeue).","why":"Stacks suit undo and DFS; queues suit BFS and task scheduling.","tags":["data-structures"],"difficulty":1,"short":"Stack = LIFO; queue = FIFO"},
+  {"id":"bigo-18","deck":"bigo","front":"Does JavaScript optimise tail calls?","back":"ES2015 specifies proper tail calls, but in practice only Safari (JavaScriptCore) implements them; V8 and SpiderMonkey do not.","why":"So do not rely on tail recursion to avoid stack overflow in JavaScript; use a loop.","tags":["recursion"],"difficulty":3,"short":"Only Safari does; others do not"},
+  {"id":"html-css-01","deck":"html-css","front":"What are the layers of the CSS box model?","back":"From inside out: content, padding, border and margin.","why":"With `box-sizing: border-box` an element's width and height include padding and border (but not margin).","tags":["box-model","layout"],"difficulty":1,"short":"Content, padding, border, margin"},
+  {"id":"html-css-02","deck":"html-css","front":"How is CSS specificity calculated?","back":"Inline styles beat IDs, which beat classes, attributes and pseudo-classes, which beat element selectors and pseudo-elements; `!important` overrides normal declarations.","why":"Compare from the most significant level down; on a tie the later rule wins.","tags":["selectors","cascade"],"difficulty":2,"short":"inline > id > class/attribute/pseudo-class > element"},
+  {"id":"html-css-03","deck":"html-css","front":"In flexbox, what do justify-content and align-items control?","back":"justify-content aligns items along the main axis; align-items aligns them along the cross axis.","why":"flex-direction decides which physical axis is the main one (row by default).","tags":["flexbox","layout"],"difficulty":1,"short":"justify-content = main axis; align-items = cross axis"},
+  {"id":"html-css-04","deck":"html-css","front":"When would you use CSS Grid instead of Flexbox?","back":"Grid lays out in two dimensions (rows and columns together); Flexbox is one-dimensional (a row or a column).","why":"They combine well: grid for the page skeleton, flex for the components inside it.","tags":["grid","flexbox","layout"],"difficulty":2,"short":"Grid is 2D; Flexbox is 1D"},
+  {"id":"html-css-05","deck":"html-css","front":"What is the difference between display: none, visibility: hidden and opacity: 0?","back":"display: none removes the element from layout and the accessibility tree; visibility: hidden keeps its space but hides it from users and assistive tech; opacity: 0 keeps space and stays interactive and focusable.","why":"Use display: none (or the hidden attribute) to remove something entirely.","tags":["visibility","accessibility"],"difficulty":2,"short":"none = no space; hidden = space, invisible; opacity 0 = still interactive"},
+  {"id":"html-css-06","deck":"html-css","front":"What do the CSS position values static, relative, absolute, fixed and sticky do?","back":"static: normal flow. relative: offset from its normal spot. absolute: positioned against the nearest positioned ancestor. fixed: against the viewport. sticky: scrolls normally until a threshold, then sticks.","why":"An absolutely positioned child needs a positioned (e.g. relative) ancestor to anchor to.","tags":["positioning","layout"],"difficulty":2,"short":"static, relative, absolute, fixed, sticky"},
+  {"id":"html-css-07","deck":"html-css","front":"What is margin collapsing?","back":"Adjoining vertical margins of block elements combine into one margin equal to the larger of the two instead of adding up.","why":"It does not happen in flex or grid containers, or with padding/borders between the margins.","tags":["box-model","layout"],"difficulty":3,"short":"Adjacent vertical margins merge into the larger one"},
+  {"id":"html-css-08","deck":"html-css","front":"What is the difference between em and rem units?","back":"rem is relative to the root element's font size; em is relative to the element's own font size (or, for the font-size property itself, the parent's).","why":"Nested em values compound, which is why rem is more predictable for sizing.","tags":["units","typography"],"difficulty":2,"short":"rem = root font size; em = current/parent font size"},
+  {"id":"html-css-09","deck":"html-css","front":"What is the difference between async and defer on a script tag?","back":"Both download in parallel; async runs the script as soon as it arrives (order not guaranteed), while defer runs scripts in order after the HTML is parsed.","why":"Use defer for scripts that need the DOM or depend on each other.","tags":["scripts","performance"],"difficulty":2,"short":"async = run when ready; defer = run in order after parsing"},
+  {"id":"html-css-10","deck":"html-css","front":"What creates a new stacking context and why does it matter?","back":"Examples: position with z-index, opacity below 1, transform, filter, isolation: isolate, and fixed or sticky positioning. z-index values only compete inside the same stacking context.","why":"That is why a huge z-index on a child cannot escape a parent stacking context.","tags":["z-index","layout"],"difficulty":3,"short":"z-index only compares within a stacking context"},
+  {"id":"html-css-11","deck":"html-css","front":"Why write media queries mobile-first?","back":"Base styles target small screens and `@media (min-width: ...)` adds enhancements for larger ones.","why":"Small screens get the simplest CSS, and layouts are progressively enhanced.","tags":["responsive"],"difficulty":2,"short":"Base styles for small screens, min-width for larger"},
+  {"id":"html-css-12","deck":"html-css","front":"What are CSS custom properties?","back":"Variables declared with `--name` and read with `var(--name, fallback)`; they cascade, inherit and can be changed at runtime.","why":"They make theming (light/dark) simple, unlike preprocessor variables that are compiled away.","tags":["variables","theming"],"difficulty":1,"short":"--name variables read with var(), inherit and change at runtime"},
+  {"id":"html-css-13","deck":"html-css","front":"How do :is() and :where() differ in specificity?","back":":where() always contributes zero specificity, while :is() takes the specificity of its most specific argument.","why":"Use :where() in defaults you want to be easy to override.","tags":["selectors","cascade"],"difficulty":3,"short":":where() = 0; :is() = its most specific argument"},
+  {"id":"html-css-14","deck":"html-css","front":"How do you centre an element both horizontally and vertically?","back":"Make the parent a flex or grid container: `display: grid; place-items: center` (or flex with justify-content and align-items: center).","why":"For horizontal-only centring of a block with a set width use `margin-inline: auto`.","tags":["layout","flexbox","grid"],"difficulty":1,"short":"display: grid; place-items: center"},
+  {"id":"html-css-15","deck":"html-css","front":"Why prefer \u003cbutton> over \u003cdiv onclick>?","back":"A real button is focusable, activates with Enter and Space, and is announced as a button by assistive tech; a div needs role, tabindex and key handlers to imitate that.","why":"Use native semantic elements first: the first rule of ARIA is not to use ARIA when a native element will do.","tags":["accessibility","semantics"],"difficulty":1,"short":"Native keyboard support and semantics for free"},
+  {"id":"html-css-16","deck":"html-css","front":"How do you associate a label with a form control?","back":"Use `\u003clabel for=\"id\">` matching the input's id, or wrap the input inside the label.","why":"It gives the control an accessible name and makes clicking the label focus the input.","tags":["forms","accessibility"],"difficulty":1,"short":"\u003clabel for=\"id\"> or wrap the input in the label"},
+  {"id":"html-css-17","deck":"html-css","front":"How do you serve responsive images?","back":"Use `srcset` with `sizes` (or `\u003cpicture>` with `\u003csource>`) so the browser picks a suitable file for the viewport and pixel density; add `loading=\"lazy\"` for offscreen images.","why":"Always give images width/height or aspect-ratio to avoid layout shift.","tags":["images","responsive","performance"],"difficulty":2,"short":"srcset + sizes or \u003cpicture>"},
+  {"id":"html-css-18","deck":"html-css","front":"What does prefers-reduced-motion do?","back":"The `@media (prefers-reduced-motion: reduce)` query detects users who asked the OS to minimise animation, so you can remove or simplify transitions and animations.","why":"Large motion such as flips and parallax can trigger vestibular problems.","tags":["accessibility","animation"],"difficulty":2,"short":"Detects the OS \"reduce motion\" setting"},
+  {"id":"git-01","deck":"git","front":"What is the difference between git fetch and git pull?","back":"`git fetch` downloads new commits and updates remote-tracking branches without touching your working branch; `git pull` is fetch followed by a merge (or rebase).","why":"Fetch first when you want to inspect incoming changes before integrating them.","tags":["remotes"],"difficulty":1,"short":"fetch downloads; pull = fetch + merge/rebase"},
+  {"id":"git-02","deck":"git","front":"What is the difference between git merge and git rebase?","back":"Merge joins two histories with a merge commit and preserves history; rebase replays your commits on top of another branch, giving a linear history but rewriting commits.","why":"Do not rebase commits that others have already pulled.","tags":["branching","history"],"difficulty":2,"short":"Merge preserves history; rebase rewrites it linearly"},
+  {"id":"git-03","deck":"git","front":"What do git reset --soft, --mixed and --hard do?","back":"--soft moves the branch pointer only; --mixed (the default) also resets the staging area; --hard also overwrites the working tree.","why":"--hard discards uncommitted work, so use it carefully.","tags":["undo","history"],"difficulty":2,"short":"soft: keep index+files; mixed: keep files; hard: discard all"},
+  {"id":"git-04","deck":"git","front":"When do you use git revert instead of git reset?","back":"`git revert \u003ccommit>` creates a new commit that undoes an earlier one and keeps history intact, so it is safe for commits already pushed and shared.","why":"reset moves the branch pointer and rewrites history, which is unsafe on shared branches.","tags":["undo","history"],"difficulty":2,"short":"revert adds an undo commit; safe on shared branches"},
+  {"id":"git-05","deck":"git","front":"How do you shelve uncommitted changes temporarily?","back":"`git stash` saves modified tracked files and reverts the working tree; `git stash pop` reapplies the latest stash and removes it.","why":"Add -u to include untracked files.","tags":["workflow"],"difficulty":1,"short":"git stash, then git stash pop"},
+  {"id":"git-06","deck":"git","front":"How do you fix the message or contents of your last commit?","back":"`git commit --amend` replaces the last commit with a new one (new message and/or the currently staged changes).","why":"It rewrites history, so avoid it after pushing unless you force-push a branch only you use.","tags":["undo","history"],"difficulty":1,"short":"git commit --amend"},
+  {"id":"git-07","deck":"git","front":"What is a detached HEAD?","back":"HEAD points directly at a commit instead of a branch, for example after checking out a tag or commit hash; new commits belong to no branch and can be lost.","why":"Create a branch with `git switch -c name` to keep them.","tags":["branching"],"difficulty":2,"short":"HEAD points at a commit, not a branch"},
+  {"id":"git-08","deck":"git","front":"Why does adding a file to .gitignore not stop Git tracking it?","back":".gitignore only affects untracked files; an already tracked file keeps being tracked until you run `git rm --cached \u003cfile>` and commit.","why":"The file stays on disk with --cached.","tags":["basics"],"difficulty":2,"short":"It only ignores untracked files; use git rm --cached"},
+  {"id":"git-09","deck":"git","front":"How can you recover a commit after a bad reset or deleted branch?","back":"`git reflog` lists where HEAD and branches recently pointed; find the commit hash there and create a branch or reset to it.","why":"Reflog entries are local and expire after a while (90 days by default).","tags":["undo"],"difficulty":2,"short":"git reflog"},
+  {"id":"git-10","deck":"git","front":"Why prefer git push --force-with-lease over --force?","back":"It refuses to overwrite the remote branch if someone else pushed commits you have not seen, while plain --force overwrites blindly.","why":"Use it after rebasing your own branch.","tags":["remotes"],"difficulty":3,"short":"It fails if the remote has commits you have not fetched"},
+  {"id":"git-11","deck":"git","front":"How do you unstage a file or discard working-tree changes?","back":"`git restore --staged \u003cfile>` unstages it; `git restore \u003cfile>` discards uncommitted edits to it.","why":"Discarding cannot be undone by Git because the changes were never committed.","tags":["undo","basics"],"difficulty":2,"short":"git restore --staged / git restore"},
+  {"id":"git-12","deck":"git","front":"What is the difference between `git diff` and `git diff --staged`?","back":"`git diff` shows unstaged changes (working tree vs index); `git diff --staged` shows staged changes (index vs last commit).","why":"Run both before committing to know exactly what will be included.","tags":["basics"],"difficulty":1,"short":"Unstaged changes vs staged changes"},
+  {"id":"git-13","deck":"git","front":"What does git bisect do?","back":"It binary-searches your commit history to find the commit that introduced a bug: you mark commits good or bad and it checks out the midpoints.","why":"It finds the culprit among n commits in about log2(n) steps.","tags":["debugging"],"difficulty":3,"short":"Binary search through history for the bad commit"},
+  {"id":"git-14","deck":"git","front":"What is the difference between `>` and `>>` in a shell?","back":"`>` redirects output to a file and overwrites it; `>>` appends to the file.","why":"Use `2>` for error output and `|` to pipe one command's output into another.","tags":["terminal","shell"],"difficulty":1,"short":"> overwrites; >> appends"},
+  {"id":"git-15","deck":"git","front":"What is the difference between `cmd1 && cmd2` and `cmd1; cmd2`?","back":"`&&` runs cmd2 only if cmd1 succeeded (exit status 0); `;` runs cmd2 regardless.","why":"`$?` holds the exit status of the last command.","tags":["terminal","shell"],"difficulty":2,"short":"&& runs next only on success; ; always runs it"},
+  {"id":"git-16","deck":"git","front":"How do you search for text recursively in a project from the terminal?","back":"`grep -rn \"text\" .` searches all files under the current directory and prints file names and line numbers.","why":"Add -i for case-insensitive and --include=\"*.js\" to limit file types.","tags":["terminal","search"],"difficulty":1,"short":"grep -rn \"text\" ."},
+  {"id":"web-01","deck":"web","front":"What do the HTTP status code classes 1xx to 5xx mean?","back":"1xx informational, 2xx success, 3xx redirection, 4xx client error, 5xx server error.","why":"The first digit tells you who should act: the client for 4xx, the server for 5xx.","tags":["status-codes"],"difficulty":1,"short":"1xx info, 2xx success, 3xx redirect, 4xx client error, 5xx server error"},
+  {"id":"web-02","deck":"web","front":"What is the difference between 401 and 403?","back":"401 Unauthorized means the request lacks valid authentication; 403 Forbidden means the server knows who you are but you are not allowed.","why":"Log in again for 401; permissions need to change for 403.","tags":["status-codes","auth"],"difficulty":2,"short":"401 = not authenticated; 403 = authenticated but not allowed"},
+  {"id":"web-03","deck":"web","front":"Which status codes signal a successful create and a successful response with no body?","back":"201 Created (usually with a Location header) for a create, and 204 No Content for success with no body.","why":"204 is common for DELETE and PUT that return nothing.","tags":["status-codes"],"difficulty":1,"short":"201 Created; 204 No Content"},
+  {"id":"web-04","deck":"web","front":"What is the difference between 301, 302, 307 and 308 redirects?","back":"301 and 308 are permanent, 302 and 307 are temporary; 307 and 308 keep the request method and body, while 301/302 may be turned into GET by clients.","why":"Use 308 or 307 when a POST must be repeated as a POST.","tags":["status-codes"],"difficulty":3,"short":"301/308 permanent, 302/307 temporary; 307/308 keep the method"},
+  {"id":"web-05","deck":"web","front":"What do 502, 503 and 504 mean?","back":"502 Bad Gateway: an upstream server sent an invalid response. 503 Service Unavailable: the server is overloaded or down for maintenance. 504 Gateway Timeout: the upstream did not respond in time.","why":"They usually appear when a proxy or load balancer sits in front of your app.","tags":["status-codes"],"difficulty":2,"short":"502 bad upstream reply; 503 unavailable; 504 upstream timeout"},
+  {"id":"web-06","deck":"web","front":"What is CORS and who enforces it?","back":"Cross-Origin Resource Sharing lets a server opt in, through Access-Control-Allow-* headers, to being read by scripts from other origins; the browser enforces it.","why":"It relaxes the same-origin policy; it does not protect the server from non-browser clients.","tags":["cors","security"],"difficulty":2,"short":"Server headers that let browsers allow cross-origin reads"},
+  {"id":"web-07","deck":"web","front":"What is a preflight request?","back":"An automatic OPTIONS request the browser sends before a non-simple cross-origin request (for example PUT/DELETE or custom headers) to ask if the actual request is allowed.","why":"The server must answer with matching Access-Control-Allow-Methods and Access-Control-Allow-Headers.","tags":["cors"],"difficulty":3,"short":"An automatic OPTIONS check before a non-simple cross-origin request"},
+  {"id":"web-08","deck":"web","front":"Can Access-Control-Allow-Origin be * when cookies are sent?","back":"No. With credentials the server must echo a specific origin and send Access-Control-Allow-Credentials: true.","why":"The client also has to opt in, for example fetch with credentials: \"include\".","tags":["cors","cookies"],"difficulty":3,"short":"No; credentialed requests need a specific origin"},
+  {"id":"web-09","deck":"web","front":"What defines the same origin?","back":"The same scheme (protocol), host and port.","why":"https://a.com and http://a.com differ, as do a.com and api.a.com.","tags":["security"],"difficulty":1,"short":"Same scheme + host + port"},
+  {"id":"web-10","deck":"web","front":"How do cookies differ from localStorage?","back":"Cookies are small (about 4 KB each), can expire, and are sent to the server with matching requests; localStorage holds around 5 MB of strings per origin, has no expiry, is never sent automatically and is readable only by scripts.","why":"sessionStorage is like localStorage but limited to the tab.","tags":["cookies","storage"],"difficulty":2,"short":"Cookies are sent with requests; localStorage stays in the browser"},
+  {"id":"web-11","deck":"web","front":"What do the HttpOnly, Secure and SameSite cookie attributes do?","back":"HttpOnly hides the cookie from JavaScript, Secure sends it only over HTTPS, and SameSite (Strict, Lax, None) limits sending it on cross-site requests.","why":"They reduce the impact of XSS (HttpOnly) and CSRF (SameSite); SameSite=None must also be Secure.","tags":["cookies","security"],"difficulty":2,"short":"HttpOnly hides from JS; Secure = HTTPS only; SameSite limits cross-site"},
+  {"id":"web-12","deck":"web","front":"What makes an API RESTful?","back":"It models resources with URLs, uses HTTP methods for actions (GET read, POST create, PUT/PATCH update, DELETE remove), is stateless, and returns representations such as JSON.","why":"Stateless means each request carries everything the server needs.","tags":["rest"],"difficulty":1,"short":"Resources + HTTP methods + stateless requests"},
+  {"id":"web-13","deck":"web","front":"Which HTTP methods are safe and which are idempotent?","back":"Safe (no state change): GET, HEAD, OPTIONS. Idempotent (repeating has the same effect): GET, HEAD, OPTIONS, PUT, DELETE. POST is neither.","why":"Idempotency is what makes automatic retries safe.","tags":["rest","methods"],"difficulty":2,"short":"Safe: GET/HEAD/OPTIONS; idempotent adds PUT and DELETE"},
+  {"id":"web-14","deck":"web","front":"What is the difference between PUT and PATCH?","back":"PUT replaces the whole resource with the request body; PATCH applies a partial update.","why":"PUT is idempotent by definition; PATCH is not guaranteed to be.","tags":["rest","methods"],"difficulty":2,"short":"PUT replaces; PATCH partially updates"},
+  {"id":"web-15","deck":"web","front":"What is the difference between Cache-Control: no-cache and no-store?","back":"no-cache lets the response be stored but requires revalidation with the server before each reuse; no-store forbids storing it at all.","why":"Use no-store for sensitive data; no-cache still allows cheap 304 revalidation.","tags":["caching","headers"],"difficulty":3,"short":"no-cache = store but revalidate; no-store = never store"},
+  {"id":"web-16","deck":"web","front":"Does fetch() reject the promise on a 404 or 500 response?","back":"No. It rejects only on network failure or abort; for HTTP error statuses it resolves, so check `response.ok` (status 200-299).","why":"Throw an error yourself when !response.ok.","tags":["fetch","errors"],"difficulty":2,"short":"No; check response.ok"},
+  {"id":"web-17","deck":"web","front":"What is the difference between XSS and CSRF?","back":"XSS injects attacker script into your page so it runs with your origin's privileges; CSRF tricks a logged-in user's browser into sending an unwanted request that carries their cookies.","why":"Mitigate XSS with output escaping and CSP; mitigate CSRF with SameSite cookies and CSRF tokens.","tags":["security"],"difficulty":2,"short":"XSS runs attacker script; CSRF forges a request with your cookies"},
+  {"id":"web-18","deck":"web","front":"What is a JWT and is its payload secret?","back":"A JSON Web Token is a signed token with a header, payload and signature; the payload is only base64url-encoded, so anyone holding the token can read it.","why":"The signature proves it has not been altered; never put secrets in the payload.","tags":["auth","security"],"difficulty":3,"short":"Signed, not encrypted; payload is readable"},
+  {"id":"web-19","deck":"web","front":"What happens when you type a URL and press Enter?","back":"DNS resolves the host to an IP, a TCP connection and TLS handshake are made, the browser sends an HTTP request, receives the response, then parses HTML, loads subresources and renders the page.","why":"Caches (DNS, HTTP, service workers) can short-circuit several of these steps.","tags":["fundamentals"],"difficulty":2,"short":"DNS, TCP + TLS, HTTP request, response, parse and render"},
+  {"id":"web-20","deck":"web","front":"When would you use WebSockets, Server-Sent Events or polling?","back":"WebSockets give a persistent two-way channel; SSE is a one-way server-to-client stream over HTTP with automatic reconnect; polling repeatedly asks the server and is simplest but wasteful.","why":"Choose by direction and frequency of updates.","tags":["realtime"],"difficulty":3,"short":"WebSocket = two-way; SSE = server push only; polling = repeated requests"}
+];
+</script>
+<script id="fc-core">
+/* ==========================================================================
+   Core logic (pure, no DOM): scheduling, dates, streaks, queue building,
+   quiz generation, import validation and state sanitising.
+   ========================================================================== */
+const FCCore = (function () {
+  'use strict';
+  const EASE0 = 2.5, EASE_MIN = 1.3, EASE_MAX = 3, MAX_INTERVAL = 365, MATURE = 21;
+  const MAX_TEXT = 2000, MAX_USER_CARDS = 500, MAX_TAGS = 10, MAX_TAG_LEN = 30;
+  const APP_ID = 'code-playground-flashcards';
+  const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  const ID_RE = /^[A-Za-z0-9_-]{1,40}$/;
+  const TABS = ['review', 'quiz', 'cards'];
+  const CARD_FIELDS = ['id', 'deck', 'front', 'back', 'code', 'why', 'short', 'tags', 'difficulty'];
+
+  /* ---------- dates: local calendar dates as 'YYYY-MM-DD' strings ---------- */
+  const pad = n => (n < 10 ? '0' : '') + n;
+  function dateStr(t) {
+    const d = t instanceof Date ? t : new Date(t);
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+  function parts(s) { return DATE_RE.test(s) ? [+s.slice(0, 4), +s.slice(5, 7), +s.slice(8, 10)] : null; }
+  function isDate(s) {
+    if (typeof s !== 'string') return false;
+    const p = parts(s); if (!p) return false;
+    const d = new Date(Date.UTC(p[0], p[1] - 1, p[2]));
+    return d.getUTCFullYear() === p[0] && d.getUTCMonth() === p[1] - 1 && d.getUTCDate() === p[2] && p[0] >= 2000 && p[0] <= 2200;
+  }
+  // Day arithmetic works on UTC day numbers of the calendar date, so DST never shifts a due date.
+  function dayNum(s) { const p = parts(s); return Math.round(Date.UTC(p[0], p[1] - 1, p[2]) / 864e5); }
+  function numToStr(n) { return new Date(n * 864e5).toISOString().slice(0, 10); }
+  function addDays(s, n) { return numToStr(dayNum(s) + n); }
+  function daysBetween(a, b) { return dayNum(b) - dayNum(a); }
+
+  /* ---------- SM-2 style scheduler ---------- */
+  const clampEase = e => Math.min(EASE_MAX, Math.max(EASE_MIN, Math.round(e * 100) / 100));
+  const clampInt = i => Math.max(0, Math.min(MAX_INTERVAL, Math.round(i)));
+  const nonNegInt = v => (Number.isFinite(v) && v > 0 ? Math.floor(v) : 0);
+  function norm(rec) {
+    const r = rec || {};
+    return {
+      ease: Number.isFinite(r.ease) ? clampEase(r.ease) : EASE0,
+      interval: Number.isFinite(r.interval) ? clampInt(r.interval) : 0,
+      reps: nonNegInt(r.reps),
+      lapses: nonNegInt(r.lapses)
+    };
+  }
+  function goodInterval(c) {
+    if (c.reps === 0) return 1;
+    if (c.reps === 1) return clampInt(Math.max(3, c.interval + 1));
+    return clampInt(Math.max(c.interval + 1, c.interval * c.ease));
+  }
+  /* schedule(card, grade, now) -> { ease, interval, reps, due, lapses }
+     card: previous record (or null for a new card); grade: 1 Again, 2 Hard, 3 Good, 4 Easy;
+     now: Date | timestamp. Pure: never mutates `card`. */
+  function schedule(card, grade, now) {
+    const c = norm(card);
+    const today = dateStr(now);
+    let ease = c.ease, interval = c.interval, reps = c.reps, lapses = c.lapses;
+    if (grade === 1) {
+      if (reps > 0) { lapses += 1; ease = clampEase(ease - 0.2); }
+      reps = 0; interval = 0;
+    } else if (grade === 2) {
+      ease = clampEase(ease - 0.15);
+      if (reps > 0) { interval = clampInt(Math.max(interval + 1, interval * 1.2)); reps += 1; }
+      else interval = 0;
+    } else if (grade === 3) {
+      interval = goodInterval(c); reps += 1;
+    } else if (grade === 4) {
+      ease = clampEase(ease + 0.15);
+      const g = goodInterval(c);
+      interval = c.reps === 0 ? 4 : clampInt(Math.max(g + 1, c.interval * ease * 1.3));
+      reps += 1;
+    } else throw new RangeError('grade must be 1, 2, 3 or 4');
+    return { ease, interval, reps, due: addDays(today, interval), lapses };
+  }
+  function previewIntervals(card, now) {
+    return [1, 2, 3, 4].map(g => schedule(card, g, now).interval);
+  }
+  function fmtInterval(d) {
+    if (d <= 0) return 'soon';
+    if (d < 30) return d + 'd';
+    if (d < 365) return Math.round(d / 30) + 'mo';
+    return '1y';
+  }
+  function cardState(rec) {
+    if (!rec || !(rec.rev > 0)) return 'new';
+    return rec.interval >= MATURE ? 'mature' : 'learning';
+  }
+
+  /* ---------- streaks + heatmap ---------- */
+  function activeDates(days) {
+    return Object.keys(days || {}).filter(d => isDate(d) && days[d] && days[d].n > 0).sort();
+  }
+  function calcStreaks(days, today) {
+    const ds = activeDates(days).map(dayNum);
+    let longest = 0, run = 0, prev = null;
+    for (const n of ds) {
+      run = prev !== null && n === prev + 1 ? run + 1 : 1;
+      if (run > longest) longest = run;
+      prev = n;
+    }
+    const set = new Set(ds);
+    let t = dayNum(today);
+    if (!set.has(t)) t -= 1; // today not reviewed yet: the streak is still alive through yesterday
+    let current = 0;
+    while (set.has(t)) { current++; t--; }
+    return { current, longest };
+  }
+  const heatLevel = n => (n <= 0 ? 0 : n < 5 ? 1 : n < 10 ? 2 : n < 20 ? 3 : 4);
+  function heatmap(days, today, weeks) {
+    weeks = weeks || 12;
+    const tn = dayNum(today);
+    const dow = new Date(tn * 864e5).getUTCDay(); // 0 = Sunday
+    const start = tn - dow - 7 * (weeks - 1);
+    const cells = []; let total = 0, active = 0;
+    for (let i = 0; i < weeks * 7; i++) {
+      const n = start + i, date = numToStr(n), future = n > tn;
+      const count = !future && days && days[date] ? (days[date].n | 0) : 0;
+      if (count > 0) { total += count; active++; }
+      cells.push({ date, count, level: heatLevel(count), future });
+    }
+    return { cells, total, active, weeks };
+  }
+
+  /* ---------- review queue + stats ---------- */
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function hashSeed(s) {
+    let h = 2166136261; s = String(s);
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function seededShuffle(arr, rng) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function todayEntry(days, today) { return (days && days[today]) || { n: 0, r: 0, g: 0, nw: 0 }; }
+
+  /* buildQueue(cards, state, today, opts) -> { queue: [ids], dueTotal, newPool, newLeft, capLeft }
+     Non-cram: due cards (learning first, then most overdue), then new cards round-robin across decks,
+     limited by the daily new-card limit and the daily review cap. Cram: every card in the selected decks. */
+  function buildQueue(cards, state, today, opts) {
+    const decks = new Set(opts.decks || []);
+    const susp = state.susp || {};
+    const eligible = cards.filter(c => decks.has(c.deck) && !susp[c.id]);
+    if (opts.cram) {
+      const rng = opts.rng || Math.random;
+      const ids = seededShuffle(eligible.map(c => c.id), rng);
+      return { queue: ids, dueTotal: ids.length, newPool: 0, newLeft: 0, capLeft: ids.length, cram: true };
+    }
+    const prog = state.prog || {};
+    const te = todayEntry(state.days, today);
+    const capLeft = Math.max(0, (opts.maxReviews | 0) - te.n);
+    const newLeft = Math.max(0, (opts.newLimit | 0) - te.nw);
+    const due = eligible.filter(c => prog[c.id] && prog[c.id].due <= today).sort((a, b) => {
+      const ra = prog[a.id], rb = prog[b.id];
+      const la = ra.interval === 0 ? 0 : 1, lb = rb.interval === 0 ? 0 : 1;
+      return la - lb || (ra.due < rb.due ? -1 : ra.due > rb.due ? 1 : 0) || (a.id < b.id ? -1 : 1);
+    });
+    const pools = {}; const order = [];
+    eligible.filter(c => !prog[c.id]).forEach(c => { if (!pools[c.deck]) { pools[c.deck] = []; order.push(c.deck); } pools[c.deck].push(c.id); });
+    const fresh = [];
+    for (let i = 0; order.some(d => i < pools[d].length); i++) order.forEach(d => { if (i < pools[d].length) fresh.push(pools[d][i]); });
+    const reviews = due.slice(0, capLeft).map(c => c.id);
+    const news = fresh.slice(0, Math.max(0, Math.min(newLeft, capLeft - reviews.length)));
+    return { queue: reviews.concat(news), dueTotal: due.length, newPool: fresh.length, newLeft, capLeft, cram: false };
+  }
+  function computeStats(cards, state, today, deckIds) {
+    const sel = new Set(deckIds), prog = state.prog || {}, susp = state.susp || {};
+    const out = { due: 0, newPool: 0, learning: 0, mature: 0, suspended: 0, total: 0, perDeck: {} };
+    for (const c of cards) {
+      const pd = out.perDeck[c.deck] || (out.perDeck[c.deck] = { total: 0, learned: 0, mature: 0 });
+      pd.total++;
+      const st = cardState(prog[c.id]);
+      if (st !== 'new') pd.learned++;
+      if (st === 'mature') pd.mature++;
+      if (!sel.has(c.deck)) continue;
+      out.total++;
+      if (susp[c.id]) { out.suspended++; continue; }
+      if (st === 'new') out.newPool++;
+      else if (st === 'mature') out.mature++;
+      else out.learning++;
+      if (prog[c.id] && prog[c.id].due <= today) out.due++;
+    }
+    let r = 0, g = 0;
+    Object.keys(state.days || {}).forEach(d => { const e = state.days[d]; r += e.r | 0; g += e.g | 0; });
+    out.retention = r > 0 ? Math.round(g / r * 100) : null;
+    out.reviewsTotal = r;
+    const s = calcStreaks(state.days, today);
+    out.streak = s.current; out.longest = s.longest;
+    return out;
+  }
+
+  /* ---------- quiz generation ---------- */
+  function firstSentence(t) {
+    t = String(t == null ? '' : t).replace(/\s+/g, ' ').trim();
+    const m = t.match(/^(.+?[.!?])(\s|$)/);
+    let s = m ? m[1] : t;
+    if (s.length > 140) s = s.slice(0, 137).trimEnd() + '...';
+    return s;
+  }
+  function shortAnswer(card) {
+    return card.short && String(card.short).trim() ? String(card.short).trim() : firstSentence(card.back);
+  }
+  const normAns = s => String(s).toLowerCase().replace(/[.,;:!?'"`()\[\]{}]/g, ' ').replace(/\s+/g, ' ').trim();
+  function counts(tokens) { const m = new Map(); tokens.forEach(t => m.set(t, (m.get(t) || 0) + 1)); return m; }
+  function nearDup(a, b) {
+    const na = normAns(a), nb = normAns(b);
+    if (na === nb) return true;
+    const ta = na.split(' ').filter(Boolean), tb = nb.split(' ').filter(Boolean);
+    if (!ta.length || !tb.length) return true;
+    const ca = counts(ta), cb = counts(tb);
+    let inter = 0, uni = 0;
+    new Set([...ca.keys(), ...cb.keys()]).forEach(k => {
+      const x = ca.get(k) || 0, y = cb.get(k) || 0;
+      inter += Math.min(x, y); uni += Math.max(x, y);
+    });
+    if (inter / uni >= 0.8) return true;
+    const shorter = ta.length <= tb.length ? ta : tb, longer = ta.length <= tb.length ? tb : ta;
+    if (shorter.length >= 4) {
+      const cl = counts(longer), cs = counts(shorter);
+      let subset = true; cs.forEach((v, k) => { if ((cl.get(k) || 0) < v) subset = false; });
+      if (subset) return true;
+    }
+    return false;
+  }
+  function answerShape(card) {
+    const s = shortAnswer(card);
+    if (card.out) return 'out';
+    if (/^O\(/.test(s)) return 'bigo';
+    if (/^\d{3}\b/.test(s)) return 'code';
+    return 'text';
+  }
+  function distractorScore(card, cand) {
+    let s = 0;
+    if (answerShape(card) === answerShape(cand)) s += 2;
+    const tags = card.tags || [];
+    if ((cand.tags || []).some(t => tags.indexOf(t) >= 0)) s += 1;
+    return s;
+  }
+  /* makeQuestion(card, allCards, rng) -> { cardId, options: [{text, correct, cardId}], answer } | null */
+  function makeQuestion(card, all, rng) {
+    const correct = shortAnswer(card);
+    const chosen = [];
+    const take = cands => {
+      const scored = seededShuffle(cands, rng).map(c => ({ c, s: distractorScore(card, c) }));
+      scored.sort((a, b) => b.s - a.s);
+      for (const { c } of scored) {
+        if (chosen.length >= 3) break;
+        const text = shortAnswer(c);
+        if (!text || nearDup(text, correct) || chosen.some(x => nearDup(x.text, text))) continue;
+        chosen.push({ text, correct: false, cardId: c.id });
+      }
+    };
+    take(all.filter(c => c.id !== card.id && c.deck === card.deck));
+    if (chosen.length < 3) take(all.filter(c => c.id !== card.id && c.deck !== card.deck));
+    if (chosen.length < 3) return null;
+    const options = seededShuffle([{ text: correct, correct: true, cardId: card.id }].concat(chosen), rng);
+    return { cardId: card.id, options, answer: options.findIndex(o => o.correct) };
+  }
+  function buildQuiz(cards, all, opts) {
+    const seed = opts.seed != null ? opts.seed : Math.floor(Math.random() * 1e9);
+    const decks = new Set(opts.decks || []);
+    const pool = cards.filter(c => decks.has(c.deck));
+    const order = seededShuffle(pool, mulberry32(hashSeed('order:' + seed)));
+    const questions = [];
+    for (const c of order) {
+      if (questions.length >= (opts.length | 0)) break;
+      const q = makeQuestion(c, all, mulberry32(hashSeed(seed + ':' + c.id)));
+      if (q) questions.push(q);
+    }
+    return { seed, questions };
+  }
+
+  /* ---------- validation helpers ---------- */
+  const isPlain = v => v !== null && typeof v === 'object' && !Array.isArray(v);
+  const isInt = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
+  function cleanTags(tags) {
+    const out = [];
+    (tags || []).forEach(t => { t = String(t).trim(); if (t && t.length <= MAX_TAG_LEN && out.indexOf(t) < 0) out.push(t); });
+    return out.slice(0, MAX_TAGS);
+  }
+  /* validateCard: strict validation of one card object (used by import).
+     ctx: { decks:Set, path:'Card 3' }.  Returns {errors:[], card} */
+  function validateCard(raw, ctx) {
+    const errors = [], p = ctx.path;
+    if (!isPlain(raw)) return { errors: [p + ': must be an object'] };
+    Object.keys(raw).forEach(k => { if (CARD_FIELDS.indexOf(k) < 0) errors.push(p + ": unknown field '" + k.slice(0, 40) + "'"); });
+    const str = (k, req) => {
+      const v = raw[k];
+      if (v === undefined) { if (req) errors.push(p + ": '" + k + "' is required"); return ''; }
+      if (typeof v !== 'string') { errors.push(p + ": '" + k + "' must be text"); return ''; }
+      if (v.length > MAX_TEXT) { errors.push(p + ": '" + k + "' is longer than " + MAX_TEXT + ' characters'); return ''; }
+      if (req && !v.trim()) errors.push(p + ": '" + k + "' must not be empty");
+      return v;
+    };
+    const card = {
+      front: str('front', true), back: str('back', true),
+      code: str('code'), why: str('why'), short: str('short')
+    };
+    if (raw.id !== undefined) {
+      if (typeof raw.id !== 'string' || !ID_RE.test(raw.id)) errors.push(p + ": 'id' must be 1-40 letters, digits, '-' or '_'");
+      else card.id = raw.id;
+    }
+    if (raw.deck === undefined) card.deck = 'my';
+    else if (typeof raw.deck !== 'string' || !ctx.decks.has(raw.deck)) errors.push(p + ": 'deck' must be one of " + Array.from(ctx.decks).join(', '));
+    else card.deck = raw.deck;
+    if (raw.difficulty === undefined) card.difficulty = 2;
+    else if (!isInt(raw.difficulty, 1, 3)) errors.push(p + ": 'difficulty' must be 1, 2 or 3");
+    else card.difficulty = raw.difficulty;
+    if (raw.tags === undefined) card.tags = [];
+    else if (!Array.isArray(raw.tags) || raw.tags.length > MAX_TAGS) errors.push(p + ": 'tags' must be a list of at most " + MAX_TAGS + ' tags');
+    else if (raw.tags.some(t => typeof t !== 'string' || !t.trim() || t.length > MAX_TAG_LEN)) errors.push(p + ": each tag must be text of 1-" + MAX_TAG_LEN + ' characters');
+    else card.tags = cleanTags(raw.tags);
+    return { errors, card };
+  }
+  const MAX_ERRORS = 20;
+  function capErrors(errors) {
+    if (errors.length <= MAX_ERRORS) return errors;
+    return errors.slice(0, MAX_ERRORS).concat(['...and ' + (errors.length - MAX_ERRORS) + ' more problem(s).']);
+  }
+  function parseJSON(text, what) {
+    if (typeof text !== 'string' || !text.trim()) return { error: 'Nothing to import: the ' + what + ' is empty.' };
+    if (text.length > 2000000) return { error: 'That file is too large (over 2 MB).' };
+    try { return { value: JSON.parse(text) }; } catch (e) { return { error: 'That is not valid JSON (' + String(e.message).slice(0, 80) + ').' }; }
+  }
+  /* validateCardsImport(text, { takenIds:Set, decks:Set, existing:number }) -> { ok, cards, errors } */
+  function validateCardsImport(text, ctx) {
+    const pj = parseJSON(text, 'text');
+    if (pj.error) return { ok: false, errors: [pj.error], cards: [] };
+    let list = pj.value;
+    if (isPlain(list)) {
+      const errs = [];
+      Object.keys(list).forEach(k => { if (['app', 'kind', 'version', 'exported', 'cards'].indexOf(k) < 0) errs.push("Unknown top-level field '" + k.slice(0, 40) + "'."); });
+      if (list.kind !== undefined && list.kind !== 'cards') errs.push("This file is '" + String(list.kind).slice(0, 30) + "' data, not a card export.");
+      if (list.app !== undefined && list.app !== APP_ID) errs.push('This file was not exported by Flashcards.');
+      if (list.version !== undefined && list.version !== 1) errs.push('Unsupported version ' + String(list.version).slice(0, 10) + '.');
+      if (errs.length) return { ok: false, errors: errs, cards: [] };
+      list = list.cards;
+    }
+    if (!Array.isArray(list)) return { ok: false, errors: ['Expected a list of cards, or an object with a "cards" list.'], cards: [] };
+    if (list.length === 0) return { ok: false, errors: ['The file contains no cards.'], cards: [] };
+    if (list.length > MAX_USER_CARDS) return { ok: false, errors: ['Too many cards: ' + list.length + ' (the limit is ' + MAX_USER_CARDS + ' per import).'], cards: [] };
+    if ((ctx.existing | 0) + list.length > MAX_USER_CARDS) return { ok: false, errors: ['Importing ' + list.length + ' cards would exceed the limit of ' + MAX_USER_CARDS + ' user cards (you have ' + (ctx.existing | 0) + ').'], cards: [] };
+    const errors = [], cards = [], seen = new Set();
+    list.forEach((raw, i) => {
+      const r = validateCard(raw, { decks: ctx.decks, path: 'Card ' + (i + 1) });
+      r.errors.forEach(e => errors.push(e));
+      if (r.errors.length) return;
+      if (r.card.id) {
+        if (seen.has(r.card.id)) errors.push('Card ' + (i + 1) + ": duplicate id '" + r.card.id + "' in this file");
+        else if (ctx.takenIds.has(r.card.id)) errors.push('Card ' + (i + 1) + ": id '" + r.card.id + "' already exists");
+        seen.add(r.card.id);
+      }
+      cards.push(r.card);
+    });
+    if (errors.length) return { ok: false, errors: capErrors(errors), cards: [] };
+    return { ok: true, errors: [], cards };
+  }
+
+  function validateRecord(r, path, errors) {
+    if (!isPlain(r)) { errors.push(path + ': must be an object'); return null; }
+    const allowed = ['ease', 'interval', 'reps', 'due', 'lapses', 'rev', 'last'];
+    Object.keys(r).forEach(k => { if (allowed.indexOf(k) < 0) errors.push(path + ": unknown field '" + k.slice(0, 30) + "'"); });
+    const before = errors.length;
+    if (typeof r.ease !== 'number' || !(r.ease >= EASE_MIN && r.ease <= EASE_MAX)) errors.push(path + ": 'ease' must be a number from " + EASE_MIN + ' to ' + EASE_MAX);
+    if (!isInt(r.interval, 0, MAX_INTERVAL)) errors.push(path + ": 'interval' must be a whole number of days from 0 to " + MAX_INTERVAL);
+    if (!isInt(r.reps, 0, 10000)) errors.push(path + ": 'reps' must be a whole number");
+    if (!isInt(r.lapses, 0, 10000)) errors.push(path + ": 'lapses' must be a whole number");
+    if (!isInt(r.rev, 0, 100000)) errors.push(path + ": 'rev' must be a whole number");
+    if (!isDate(r.due)) errors.push(path + ": 'due' must be a date like 2026-01-31");
+    if (r.last !== undefined && !isDate(r.last)) errors.push(path + ": 'last' must be a date like 2026-01-31");
+    return errors.length === before ? { ease: r.ease, interval: r.interval, reps: r.reps, due: r.due, lapses: r.lapses, rev: r.rev, last: r.last || r.due } : null;
+  }
+  function validateDay(d, path, errors) {
+    if (!isPlain(d)) { errors.push(path + ': must be an object'); return null; }
+    Object.keys(d).forEach(k => { if (['n', 'r', 'g', 'nw'].indexOf(k) < 0) errors.push(path + ": unknown field '" + k.slice(0, 30) + "'"); });
+    const before = errors.length;
+    ['n', 'r', 'g', 'nw'].forEach(k => { if (!isInt(d[k], 0, 1e6)) errors.push(path + ": '" + k + "' must be a whole number"); });
+    if (errors.length === before && (d.r > d.n || d.g > d.r || d.nw > d.n)) errors.push(path + ': counts are inconsistent');
+    return errors.length === before ? { n: d.n, r: d.r, g: d.g, nw: d.nw } : null;
+  }
+  /* validateProgressImport(text) -> { ok, errors, data: { prog, days, susp } } */
+  function validateProgressImport(text) {
+    const pj = parseJSON(text, 'text');
+    if (pj.error) return { ok: false, errors: [pj.error] };
+    const o = pj.value, errors = [];
+    if (!isPlain(o)) return { ok: false, errors: ['Expected an object exported with "Export progress".'] };
+    Object.keys(o).forEach(k => { if (['app', 'kind', 'version', 'exported', 'progress', 'days', 'suspended'].indexOf(k) < 0) errors.push("Unknown top-level field '" + k.slice(0, 40) + "'."); });
+    if (o.app !== APP_ID) errors.push('This file was not exported by Flashcards.');
+    if (o.kind !== 'progress') errors.push("This file is not a progress export (kind must be 'progress').");
+    if (o.version !== 1) errors.push('Unsupported version.');
+    if (!isPlain(o.progress)) errors.push("'progress' must be an object.");
+    if (!isPlain(o.days)) errors.push("'days' must be an object.");
+    if (!Array.isArray(o.suspended)) errors.push("'suspended' must be a list of card ids.");
+    if (errors.length) return { ok: false, errors: capErrors(errors) };
+    const pk = Object.keys(o.progress), dk = Object.keys(o.days);
+    if (pk.length > 5000) errors.push('Too many progress entries (limit 5000).');
+    if (dk.length > 3700) errors.push('Too many days of history (limit 3700).');
+    if (o.suspended.length > 5000) errors.push('Too many suspended cards (limit 5000).');
+    if (errors.length) return { ok: false, errors };
+    const prog = Object.create(null), days = Object.create(null), susp = Object.create(null);
+    pk.forEach(id => {
+      if (!ID_RE.test(id)) { errors.push("Progress: invalid card id '" + id.slice(0, 40) + "'"); return; }
+      const rec = validateRecord(o.progress[id], 'Progress ' + id, errors);
+      if (rec) prog[id] = rec;
+    });
+    dk.forEach(d => {
+      if (!isDate(d)) { errors.push("Days: '" + d.slice(0, 20) + "' is not a date like 2026-01-31"); return; }
+      const e = validateDay(o.days[d], 'Day ' + d, errors);
+      if (e) days[d] = e;
+    });
+    o.suspended.forEach((id, i) => {
+      if (typeof id !== 'string' || !ID_RE.test(id)) errors.push('Suspended #' + (i + 1) + ': invalid card id');
+      else susp[id] = 1;
+    });
+    if (errors.length) return { ok: false, errors: capErrors(errors) };
+    return { ok: true, errors: [], data: { prog, days, susp } };
+  }
+
+  /* ---------- persisted state: sanitise / migrate ---------- */
+  function defaultSettings(allDeckIds) {
+    return { newLimit: 10, maxRev: 100, decks: allDeckIds.slice(), cram: false, quizLen: 10, quizTimer: false, quizDecks: allDeckIds.slice() };
+  }
+  function cleanDeckList(v, valid, fallback) {
+    if (!Array.isArray(v)) return fallback.slice();
+    const out = [];
+    v.forEach(d => { if (typeof d === 'string' && valid.has(d) && out.indexOf(d) < 0) out.push(d); });
+    return out;
+  }
+  function sanitizeUserCard(c, deckSet) {
+    if (!isPlain(c)) return null;
+    if (typeof c.id !== 'string' || !ID_RE.test(c.id)) return null;
+    const txt = (v, req) => (typeof v === 'string' && v.length <= MAX_TEXT && (!req || v.trim()) ? v : (req ? null : ''));
+    const front = txt(c.front, true), back = txt(c.back, true);
+    if (front === null || back === null) return null;
+    return {
+      id: c.id, deck: typeof c.deck === 'string' && deckSet.has(c.deck) ? c.deck : 'my',
+      front, back, code: txt(c.code), why: txt(c.why), short: txt(c.short),
+      tags: Array.isArray(c.tags) ? cleanTags(c.tags.filter(t => typeof t === 'string')) : [],
+      difficulty: isInt(c.difficulty, 1, 3) ? c.difficulty : 2
+    };
+  }
+  /* sanitizeState(raw, { builtinIds:Set, deckIds:[...] }) -> a fully valid state, whatever `raw` is. */
+  function sanitizeState(raw, ctx) {
+    const deckSet = new Set(ctx.deckIds);
+    const s = { v: 1, tab: 'review', user: [], seq: 0, prog: Object.create(null), susp: Object.create(null), days: Object.create(null), settings: defaultSettings(ctx.deckIds) };
+    if (!isPlain(raw)) return s;
+    // v1 is the only shape so far; a missing/older/newer `v` is handled best-effort field by field.
+    if (TABS.indexOf(raw.tab) >= 0) s.tab = raw.tab;
+    if (Array.isArray(raw.user)) {
+      const ids = new Set();
+      raw.user.slice(0, MAX_USER_CARDS * 2).forEach(c => {
+        const u = sanitizeUserCard(c, deckSet);
+        if (u && !ids.has(u.id) && !ctx.builtinIds.has(u.id) && s.user.length < MAX_USER_CARDS) { ids.add(u.id); s.user.push(u); }
+      });
+    }
+    s.seq = isInt(raw.seq, 0, 1e9) ? raw.seq : 0;
+    s.user.forEach(u => { const m = /^my-(\d+)$/.exec(u.id); if (m && +m[1] > s.seq) s.seq = +m[1]; });
+    if (isPlain(raw.prog)) {
+      Object.keys(raw.prog).slice(0, 20000).forEach(id => {
+        const r = raw.prog[id];
+        if (!ID_RE.test(id) || !isPlain(r) || !isDate(r.due)) return;
+        const interval = Number.isFinite(r.interval) ? clampInt(r.interval) : 0;
+        const reps = nonNegInt(r.reps);
+        let rev = isInt(r.rev, 0, 100000) ? r.rev : (reps > 0 || interval > 0 ? Math.max(1, reps) : 0);
+        s.prog[id] = { ease: Number.isFinite(r.ease) ? clampEase(r.ease) : EASE0, interval, reps: Math.min(reps, 10000), due: r.due, lapses: Math.min(nonNegInt(r.lapses), 10000), rev, last: isDate(r.last) ? r.last : r.due };
+      });
+    }
+    if (isPlain(raw.susp)) Object.keys(raw.susp).slice(0, 20000).forEach(id => { if (ID_RE.test(id) && raw.susp[id]) s.susp[id] = 1; });
+    if (isPlain(raw.days)) {
+      Object.keys(raw.days).slice(0, 3700).forEach(d => {
+        const e = raw.days[d];
+        if (!isDate(d) || !isPlain(e)) return;
+        const n = isInt(e.n, 0, 1e6) ? e.n : 0, r = Math.min(isInt(e.r, 0, 1e6) ? e.r : 0, n);
+        s.days[d] = { n, r, g: Math.min(isInt(e.g, 0, 1e6) ? e.g : 0, r), nw: Math.min(isInt(e.nw, 0, 1e6) ? e.nw : 0, n) };
+      });
+    }
+    if (isPlain(raw.settings)) {
+      const st = raw.settings, d = s.settings;
+      if (isInt(st.newLimit, 0, 50)) d.newLimit = st.newLimit;
+      if (isInt(st.maxRev, 1, 1000)) d.maxRev = st.maxRev;
+      d.decks = cleanDeckList(st.decks, deckSet, d.decks);
+      d.quizDecks = cleanDeckList(st.quizDecks, deckSet, d.quizDecks);
+      d.cram = st.cram === true;
+      if ([5, 10, 20].indexOf(st.quizLen) >= 0) d.quizLen = st.quizLen;
+      d.quizTimer = st.quizTimer === true;
+    }
+    return s;
+  }
+
+  return {
+    EASE0, EASE_MIN, EASE_MAX, MAX_INTERVAL, MATURE, MAX_TEXT, MAX_USER_CARDS, APP_ID, TABS,
+    dateStr, isDate, dayNum, numToStr, addDays, daysBetween,
+    schedule, previewIntervals, fmtInterval, cardState,
+    calcStreaks, heatmap, heatLevel,
+    mulberry32, hashSeed, seededShuffle,
+    buildQueue, computeStats,
+    shortAnswer, firstSentence, nearDup, answerShape, makeQuestion, buildQuiz,
+    cleanTags, validateCard, validateCardsImport, validateProgressImport, sanitizeState, defaultSettings
+  };
+})();
+
+</script>
+<script id="fc-app">
+(function () {
+'use strict';
+const C = FCCore;
+const KEY = 'code-playground:cards:v1';
+const THEME_KEY = 'code-playground:v1';
+const DECKS = FC_DECKS.concat([{ id: 'my', name: 'My cards' }]);
+const DECK_IDS = DECKS.map(d => d.id);
+const DECK_NAME = {}; DECKS.forEach(d => { DECK_NAME[d.id] = d.name; });
+const BUILTIN_IDS = new Set(FC_CARDS.map(c => c.id));
+const DIFF = { 1: 'Easy', 2: 'Medium', 3: 'Hard' };
+const DIFF_CLS = { 1: 'easy', 2: 'medium', 3: 'hard' };
+const QUIZ_SECONDS = 20;
+const SESSION_GAP = 10; // an "Again" card comes back after about this many other cards
+
+/* ==========================================================================
+   DOM helpers (all card text goes through textContent / text nodes, never innerHTML)
+   ========================================================================== */
+const $ = (s, r) => (r || document).querySelector(s);
+function h(tag, props) {
+  const el = document.createElement(tag);
+  if (props) {
+    for (const k in props) {
+      const v = props[k];
+      if (v === undefined || v === null || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'text') el.textContent = v;
+      else if (k.slice(0, 2) === 'on' && typeof v === 'function') el.addEventListener(k.slice(2), v);
+      else if (k === 'value') el.value = v;
+      else el.setAttribute(k, v === true ? '' : String(v));
+    }
+  }
+  for (let i = 2; i < arguments.length; i++) append(el, arguments[i]);
+  return el;
+}
+function append(el, kid) {
+  if (kid === undefined || kid === null || kid === false) return;
+  if (Array.isArray(kid)) { kid.forEach(k => append(el, k)); return; }
+  el.appendChild(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+}
+function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); return el; }
+function mount(el) { clear(el); for (let i = 1; i < arguments.length; i++) append(el, arguments[i]); return el; }
+const ICONS = {
+  cards: '<rect x="3" y="7" width="13" height="13" rx="2"/><path d="M7 7V5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2h-3"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M20.5 14A8.5 8.5 0 1110 3.5a7 7 0 0010.5 10.5z"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  undo: '<path d="M9 14L4 9l5-5M4 9h11a5 5 0 010 10h-3"/>',
+  download: '<path d="M12 4v11m-5-4.5l5 5 5-5M5 20h14"/>',
+  upload: '<path d="M12 16V5m-5 4.5l5-5 5 5M5 20h14"/>'
+};
+function ic(name, size) {
+  const s = size || 16, span = document.createElement('span');
+  span.style.display = 'inline-flex';
+  span.innerHTML = '<svg viewBox="0 0 24 24" width="' + s + '" height="' + s + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + '</svg>';
+  return span;
+}
+function toast(msg, bad) {
+  const t = h('div', { class: 'toast' + (bad ? ' bad' : ''), text: msg });
+  $('#toasts').appendChild(t);
+  setTimeout(() => t.remove(), 3400);
+}
+let liveTimer = 0;
+function announce(text) {
+  const live = $('#live');
+  live.textContent = '';
+  clearTimeout(liveTimer);
+  liveTimer = setTimeout(() => { live.textContent = text; }, 20);
+}
+
+/* ==========================================================================
+   Storage (every access guarded; falls back to memory)
+   ========================================================================== */
+const mem = {};
+let storageOK = true;
+function lsGet(k) {
+  let v = null;
+  try { v = localStorage.getItem(k); } catch (e) { storageOK = false; }
+  if (v === null && Object.prototype.hasOwnProperty.call(mem, k)) v = mem[k];
+  return v;
+}
+function lsSet(k, v) {
+  mem[k] = v;
+  try { localStorage.setItem(k, v); } catch (e) { storageOK = false; }
+}
+function parseJSONSafe(s) { try { return s ? JSON.parse(s) : null; } catch (e) { return null; } }
+
+let S = C.sanitizeState(parseJSONSafe(lsGet(KEY)), { builtinIds: BUILTIN_IDS, deckIds: DECK_IDS });
+let CARDS = [], BYID = new Map();
+function rebuild() { CARDS = FC_CARDS.concat(S.user); BYID = new Map(CARDS.map(c => [c.id, c])); }
+rebuild();
+function save() {
+  S.v = 1;
+  lsSet(KEY, JSON.stringify(S));
+  $('#storage-warn').hidden = storageOK;
+}
+const today = () => C.dateStr(Date.now());
+const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+
+/* ---------- theme (shares 'code-playground:v1' with the other pages; only `theme` is touched) ---------- */
+function readShared() { const o = parseJSONSafe(lsGet(THEME_KEY)); return o && typeof o === 'object' && !Array.isArray(o) ? o : {}; }
+let theme = (() => { const t = readShared().theme; return t === 'light' || t === 'dark' ? t : null; })();
+function prefersDark() { try { return !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches); } catch (e) { return false; } }
+const isDark = () => (theme ? theme === 'dark' : prefersDark());
+function applyTheme() {
+  if (theme) document.documentElement.dataset.theme = theme; else delete document.documentElement.dataset.theme;
+  const b = $('#theme-btn');
+  mount(b, ic(isDark() ? 'sun' : 'moon', 18));
+  b.title = isDark() ? 'Switch to light theme' : 'Switch to dark theme';
+}
+function toggleTheme() {
+  theme = isDark() ? 'light' : 'dark';
+  const o = readShared(); o.theme = theme;
+  lsSet(THEME_KEY, JSON.stringify(o));
+  applyTheme();
+  $('#storage-warn').hidden = storageOK;
+}
+
+/* ==========================================================================
+   Dialogs (focus trap, Esc closes, focus returns to the opener)
+   ========================================================================== */
+let dialogSeq = 0;
+const modalOpen = () => !!$('#modal-root .overlay');
+const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+function openDialog(opts) {
+  const opener = document.activeElement;
+  const id = 'dlg' + (++dialogSeq);
+  const ov = h('div', { class: 'overlay' });
+  const body = h('div', { class: 'dialog-b' });
+  const foot = h('div', { class: 'dialog-f' });
+  const dlg = h('div', { class: 'dialog' + (opts.narrow ? ' narrow' : ''), role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': id + '-t' },
+    h('div', { class: 'dialog-h' }, h('h2', { id: id + '-t', text: opts.title }),
+      h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Close dialog', onclick: () => api.close() }, ic('x', 18))),
+    body, foot);
+  ov.appendChild(dlg);
+  let closed = false;
+  function onKey(e) {
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); api.close(); return; }
+    if (e.key === 'Tab') {
+      const f = Array.from(dlg.querySelectorAll(FOCUSABLE)).filter(x => !x.closest('[hidden]'));
+      if (!f.length) { e.preventDefault(); return; }
+      const first = f[0], last = f[f.length - 1];
+      if (!dlg.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  }
+  const api = {
+    el: dlg, body, foot,
+    close() {
+      if (closed) return; closed = true;
+      ov.remove(); document.removeEventListener('keydown', onKey, true);
+      const back = opener && document.body.contains(opener) ? opener : $('#main');
+      if (back && back.focus) back.focus();
+      if (opts.onClose) opts.onClose();
+    }
+  };
+  ov.addEventListener('mousedown', e => { if (e.target === ov) api.close(); });
+  document.addEventListener('keydown', onKey, true);
+  opts.build(api);
+  $('#modal-root').appendChild(ov);
+  const first = opts.focus ? opts.focus(api) : dlg.querySelector('input,textarea,select') || dlg.querySelector('.btn.primary') || dlg.querySelector('button');
+  if (first) first.focus();
+  return api;
+}
+function confirmDialog(title, message, okLabel, danger) {
+  return new Promise(resolve => {
+    let done = false;
+    openDialog({
+      title, narrow: true,
+      onClose() { if (!done) resolve(false); },
+      build(api) {
+        api.body.appendChild(h('p', { style: 'margin:0', text: message }));
+        api.foot.appendChild(h('button', { class: 'btn', type: 'button', onclick: () => api.close() }, 'Cancel'));
+        api.foot.appendChild(h('button', { class: 'btn primary' + (danger ? '' : ''), type: 'button', id: 'confirm-ok', onclick: () => { done = true; api.close(); resolve(true); } }, okLabel || 'OK'));
+      },
+      focus(api) { return $('#confirm-ok', api.foot); }
+    });
+  });
+}
+
+/* ==========================================================================
+   Shared card rendering
+   ========================================================================== */
+function codeBlock(text) { return h('pre', { class: 'codeblock', tabindex: '0', 'aria-label': 'Code' }, h('code', { text })); }
+function frontNodes(card) {
+  return [h('div', { class: 'face-text', text: card.front }), card.code ? codeBlock(card.code) : null];
+}
+function backNodes(card) {
+  const nodes = [];
+  if (card.out) {
+    nodes.push(h('div', { class: 'face-text', text: 'Prints:' }));
+    nodes.push(codeBlock(card.out.join('\n')));
+  } else nodes.push(h('div', { class: 'face-text', text: card.back }));
+  if (card.why) nodes.push(h('div', { class: 'why' }, h('strong', { text: 'Why: ' }), card.why));
+  return nodes;
+}
+function backPlain(card) { return (card.out ? 'Prints: ' + card.out.join(', ') : card.back) + (card.why ? '. Why: ' + card.why : ''); }
+function stateLabel(card) {
+  if (S.susp[card.id]) return 'Suspended';
+  const st = C.cardState(S.prog[card.id]);
+  return st === 'new' ? 'New' : st === 'mature' ? 'Mature' : 'Learning';
+}
+function metaPills(card, withState) {
+  return h('div', { class: 'face-meta' },
+    h('span', { class: 'pill', text: DECK_NAME[card.deck] || card.deck }),
+    h('span', { class: 'pill ' + DIFF_CLS[card.difficulty], text: DIFF[card.difficulty] || 'Medium' }),
+    withState ? h('span', { class: 'pill state', text: stateLabel(card) }) : null,
+    card.id.indexOf('my-') === 0 || !BUILTIN_IDS.has(card.id) ? h('span', { class: 'pill custom', text: 'Yours' }) : null);
+}
+function deckChips(selected, counts, onChange, label) {
+  const wrap = h('div', { class: 'chips', role: 'group', 'aria-label': label });
+  const visible = DECKS.filter(d => d.id !== 'my' || S.user.length > 0);
+  visible.forEach(d => {
+    const on = selected.indexOf(d.id) >= 0;
+    wrap.appendChild(h('button', {
+      class: 'chip', type: 'button', 'aria-pressed': on ? 'true' : 'false', 'data-deck': d.id,
+      onclick: () => { const next = on ? selected.filter(x => x !== d.id) : selected.concat([d.id]); onChange(next); }
+    }, d.name + ' (' + (counts[d.id] || 0) + ')'));
+  });
+  wrap.appendChild(h('button', { class: 'btn sm ghost', type: 'button', onclick: () => onChange(visible.map(d => d.id)) }, 'All'));
+  wrap.appendChild(h('button', { class: 'btn sm ghost', type: 'button', onclick: () => onChange([]) }, 'None'));
+  return wrap;
+}
+function deckCounts() { const m = {}; CARDS.forEach(c => { m[c.deck] = (m[c.deck] || 0) + 1; }); return m; }
+
+/* ==========================================================================
+   REVIEW
+   ========================================================================== */
+let RV = { view: 'home' };
+function queueInfo() {
+  const st = S.settings;
+  return C.buildQueue(CARDS, S, today(), { decks: st.decks, newLimit: st.newLimit, maxReviews: st.maxRev, cram: st.cram });
+}
+function updateBadges() {
+  const q = C.buildQueue(CARDS, S, today(), { decks: S.settings.decks, newLimit: S.settings.newLimit, maxReviews: S.settings.maxRev, cram: false });
+  const b = $('#badge-review');
+  b.textContent = String(q.queue.length); b.hidden = q.queue.length === 0;
+  b.setAttribute('aria-label', plural(q.queue.length, 'card') + ' to review');
+  $('#badge-cards').textContent = String(CARDS.length);
+}
+function tile(label, value, sub) {
+  return h('div', { class: 'tile' }, h('div', { class: 'tile-l', text: label }), h('div', { class: 'tile-v', text: String(value) }), sub ? h('div', { class: 'tile-s', text: sub }) : null);
+}
+function numField(label, id, value, min, max, onChange, hint) {
+  const inp = h('input', { class: 'input num', id, type: 'number', min, max, step: 1, value, inputmode: 'numeric' });
+  inp.addEventListener('change', () => {
+    let v = parseInt(inp.value, 10);
+    if (!Number.isFinite(v)) v = value;
+    v = Math.max(min, Math.min(max, v));
+    inp.value = v; onChange(v);
+  });
+  return h('div', { class: 'fld' }, h('label', { for: id, text: label }), inp, hint ? h('span', { class: 'small', text: hint }) : null);
+}
+function heatmapView() {
+  const hm = C.heatmap(S.days, today(), 12);
+  const days = ['Sun', '', 'Tue', '', 'Thu', '', 'Sat'];
+  const grid = h('div', { class: 'hm', role: 'group', 'aria-label': 'Review activity, last 12 weeks' });
+  hm.cells.forEach(c => {
+    const label = c.future ? c.date + ': upcoming' : c.date + ': ' + plural(c.count, 'review');
+    grid.appendChild(h('span', { class: 'hm-c l' + c.level + (c.future ? ' future' : ''), role: 'img', 'aria-label': label, title: label }));
+  });
+  const legend = h('div', { class: 'hm-legend', 'aria-hidden': 'true' }, 'Less');
+  for (let i = 0; i < 5; i++) legend.appendChild(h('span', { class: 'hm-c l' + i }));
+  legend.appendChild(document.createTextNode('More'));
+  return h('section', { class: 'card pad', 'aria-labelledby': 'hm-h' },
+    h('h2', { class: 'sec-h', id: 'hm-h', text: 'Activity, last 12 weeks' }),
+    h('div', { class: 'hm-wrap' }, h('div', { class: 'hm-days', 'aria-hidden': 'true' }, days.map(d => h('span', { text: d }))), grid),
+    h('p', { class: 'small', id: 'hm-summary', style: 'margin:8px 0 0', text: hm.total ? plural(hm.total, 'review') + ' on ' + plural(hm.active, 'active day') + ' in the last 12 weeks.' : 'No reviews yet in the last 12 weeks.' }),
+    legend);
+}
+function deckProgressView(stats) {
+  const sec = h('section', { class: 'card pad', 'aria-labelledby': 'dp-h' }, h('h2', { class: 'sec-h', id: 'dp-h', text: 'Progress by deck' }));
+  DECKS.forEach(d => {
+    const p = stats.perDeck[d.id];
+    if (!p || !p.total) return;
+    const learnedPct = Math.round(p.learned / p.total * 100), maturePct = Math.round(p.mature / p.total * 100);
+    const bar = h('div', { class: 'bar', role: 'progressbar', 'aria-label': d.name + ' progress', 'aria-valuemin': '0', 'aria-valuemax': String(p.total), 'aria-valuenow': String(p.learned), 'aria-valuetext': p.learned + ' of ' + p.total + ' cards learned, ' + p.mature + ' mature' },
+      h('i', { class: 'g', style: 'width:' + maturePct + '%' }), h('i', { class: 'a', style: 'width:' + Math.max(0, learnedPct - maturePct) + '%' }));
+    sec.appendChild(h('div', { class: 'deckrow' }, h('span', { text: d.name }), bar, h('span', { class: 'n', text: p.learned + '/' + p.total + ' learned, ' + p.mature + ' mature' })));
+  });
+  sec.appendChild(h('p', { class: 'small', style: 'margin:8px 0 0', text: 'Learned = reviewed at least once. Mature = next review is 21 or more days away.' }));
+  return sec;
+}
+function homeView() {
+  const st = S.settings, stats = C.computeStats(CARDS, S, today(), st.decks), q = queueInfo(), counts = deckCounts();
+  const rebuildHome = () => { save(); renderReview(); updateBadges(); };
+  const startLabel = (st.cram ? 'Start cram' : 'Start review') + ' · ' + plural(q.queue.length, 'card');
+  let msg = '';
+  if (!q.queue.length) {
+    if (!st.decks.length) msg = 'Select at least one deck to study.';
+    else if (st.cram) msg = 'No cards in the selected decks (suspended cards are skipped).';
+    else if (q.dueTotal > 0 && q.capLeft === 0) msg = 'You have reached today\'s review cap. Raise it below or come back tomorrow.';
+    else if (q.newPool > 0 && q.newLeft === 0) msg = 'Nothing is due, and today\'s new-card limit is used up. Raise it below, or turn on Cram mode.';
+    else msg = 'All caught up. Come back tomorrow, or turn on Cram mode to revisit cards.';
+  }
+  const start = h('button', { class: 'btn primary lg', type: 'button', id: 'start-btn', disabled: q.queue.length === 0, onclick: startSession }, startLabel);
+  return h('div', { class: 'stack' },
+    h('section', { class: 'card pad', 'aria-labelledby': 'today-h' },
+      h('h2', { class: 'sec-h', id: 'today-h', text: 'Today' }),
+      h('div', { class: 'tiles' },
+        tile('Due today', stats.due, st.cram ? 'ignored in cram' : null), tile('New', Math.min(stats.newPool, st.cram ? stats.newPool : Math.max(0, q.newLeft)), 'available today'),
+        tile('Learning', stats.learning, 'under 21 days'), tile('Mature', stats.mature, '21+ days'),
+        tile('Streak', stats.streak, stats.streak === 1 ? 'day' : 'days'), tile('Best streak', stats.longest, stats.longest === 1 ? 'day' : 'days'),
+        tile('Retention', stats.retention === null ? '-' : stats.retention + '%', stats.retention === null ? 'no reviews yet' : 'Good/Easy on ' + plural(stats.reviewsTotal, 'review'))),
+      h('div', { class: 'row' }, start, h('span', { class: 'small', text: 'Keys: Space flips, 1-4 grades, Ctrl/Cmd+Z undoes' })),
+      msg ? h('p', { class: 'msg', id: 'start-msg', text: msg }) : null),
+    h('section', { class: 'card pad', 'aria-labelledby': 'opt-h' },
+      h('h2', { class: 'sec-h', id: 'opt-h', text: 'Session options' }),
+      h('div', { class: 'fld' }, h('span', { text: 'Decks to study' }), deckChips(st.decks, counts, next => { st.decks = next; rebuildHome(); }, 'Decks to study')),
+      h('div', { class: 'opts' },
+        numField('New cards per day (0-50)', 'opt-new', st.newLimit, 0, 50, v => { st.newLimit = v; rebuildHome(); }),
+        numField('Max reviews per day', 'opt-max', st.maxRev, 1, 1000, v => { st.maxRev = v; rebuildHome(); }),
+        h('label', { class: 'check', style: 'margin-bottom:10px' }, h('input', { type: 'checkbox', id: 'opt-cram', checked: st.cram, onchange: e => { st.cram = e.target.checked; rebuildHome(); } }), 'Cram mode (review everything, keep the schedule unchanged)'))),
+    h('div', { class: 'grid-2' }, heatmapView(), deckProgressView(stats)));
+}
+
+function startSession() {
+  const q = queueInfo();
+  if (!q.queue.length) return;
+  RV = { view: 'session', queue: q.queue.slice(), total: q.queue.length, done: 0, flipped: false, cram: S.settings.cram, counts: [0, 0, 0, 0, 0], log: [], undo: [], start: Date.now() };
+  renderReview(); focusFlip(); announceCard();
+}
+function announceCard() {
+  const c = BYID.get(RV.queue[0]);
+  if (c) announce('Card ' + (RV.done + 1) + ' of ' + RV.total + '. Question: ' + c.front + (c.code ? ' (code shown on screen)' : ''));
+}
+function focusFlip() { const b = $('#flip-btn'); if (b) b.focus(); }
+function sessionView() {
+  const id = RV.queue[0], card = BYID.get(id), rec = S.prog[id];
+  const prev = RV.cram ? null : C.previewIntervals(rec, Date.now());
+  const pct = RV.total ? Math.round(RV.done / RV.total * 100) : 0;
+  const names = ['Again', 'Hard', 'Good', 'Easy'];
+  const grades = h('div', { class: 'grades', id: 'grades', role: 'group', 'aria-label': 'Grade your recall', hidden: !RV.flipped },
+    names.map((n, i) => {
+      const iv = prev ? C.fmtInterval(prev[i]) : null;
+      return h('button', { class: 'grade g' + (i + 1), type: 'button', 'data-grade': i + 1, 'aria-label': n + ', key ' + (i + 1) + (iv ? ', next review ' + (iv === 'soon' ? 'later this session' : 'in ' + iv) : ''), onclick: () => gradeCard(i + 1) },
+        h('span', { text: iv ? n + ' · ' + iv : n }), h('small', { class: 'kbd', text: String(i + 1) }));
+    }));
+  const fc = h('div', { class: 'fc' + (RV.flipped ? ' flipped' : ''), id: 'fc' },
+    h('div', { class: 'fc-inner' },
+      h('div', { class: 'face face-front', id: 'face-front', 'aria-hidden': RV.flipped ? 'true' : 'false', inert: RV.flipped }, metaPills(card, true), h('div', { class: 'face-label', text: 'Question' }), frontNodes(card)),
+      h('div', { class: 'face face-back', id: 'face-back', 'aria-hidden': RV.flipped ? 'false' : 'true', inert: !RV.flipped }, metaPills(card, false), h('div', { class: 'face-label', text: 'Answer' }), backNodes(card))));
+  return h('div', { class: 'session' },
+    h('div', { class: 'sess-top' },
+      h('span', { class: 'lbl', id: 'sess-count', text: 'Card ' + (RV.done + 1) + ' of ' + RV.total + ' · ' + RV.queue.length + ' left' + (RV.cram ? ' · cram mode' : '') }),
+      h('div', { class: 'bar grow', role: 'progressbar', 'aria-label': 'Session progress', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(pct) }, h('i', { class: 'a', style: 'width:' + pct + '%' })),
+      h('button', { class: 'btn sm', type: 'button', id: 'undo-btn', disabled: RV.undo.length === 0, onclick: undo }, ic('undo', 14), 'Undo', h('span', { class: 'kbd', text: 'Ctrl+Z' })),
+      h('button', { class: 'btn sm', type: 'button', id: 'end-btn', onclick: endSession }, 'End session')),
+    fc,
+    h('div', { class: 'flip-row' }, h('button', { class: 'btn primary lg', type: 'button', id: 'flip-btn', 'aria-pressed': RV.flipped ? 'true' : 'false', onclick: flip }, RV.flipped ? 'Show question' : 'Show answer', h('span', { class: 'kbd', text: 'Space' }))),
+    grades);
+}
+function flip() {
+  if (RV.view !== 'session') return;
+  RV.flipped = !RV.flipped;
+  const card = BYID.get(RV.queue[0]);
+  $('#fc').classList.toggle('flipped', RV.flipped);
+  $('#face-front').setAttribute('aria-hidden', RV.flipped ? 'true' : 'false');
+  $('#face-back').setAttribute('aria-hidden', RV.flipped ? 'false' : 'true');
+  $('#face-front').toggleAttribute('inert', RV.flipped);
+  $('#face-back').toggleAttribute('inert', !RV.flipped);
+  $('#grades').hidden = !RV.flipped;
+  const fb = $('#flip-btn');
+  fb.setAttribute('aria-pressed', RV.flipped ? 'true' : 'false');
+  fb.firstChild.nodeValue = RV.flipped ? 'Show question' : 'Show answer';
+  announce(RV.flipped ? 'Answer: ' + backPlain(card) : 'Question: ' + card.front);
+}
+function gradeCard(g) {
+  if (RV.view !== 'session' || !RV.flipped) return;
+  const id = RV.queue[0], t = today(), snap = { id, queue: RV.queue.slice(), done: RV.done, counts: RV.counts.slice(), logLen: RV.log.length, key: t, prev: null, day: null };
+  const prevRec = S.prog[id];
+  let interval = 0;
+  if (!RV.cram) {
+    snap.prev = prevRec ? Object.assign({}, prevRec) : null;
+    snap.day = S.days[t] ? Object.assign({}, S.days[t]) : null;
+    const wasNew = !prevRec || !(prevRec.rev > 0);
+    const next = C.schedule(prevRec, g, Date.now());
+    interval = next.interval;
+    S.prog[id] = Object.assign({}, next, { rev: (prevRec ? prevRec.rev | 0 : 0) + 1, last: t });
+    const d = S.days[t] || (S.days[t] = { n: 0, r: 0, g: 0, nw: 0 });
+    d.n++; if (wasNew) d.nw++; else { d.r++; if (g >= 3) d.g++; }
+    save();
+  } else interval = g === 1 ? 0 : 1;
+  RV.undo.push(snap);
+  RV.counts[g]++;
+  RV.log.push({ id, g });
+  RV.queue.shift();
+  if (interval === 0 && (g === 1 || g === 2)) RV.queue.splice(Math.min(SESSION_GAP, RV.queue.length), 0, id);
+  else RV.done++;
+  RV.flipped = false;
+  updateBadges();
+  if (!RV.queue.length) { RV.view = 'summary'; renderReview(); const hd = $('#summary-h'); if (hd) hd.focus(); announce('Session complete. ' + plural(RV.log.length, 'card') + ' reviewed.'); return; }
+  renderReview(); focusFlip(); announceCard();
+}
+function undo() {
+  if (!(RV.view === 'session' || RV.view === 'summary') || !RV.undo.length) return;
+  const u = RV.undo.pop();
+  if (!RV.cram) {
+    if (u.prev) S.prog[u.id] = u.prev; else delete S.prog[u.id];
+    if (u.day) S.days[u.key] = u.day; else delete S.days[u.key];
+    save();
+  }
+  RV.queue = u.queue; RV.done = u.done; RV.counts = u.counts; RV.log.length = u.logLen; RV.flipped = false; RV.view = 'session';
+  updateBadges(); renderReview(); focusFlip(); toast('Undid the last grade');
+}
+function endSession() {
+  if (RV.log.length === 0) { RV = { view: 'home' }; renderReview(); const b = $('#start-btn'); if (b) b.focus(); return; }
+  RV.view = 'summary'; renderReview(); const hd = $('#summary-h'); if (hd) hd.focus();
+}
+function fmtDuration(ms) { const s = Math.max(1, Math.round(ms / 1000)); return s < 60 ? s + 's' : Math.floor(s / 60) + 'm ' + (s % 60) + 's'; }
+function summaryView() {
+  const n = RV.log.length, good = RV.counts[3] + RV.counts[4], pct = n ? Math.round(good / n * 100) : 0;
+  const tomorrow = C.addDays(today(), 1);
+  const dueTomorrow = CARDS.filter(c => !S.susp[c.id] && S.prog[c.id] && S.prog[c.id].due <= tomorrow).length;
+  const stats = C.computeStats(CARDS, S, today(), S.settings.decks);
+  return h('section', { class: 'card pad final', 'aria-labelledby': 'summary-h' },
+    h('h2', { id: 'summary-h', tabindex: '-1', text: 'Session complete' }),
+    h('div', { class: 'big', text: pct + '% recalled' }),
+    h('p', { class: 'muted', style: 'margin:0', text: plural(n, 'grade') + ' in ' + fmtDuration(Date.now() - RV.start) + (RV.cram ? ' (cram mode: schedule not changed)' : '') }),
+    h('div', { class: 'summary-grid' },
+      tile('Again', RV.counts[1]), tile('Hard', RV.counts[2]), tile('Good', RV.counts[3]), tile('Easy', RV.counts[4]),
+      tile('Streak', stats.streak, stats.streak === 1 ? 'day' : 'days'), RV.cram ? null : tile('Due by tomorrow', dueTomorrow)),
+    h('div', { class: 'row', style: 'justify-content:center' },
+      h('button', { class: 'btn', type: 'button', id: 'undo-btn', disabled: RV.undo.length === 0, onclick: undo }, ic('undo', 14), 'Undo last grade'),
+      h('button', { class: 'btn primary', type: 'button', id: 'done-btn', onclick: () => { RV = { view: 'home' }; renderReview(); updateBadges(); const b = $('#start-btn'); if (b) b.focus(); else $('#panel-review').focus(); } }, 'Back to overview')));
+}
+function pruneSessions() {
+  // cards can be deleted from the Cards tab while a session or quiz is open
+  if (RV.view === 'session' || RV.view === 'summary') {
+    RV.queue = RV.queue.filter(id => BYID.has(id));
+    RV.undo = RV.undo.filter(u => BYID.has(u.id));
+    if (RV.view === 'session' && !RV.queue.length) RV.view = RV.log.length ? 'summary' : 'home';
+  }
+  if ((QZ.view === 'run' || QZ.view === 'results') && QZ.questions.some(q => !BYID.has(q.cardId) || q.options.some(o => !BYID.has(o.cardId)))) {
+    stopTimer(); QZ = { view: 'setup' };
+  }
+}
+function renderReview() {
+  pruneSessions();
+  const p = $('#panel-review');
+  mount(p, RV.view === 'session' ? sessionView() : RV.view === 'summary' ? summaryView() : homeView());
+}
+
+/* ==========================================================================
+   QUIZ
+   ========================================================================== */
+let QZ = { view: 'setup' };
+let quizTimerId = 0;
+function stopTimer() {
+  if (quizTimerId) { clearInterval(quizTimerId); quizTimerId = 0; }
+  if (QZ.view === 'run' && QZ.timer && QZ.picked === null && QZ.deadline) QZ.remain = Math.max(0, QZ.deadline - Date.now());
+}
+function startTimer() {
+  if (quizTimerId) { clearInterval(quizTimerId); quizTimerId = 0; }
+  if (!QZ.timer || QZ.picked !== null || QZ.view !== 'run') return;
+  QZ.deadline = Date.now() + (QZ.remain == null ? QUIZ_SECONDS * 1000 : QZ.remain);
+  const tick = () => {
+    const left = Math.max(0, QZ.deadline - Date.now());
+    const el = $('#qz-time'), bar = $('#qz-bar');
+    if (el) { el.textContent = Math.ceil(left / 1000) + 's'; el.parentNode.classList.toggle('low', left <= 5000); }
+    if (bar) bar.style.width = Math.round(left / (QUIZ_SECONDS * 1000) * 100) + '%';
+    if (left <= 0) { clearInterval(quizTimerId); quizTimerId = 0; choose(-1); }
+  };
+  quizTimerId = setInterval(tick, 250);
+  tick();
+}
+function quizSetupView() {
+  const st = S.settings, counts = deckCounts();
+  const pool = CARDS.filter(c => st.quizDecks.indexOf(c.deck) >= 0);
+  const seg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Number of questions' },
+    [5, 10, 20].map(n => h('button', { type: 'button', 'aria-pressed': st.quizLen === n ? 'true' : 'false', 'data-len': n, onclick: () => { st.quizLen = n; save(); renderQuiz(); } }, String(n))));
+  return h('section', { class: 'card pad stack', 'aria-labelledby': 'qs-h' },
+    h('h2', { class: 'sec-h', id: 'qs-h', style: 'margin:0', text: 'New quiz' }),
+    h('p', { class: 'muted', style: 'margin:0', text: 'Multiple-choice rounds built from your cards. Wrong options come from other cards in the same deck.' }),
+    h('div', { class: 'fld', style: 'margin:0' }, h('span', { text: 'Decks' }), deckChips(st.quizDecks, counts, next => { st.quizDecks = next; save(); renderQuiz(); }, 'Quiz decks')),
+    h('div', { class: 'opts' },
+      h('div', { class: 'fld' }, h('span', { id: 'qlen-l', text: 'Questions' }), seg),
+      h('label', { class: 'check', style: 'margin-bottom:10px' }, h('input', { type: 'checkbox', id: 'qz-timer-opt', checked: st.quizTimer, onchange: e => { st.quizTimer = e.target.checked; save(); } }), 'Timer: ' + QUIZ_SECONDS + ' seconds per question')),
+    h('div', { class: 'row' },
+      h('button', { class: 'btn primary lg', type: 'button', id: 'qz-start', disabled: pool.length < 1, onclick: () => startQuiz() }, 'Start quiz'),
+      h('span', { class: 'small', text: pool.length ? plural(pool.length, 'card') + ' in the selected decks. Keys: 1-4 choose, Enter for next.' : 'Select at least one deck.' })));
+}
+function seedFromUrl() { try { const v = new URLSearchParams(location.search).get('seed'); return v === null || v === '' ? null : v; } catch (e) { return null; } }
+function startQuiz(cardsOverride) {
+  const st = S.settings;
+  const pool = cardsOverride || CARDS.filter(c => st.quizDecks.indexOf(c.deck) >= 0);
+  const decks = cardsOverride ? DECK_IDS : st.quizDecks;
+  const len = cardsOverride ? cardsOverride.length : st.quizLen;
+  const qz = C.buildQuiz(pool, CARDS, { decks, length: len, seed: seedFromUrl() });
+  if (!qz.questions.length) { toast('Not enough cards to build a quiz. Add more cards or pick more decks.', true); return; }
+  QZ = { view: 'run', seed: qz.seed, questions: qz.questions, i: 0, picked: null, score: 0, streak: 0, best: 0, answers: [], timer: cardsOverride ? false : st.quizTimer, remain: null };
+  if (cardsOverride) QZ.timer = st.quizTimer;
+  renderQuiz(); startTimer();
+}
+function quizRunView() {
+  const q = QZ.questions[QZ.i], card = BYID.get(q.cardId), answered = QZ.picked !== null;
+  const opts = h('div', { class: 'qopts', role: 'group', 'aria-labelledby': 'qz-question' },
+    q.options.map((o, i) => {
+      const cls = ['qopt'];
+      if (card.out) cls.push('mono');
+      let mark = '';
+      if (answered) {
+        if (o.correct) { cls.push('right'); mark = i === QZ.picked ? 'Correct (your answer)' : 'Correct answer'; }
+        else if (i === QZ.picked) { cls.push('wrong'); mark = 'Your answer (wrong)'; }
+      }
+      return h('button', { class: cls.join(' '), type: 'button', 'data-opt': i, 'aria-disabled': answered ? 'true' : 'false', onclick: () => choose(i) },
+        h('span', { class: 'qtxt' }, h('span', { class: 'qn', text: String(i + 1) }), h('span', { class: 'qt', text: o.text })),
+        mark ? h('span', { class: 'mark', text: mark }) : null);
+    }));
+  let feedback = null;
+  if (answered) {
+    const ok = QZ.picked === q.answer;
+    feedback = h('div', { class: 'feedback ' + (ok ? 'ok' : 'no'), id: 'qz-feedback' },
+      h('div', { class: 'verdict', text: QZ.picked === -1 ? 'Time is up.' : ok ? 'Correct!' : 'Not quite.' }),
+      h('div', { class: 'face-label', text: 'Explanation' }), backNodes(card));
+  }
+  const timerEl = QZ.timer ? h('div', { class: 'timer', 'aria-label': 'Time left for this question' }, h('span', { id: 'qz-time', text: answered ? '' : QUIZ_SECONDS + 's' }), h('div', { class: 'bar' }, h('i', { class: 'a', id: 'qz-bar', style: 'width:100%' }))) : null;
+  const last = QZ.i === QZ.questions.length - 1;
+  return h('div', { class: 'stack' },
+    h('div', { class: 'quiz-top' },
+      h('span', { class: 'score', id: 'qz-score', text: 'Question ' + (QZ.i + 1) + ' of ' + QZ.questions.length + ' · Score ' + QZ.score + ' · Streak ' + QZ.streak }),
+      answered ? null : timerEl),
+    h('div', { class: 'card qcard', id: 'qz-card', tabindex: '-1' },
+      h('div', { class: 'face-meta' }, h('span', { class: 'pill', text: DECK_NAME[card.deck] || card.deck }), h('span', { class: 'pill ' + DIFF_CLS[card.difficulty], text: DIFF[card.difficulty] })),
+      h('div', { class: 'face-label', text: 'Question' }),
+      h('div', { class: 'qtext', id: 'qz-question', text: card.front }), card.code ? codeBlock(card.code) : null,
+      opts, feedback,
+      answered ? h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'button', id: 'qz-next', onclick: nextQuestion }, last ? 'See results' : 'Next question', h('span', { class: 'kbd', text: 'Enter' }))) : null));
+}
+function choose(i) {
+  if (QZ.view !== 'run' || QZ.picked !== null) return;
+  const q = QZ.questions[QZ.i];
+  if (i >= q.options.length) return;
+  stopTimer();
+  QZ.picked = i;
+  const ok = i === q.answer;
+  QZ.answers.push({ cardId: q.cardId, pick: i, correct: ok });
+  if (ok) { QZ.score++; QZ.streak++; if (QZ.streak > QZ.best) QZ.best = QZ.streak; } else QZ.streak = 0;
+  renderQuiz();
+  const nb = $('#qz-next'); if (nb) nb.focus();
+  const card = BYID.get(q.cardId);
+  announce((i === -1 ? 'Time is up. ' : ok ? 'Correct. ' : 'Incorrect. ') + 'Answer: ' + q.options[q.answer].text + '. ' + (card.why || ''));
+}
+function nextQuestion() {
+  if (QZ.view !== 'run' || QZ.picked === null) return;
+  if (QZ.i >= QZ.questions.length - 1) { QZ.view = 'results'; stopTimer(); renderQuiz(); const hd = $('#qr-h'); if (hd) hd.focus(); announce('Quiz finished. You scored ' + QZ.score + ' out of ' + QZ.questions.length + '.'); return; }
+  QZ.i++; QZ.picked = null; QZ.remain = null;
+  renderQuiz(); startTimer();
+  const qc = $('#qz-card'); if (qc) qc.focus();
+  const card = BYID.get(QZ.questions[QZ.i].cardId);
+  announce('Question ' + (QZ.i + 1) + ' of ' + QZ.questions.length + ': ' + card.front);
+}
+function queueNow(ids) {
+  const t = today(); let added = 0, skipped = 0;
+  ids.forEach(id => {
+    if (S.susp[id]) { skipped++; return; }
+    const r = S.prog[id];
+    if (r) { if (r.due > t) r.due = t; }
+    else S.prog[id] = { ease: C.EASE0, interval: 0, reps: 0, due: t, lapses: 0, rev: 0, last: t };
+    added++;
+  });
+  save(); updateBadges();
+  return { added, skipped };
+}
+function quizResultsView() {
+  const n = QZ.questions.length, pct = Math.round(QZ.score / n * 100);
+  const wrong = QZ.answers.filter(a => !a.correct);
+  const wrongIds = Array.from(new Set(wrong.map(a => a.cardId)));
+  const list = wrong.map(a => {
+    const card = BYID.get(a.cardId), q = QZ.questions.find(x => x.cardId === a.cardId);
+    return h('div', { class: 'mistake' },
+      h('div', { class: 'face-text', style: 'font-size:14px', text: card.front }), card.code ? codeBlock(card.code) : null,
+      h('div', { class: 'small' }, h('strong', { text: 'Your answer: ' }), a.pick === -1 ? 'no answer (time ran out)' : q.options[a.pick].text),
+      h('div', { class: 'small' }, h('strong', { text: 'Correct answer: ' }), q.options[q.answer].text));
+  });
+  return h('div', { class: 'stack' },
+    h('section', { class: 'card pad final', 'aria-labelledby': 'qr-h' },
+      h('h2', { id: 'qr-h', tabindex: '-1', text: 'Quiz results' }),
+      h('div', { class: 'big', id: 'qr-score', text: QZ.score + ' / ' + n + ' (' + pct + '%)' }),
+      h('p', { class: 'muted', style: 'margin:0', text: 'Best streak of correct answers: ' + QZ.best }),
+      h('div', { class: 'row', style: 'justify-content:center;margin-top:14px' },
+        h('button', { class: 'btn', type: 'button', id: 'qr-queue', disabled: wrongIds.length === 0, onclick: e => { const r = queueNow(wrongIds); e.currentTarget.disabled = true; toast(plural(r.added, 'card') + ' added to your review queue' + (r.skipped ? ' (' + r.skipped + ' suspended skipped)' : '')); } }, 'Add to review queue'),
+        h('button', { class: 'btn', type: 'button', id: 'qr-retry', disabled: wrongIds.length === 0, onclick: () => startQuiz(wrongIds.map(id => BYID.get(id))) }, 'Retry mistakes'),
+        h('button', { class: 'btn primary', type: 'button', id: 'qr-new', onclick: () => { QZ = { view: 'setup' }; renderQuiz(); const b = $('#qz-start'); if (b) b.focus(); } }, 'New quiz'))),
+    wrong.length ? h('section', { class: 'card pad', 'aria-labelledby': 'mk-h' }, h('h2', { class: 'sec-h', id: 'mk-h', text: 'Mistakes (' + wrong.length + ')' }), list)
+      : h('section', { class: 'card pad' }, h('p', { style: 'margin:0', text: 'Perfect round. No mistakes to review.' })));
+}
+function renderQuiz() {
+  pruneSessions();
+  const p = $('#panel-quiz');
+  mount(p, QZ.view === 'run' ? quizRunView() : QZ.view === 'results' ? quizResultsView() : quizSetupView());
+}
+
+/* ==========================================================================
+   CARDS: browse, filter, add/edit, import/export, reset
+   ========================================================================== */
+const CF = { q: '', deck: '', tag: '', diff: '', state: '', limit: 40, open: new Set() };
+function cardMatches(c) {
+  if (CF.deck && c.deck !== CF.deck) return false;
+  if (CF.diff && String(c.difficulty) !== CF.diff) return false;
+  if (CF.tag && (c.tags || []).indexOf(CF.tag) < 0) return false;
+  if (CF.state) {
+    const susp = !!S.susp[c.id], st = C.cardState(S.prog[c.id]), rec = S.prog[c.id];
+    if (CF.state === 'suspended' ? !susp : susp) return false;
+    if (CF.state === 'due' && !(rec && rec.due <= today())) return false;
+    if (['new', 'learning', 'mature'].indexOf(CF.state) >= 0 && st !== CF.state) return false;
+  }
+  if (CF.q) {
+    const hay = (c.front + ' ' + c.back + ' ' + (c.code || '') + ' ' + (c.why || '') + ' ' + (c.tags || []).join(' ')).toLowerCase();
+    if (hay.indexOf(CF.q.toLowerCase()) < 0) return false;
+  }
+  return true;
+}
+function isUserCard(c) { return !BUILTIN_IDS.has(c.id); }
+function cardRow(c) {
+  const user = isUserCard(c), susp = !!S.susp[c.id];
+  const title = (c.front.split('\n')[0] || c.front) + (c.code ? '  [code]' : '');
+  const det = h('details', { class: 'crow', 'data-id': c.id });
+  if (CF.open.has(c.id)) det.open = true;
+  det.addEventListener('toggle', () => { if (det.open) CF.open.add(c.id); else CF.open.delete(c.id); });
+  const actions = h('div', { class: 'crow-actions' },
+    h('button', { class: 'btn sm', type: 'button', 'data-act': 'suspend', onclick: () => { if (susp) delete S.susp[c.id]; else S.susp[c.id] = 1; save(); updateBadges(); renderCardsList(); toast(susp ? 'Card resumed' : 'Card suspended'); } }, susp ? 'Unsuspend' : 'Suspend'),
+    h('button', { class: 'btn sm', type: 'button', 'data-act': 'reset', disabled: !S.prog[c.id], onclick: () => { delete S.prog[c.id]; save(); updateBadges(); renderCardsList(); toast('Progress reset for this card'); } }, 'Reset progress'),
+    user ? h('button', { class: 'btn sm', type: 'button', 'data-act': 'edit', onclick: () => cardDialog(c) }, 'Edit') : null,
+    user ? h('button', { class: 'btn sm danger', type: 'button', 'data-act': 'delete', onclick: () => deleteUserCard(c) }, 'Delete') : null);
+  const rec = S.prog[c.id];
+  det.appendChild(h('summary', null,
+    h('span', { class: 'crow-title', text: title }),
+    h('span', { class: 'crow-meta' },
+      h('span', { class: 'pill', text: DECK_NAME[c.deck] || c.deck }), h('span', { class: 'pill ' + DIFF_CLS[c.difficulty], text: DIFF[c.difficulty] }),
+      h('span', { class: 'pill ' + (susp ? 'susp' : 'state'), text: stateLabel(c) }), user ? h('span', { class: 'pill custom', text: 'Yours' }) : null)));
+  det.appendChild(h('div', { class: 'crow-body' },
+    h('div', { class: 'face-label', text: 'Question' }), frontNodes(c),
+    h('div', { class: 'face-label', text: 'Answer' }), backNodes(c),
+    (c.tags && c.tags.length) ? h('div', { class: 'crow-meta' }, c.tags.map(t => h('span', { class: 'pill', text: '#' + t }))) : null,
+    rec && rec.rev > 0 ? h('div', { class: 'small', text: 'Next review ' + rec.due + ' · interval ' + rec.interval + 'd · ease ' + rec.ease.toFixed(2) + ' · ' + plural(rec.lapses, 'lapse') + ' · ' + plural(rec.rev, 'review') } ) : h('div', { class: 'small', text: 'Not reviewed yet.' }),
+    actions));
+  return det;
+}
+function renderCardsList() {
+  const box = $('#cards-list'); if (!box) return;
+  const all = CARDS.filter(cardMatches);
+  const shown = all.slice(0, CF.limit);
+  mount(box);
+  $('#cards-count').textContent = 'Showing ' + shown.length + ' of ' + all.length + ' matching cards (' + CARDS.length + ' total)';
+  if (!all.length) box.appendChild(h('div', { class: 'empty' }, h('strong', { text: 'No cards match' }), 'Try clearing the search or filters.'));
+  shown.forEach(c => box.appendChild(cardRow(c)));
+  if (all.length > shown.length) box.appendChild(h('div', { class: 'row', style: 'justify-content:center;margin-top:8px' }, h('button', { class: 'btn', type: 'button', id: 'cards-more', onclick: () => { CF.limit += 40; renderCardsList(); } }, 'Show ' + Math.min(40, all.length - shown.length) + ' more')));
+}
+function cardsView() {
+  const tags = Array.from(new Set([].concat.apply([], CARDS.map(c => c.tags || [])))).sort();
+  const sel = (id, label, value, options, key) => h('select', { class: 'select', id, 'aria-label': label, onchange: e => { CF[key] = e.target.value; CF.limit = 40; renderCardsList(); } },
+    options.map(o => h('option', { value: o[0], selected: o[0] === value }, o[1])));
+  return h('div', { class: 'stack' },
+    h('section', { class: 'card pad toolbar', 'aria-label': 'Find and manage cards' },
+      h('div', { class: 'row' },
+        h('div', { style: 'flex:1;min-width:200px' }, h('input', { class: 'input', id: 'cf-q', type: 'search', placeholder: 'Search cards', 'aria-label': 'Search cards', value: CF.q, oninput: e => { CF.q = e.target.value; CF.limit = 40; renderCardsList(); } })),
+        h('button', { class: 'btn primary', type: 'button', id: 'add-card-btn', onclick: () => cardDialog(null) }, ic('plus', 15), 'Add card')),
+      h('div', { class: 'filters' },
+        sel('cf-deck', 'Filter by deck', CF.deck, [['', 'All decks']].concat(DECKS.map(d => [d.id, d.name])), 'deck'),
+        sel('cf-tag', 'Filter by tag', CF.tag, [['', 'All tags']].concat(tags.map(t => [t, '#' + t])), 'tag'),
+        sel('cf-diff', 'Filter by difficulty', CF.diff, [['', 'All levels'], ['1', 'Easy'], ['2', 'Medium'], ['3', 'Hard']], 'diff'),
+        sel('cf-state', 'Filter by state', CF.state, [['', 'Any state'], ['new', 'New'], ['learning', 'Learning'], ['mature', 'Mature'], ['due', 'Due today'], ['suspended', 'Suspended']], 'state')),
+      h('div', { class: 'small', id: 'cards-count', 'aria-live': 'polite' })),
+    h('div', { id: 'cards-list' }),
+    h('section', { class: 'card pad', 'aria-labelledby': 'data-h' },
+      h('h2', { class: 'sec-h', id: 'data-h', text: 'Your data' }),
+      h('div', { class: 'row' },
+        h('button', { class: 'btn', type: 'button', id: 'export-cards', onclick: exportCards }, ic('download', 14), 'Export my cards'),
+        h('button', { class: 'btn', type: 'button', id: 'import-cards', onclick: () => importDialog('cards') }, ic('upload', 14), 'Import cards'),
+        h('button', { class: 'btn', type: 'button', id: 'export-progress', onclick: exportProgress }, ic('download', 14), 'Export progress'),
+        h('button', { class: 'btn', type: 'button', id: 'import-progress', onclick: () => importDialog('progress') }, ic('upload', 14), 'Import progress'),
+        h('span', { class: 'spacer' }),
+        h('button', { class: 'btn danger', type: 'button', id: 'reset-all', onclick: resetAll }, 'Reset all progress'))));
+}
+function renderCards() { mount($('#panel-cards'), cardsView()); renderCardsList(); }
+
+/* ---------- add / edit dialog ---------- */
+function splitTags(s) { return String(s || '').split(',').map(t => t.trim()).filter(Boolean); }
+function cardDialog(existing) {
+  const editing = !!existing, refs = {};
+  let dlgApi = null;
+  const field = (key, label, control, hint) => {
+    refs[key] = control;
+    return h('div', { class: 'fld' }, h('label', { for: 'cf-' + key, text: label }), control, hint ? h('span', { class: 'small', id: 'hint-' + key, text: hint }) : null, h('div', { class: 'ferr', id: 'err-' + key, role: 'alert' }));
+  };
+  const deckSel = h('select', { class: 'select', id: 'cf-deck-f' }, DECKS.map(d => h('option', { value: d.id, selected: (existing ? existing.deck : 'my') === d.id }, d.name)));
+  refs.deck = deckSel;
+  const controls = [
+    h('div', { class: 'fld' }, h('label', { for: 'cf-deck-f', text: 'Deck' }), deckSel),
+    field('front', 'Front (question) *', h('textarea', { class: 'textarea', id: 'cf-front', rows: 3, 'aria-required': 'true', value: existing ? existing.front : '' })),
+    field('code', 'Code snippet (optional)', h('textarea', { class: 'textarea mono', id: 'cf-code', rows: 4, spellcheck: 'false', value: existing ? existing.code : '' }), 'Shown in a code block under the question.'),
+    field('back', 'Back (answer) *', h('textarea', { class: 'textarea', id: 'cf-back', rows: 3, 'aria-required': 'true', value: existing ? existing.back : '' })),
+    field('why', 'Why (optional, one line)', h('input', { class: 'input', id: 'cf-why', type: 'text', value: existing ? existing.why : '' })),
+    field('tags', 'Tags (optional, comma separated)', h('input', { class: 'input', id: 'cf-tags', type: 'text', value: existing ? (existing.tags || []).join(', ') : '' }), 'Up to ' + 10 + ' tags, each up to 30 characters.'),
+    h('div', { class: 'fld' }, h('label', { for: 'cf-diff-f', text: 'Difficulty' }), (refs.diff = h('select', { class: 'select', id: 'cf-diff-f' }, [1, 2, 3].map(n => h('option', { value: n, selected: (existing ? existing.difficulty : 2) === n }, DIFF[n])))))
+  ];
+  function validate() {
+    const v = { front: refs.front.value, code: refs.code.value, back: refs.back.value, why: refs.why.value, tags: splitTags(refs.tags.value) };
+    const errs = {};
+    const M = C.MAX_TEXT;
+    if (!v.front.trim()) errs.front = 'Front is required.'; else if (v.front.length > M) errs.front = 'Front must be at most ' + M + ' characters.';
+    if (!v.back.trim()) errs.back = 'Back is required.'; else if (v.back.length > M) errs.back = 'Back must be at most ' + M + ' characters.';
+    if (v.code.length > M) errs.code = 'Code must be at most ' + M + ' characters.';
+    if (v.why.length > M) errs.why = 'Why must be at most ' + M + ' characters.';
+    if (v.tags.length > 10) errs.tags = 'Use at most 10 tags.'; else if (v.tags.some(t => t.length > 30)) errs.tags = 'Each tag must be at most 30 characters.';
+    ['front', 'code', 'back', 'why', 'tags'].forEach(k => {
+      const e = $('#err-' + k, dlgApi.el); e.textContent = errs[k] || '';
+      if (errs[k]) { refs[k].setAttribute('aria-invalid', 'true'); refs[k].setAttribute('aria-describedby', 'err-' + k); } else { refs[k].removeAttribute('aria-invalid'); refs[k].removeAttribute('aria-describedby'); }
+    });
+    const first = ['front', 'code', 'back', 'why', 'tags'].find(k => errs[k]);
+    return { ok: !first, first, v };
+  }
+  function submit() {
+    const r = validate();
+    if (!r.ok) { refs[r.first].focus(); return; }
+    const data = { deck: refs.deck.value, front: r.v.front.trim(), code: r.v.code.replace(/\s+$/, ''), back: r.v.back.trim(), why: r.v.why.trim(), short: '', tags: C.cleanTags(r.v.tags), difficulty: parseInt(refs.diff.value, 10) };
+    if (editing) {
+      Object.assign(existing, data);
+    } else {
+      if (S.user.length >= C.MAX_USER_CARDS) { $('#form-error', dlgApi.el).textContent = 'You can keep at most ' + C.MAX_USER_CARDS + ' cards of your own.'; return; }
+      let id; do { id = 'my-' + (++S.seq); } while (BYID.has(id));
+      S.user.push(Object.assign({ id }, data));
+    }
+    save(); rebuild(); updateBadges();
+    dlgApi.close();
+    renderCards();
+    toast(editing ? 'Card updated' : 'Card added to ' + (DECK_NAME[data.deck]));
+  }
+  dlgApi = openDialog({
+    title: editing ? 'Edit card' : 'Add card',
+    build(api) {
+      const form = h('form', { novalidate: 'novalidate', onsubmit: e => { e.preventDefault(); submit(); } }, controls);
+      api.body.appendChild(form);
+      api.foot.appendChild(h('span', { class: 'form-error', id: 'form-error', role: 'alert' }));
+      api.foot.appendChild(h('button', { class: 'btn', type: 'button', onclick: () => api.close() }, 'Cancel'));
+      api.foot.appendChild(h('button', { class: 'btn primary', type: 'button', id: 'save-card', onclick: submit }, editing ? 'Save changes' : 'Add card'));
+    },
+    focus() { return refs.front; }
+  });
+  return dlgApi;
+}
+async function deleteUserCard(c) {
+  if (!(await confirmDialog('Delete this card?', 'This removes the card and its review progress. It cannot be undone.', 'Delete', true))) return;
+  S.user = S.user.filter(x => x.id !== c.id); delete S.prog[c.id]; delete S.susp[c.id];
+  CF.open.delete(c.id);
+  save(); rebuild(); updateBadges(); renderCards(); toast('Card deleted');
+}
+
+/* ---------- import / export ---------- */
+function download(name, obj) {
+  const text = JSON.stringify(obj, null, 2);
+  try {
+    const blob = new Blob([text], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = h('a', { href: url, download: name });
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast('Downloaded ' + name);
+  } catch (e) {
+    openDialog({
+      title: 'Copy your export', build(api) {
+        api.body.appendChild(h('p', { class: 'small', text: 'Downloading is not available here. Copy this text and save it as ' + name + '.' }));
+        api.body.appendChild(h('textarea', { class: 'textarea mono', rows: 12, readonly: 'readonly', 'aria-label': 'Export text', value: text }));
+        api.foot.appendChild(h('button', { class: 'btn primary', type: 'button', onclick: () => api.close() }, 'Done'));
+      }
+    });
+  }
+}
+function exportCards() {
+  if (!S.user.length) { toast('You have no cards of your own to export yet.', true); return; }
+  download('flashcards-my-cards.json', { app: C.APP_ID, kind: 'cards', version: 1, exported: new Date(Date.now()).toISOString(), cards: S.user });
+}
+function exportProgress() {
+  download('flashcards-progress.json', { app: C.APP_ID, kind: 'progress', version: 1, exported: new Date(Date.now()).toISOString(), progress: S.prog, days: S.days, suspended: Object.keys(S.susp) });
+}
+function importDialog(kind) {
+  const isCards = kind === 'cards';
+  let ta, errBox, dlg;
+  function run() {
+    const text = ta.value;
+    mount(errBox);
+    let errors = [];
+    if (isCards) {
+      const takenIds = new Set(CARDS.map(c => c.id));
+      const r = C.validateCardsImport(text, { takenIds, decks: new Set(DECK_IDS), existing: S.user.length });
+      if (r.ok) {
+        r.cards.forEach(c => {
+          let id = c.id; if (!id) { do { id = 'my-' + (++S.seq); } while (BYID.has(id) || S.user.some(u => u.id === id)); }
+          S.user.push({ id, deck: c.deck, front: c.front.trim(), back: c.back.trim(), code: c.code, why: c.why, short: c.short, tags: c.tags, difficulty: c.difficulty });
+        });
+        save(); rebuild(); updateBadges(); dlg.close(); renderCards(); toast('Imported ' + plural(r.cards.length, 'card')); return;
+      }
+      errors = r.errors;
+    } else {
+      const r = C.validateProgressImport(text);
+      if (r.ok) {
+        S.prog = r.data.prog; S.days = r.data.days; S.susp = r.data.susp;
+        save(); updateBadges(); dlg.close(); renderCards(); renderReview(); toast('Progress imported'); return;
+      }
+      errors = r.errors;
+    }
+    errBox.appendChild(h('div', { class: 'ferr', role: 'alert', text: 'Nothing was imported. Please fix ' + plural(errors.length, 'problem') + ':' }));
+    errBox.appendChild(h('ul', { class: 'errlist' }, errors.map(e => h('li', { text: e }))));
+    ta.focus();
+  }
+  dlg = openDialog({
+    title: isCards ? 'Import cards' : 'Import progress',
+    build(api) {
+      ta = h('textarea', { class: 'textarea mono', id: 'import-text', rows: 10, spellcheck: 'false', 'aria-label': isCards ? 'Cards JSON' : 'Progress JSON' });
+      errBox = h('div', { id: 'import-errors', 'aria-live': 'polite' });
+      const file = h('input', { type: 'file', id: 'import-file', accept: '.json,application/json', 'aria-label': 'Choose a JSON file', onchange: e => {
+        const f = e.target.files && e.target.files[0]; if (!f) return;
+        if (f.size > 2000000) { mount(errBox, h('div', { class: 'ferr', role: 'alert', text: 'That file is too large (over 2 MB).' })); return; }
+        const done = t => { ta.value = t; mount(errBox); };
+        try { if (f.text) f.text().then(done); else { const fr = new FileReader(); fr.onload = () => done(String(fr.result)); fr.readAsText(f); } } catch (err) { mount(errBox, h('div', { class: 'ferr', role: 'alert', text: 'Could not read that file.' })); }
+      } });
+      api.body.appendChild(h('p', { class: 'small', style: 'margin-top:0', text: isCards ? 'Paste JSON exported by "Export my cards" or choose a file. Cards are checked strictly and nothing is imported if any card is invalid.' : 'Paste JSON exported by "Export progress" or choose a file. This replaces your current review progress, history and suspended cards.' }));
+      api.body.appendChild(h('div', { class: 'fld' }, h('label', { for: 'import-file', text: 'File' }), file));
+      api.body.appendChild(h('div', { class: 'fld' }, h('label', { for: 'import-text', text: 'or paste JSON' }), ta));
+      api.body.appendChild(errBox);
+      api.foot.appendChild(h('button', { class: 'btn', type: 'button', onclick: () => api.close() }, 'Cancel'));
+      api.foot.appendChild(h('button', { class: 'btn primary', type: 'button', id: 'import-run', onclick: run }, isCards ? 'Import cards' : 'Replace progress'));
+    },
+    focus() { return ta; }
+  });
+}
+async function resetAll() {
+  if (!(await confirmDialog('Reset all progress?', 'This clears every card\'s schedule, your review history, streaks and stats. Your own cards and suspended cards are kept.', 'Reset progress', true))) return;
+  S.prog = Object.create(null); S.days = Object.create(null);
+  RV = { view: 'home' };
+  save(); updateBadges(); renderCardsList(); renderReview(); toast('All progress reset');
+}
+
+/* ==========================================================================
+   Tabs + global keys + init
+   ========================================================================== */
+function setTab(name, focusTab) {
+  if (C.TABS.indexOf(name) < 0) name = 'review';
+  if (S.tab === 'quiz' && name !== 'quiz') stopTimer();
+  S.tab = name; save();
+  C.TABS.forEach(t => {
+    const tab = $('#tab-' + t), panel = $('#panel-' + t), on = t === name;
+    tab.setAttribute('aria-selected', on ? 'true' : 'false'); tab.tabIndex = on ? 0 : -1; panel.hidden = !on;
+  });
+  if (name === 'review') renderReview(); else if (name === 'quiz') { renderQuiz(); startTimer(); } else renderCards();
+  updateBadges();
+  if (focusTab) $('#tab-' + name).focus();
+}
+function onKeydown(e) {
+  if (modalOpen()) return;
+  const t = e.target, tag = t && t.tagName;
+  const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable);
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod && !e.altKey && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
+    if (typing) return;
+    if (S.tab === 'review' && (RV.view === 'session' || RV.view === 'summary') && RV.undo.length) { e.preventDefault(); undo(); }
+    return;
+  }
+  if (mod || e.altKey || typing) return;
+  if (S.tab === 'review' && RV.view === 'session') {
+    if (e.key === ' ' || e.key === 'Enter') {
+      if (tag === 'BUTTON' || tag === 'A' || tag === 'SUMMARY') return; // native activation handles it
+      e.preventDefault(); if (!e.repeat) flip(); return;
+    }
+    if (/^[1-4]$/.test(e.key) && RV.flipped) { e.preventDefault(); gradeCard(+e.key); }
+  } else if (S.tab === 'quiz' && QZ.view === 'run') {
+    if (/^[1-4]$/.test(e.key) && QZ.picked === null) { e.preventDefault(); choose(+e.key - 1); }
+    else if (e.key === 'Enter' && QZ.picked !== null) { if (tag === 'BUTTON' || tag === 'A') return; e.preventDefault(); nextQuestion(); }
+  }
+}
+function init() {
+  mount($('#logo'), ic('cards', 18));
+  $('#theme-btn').addEventListener('click', toggleTheme);
+  applyTheme();
+  try { if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (!theme) applyTheme(); }); } catch (e) {}
+  const tabs = C.TABS;
+  tabs.forEach((t, i) => {
+    const b = $('#tab-' + t);
+    b.addEventListener('click', () => setTab(t));
+    b.addEventListener('keydown', e => {
+      let j = -1;
+      if (e.key === 'ArrowRight') j = (i + 1) % tabs.length; else if (e.key === 'ArrowLeft') j = (i + tabs.length - 1) % tabs.length;
+      else if (e.key === 'Home') j = 0; else if (e.key === 'End') j = tabs.length - 1;
+      if (j >= 0) { e.preventDefault(); setTab(tabs[j], true); }
+    });
+  });
+  document.addEventListener('keydown', onKeydown);
+  window.addEventListener('pagehide', () => { stopTimer(); });
+  save();
+  setTab(S.tab);
+}
+init();
+})();
+
+</script>
+<script src="levelup-nav.js"></script>
+</body>
+</html>

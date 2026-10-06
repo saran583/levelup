@@ -1,0 +1,1165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Big-O - Levelup</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f5f8; --panel:#ffffff; --panel-2:#f1f3f7; --border:#e1e4ea; --text:#1a1e27; --muted:#667085;
+  --accent:#4f46e5; --accent-h:#4338ca; --accent-soft:#eceeff; --on-accent:#ffffff;
+  --good:#137a4b; --good-bg:#e5f6ed; --bad:#c0362c; --bad-bg:#fdecea; --warn:#9a5b06; --warn-bg:#fff3de;
+  --code-bg:#fbfbfd; --gutter:#f1f3f7; --shadow:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.06);
+  --mono: ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+  /* colour-blind-safe curve colours (Okabe-Ito based), one per complexity class */
+  --c1:#009e73; --c2:#0072b2; --c3:#2b90c8; --c4:#b87d00; --c5:#d55e00; --c6:#b5548f;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+    --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+    --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+    --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+    --c1:#2fc79a; --c2:#4aa3e8; --c3:#8fd6f7; --c4:#f2b632; --c5:#f2803a; --c6:#e58fc0;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+  --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+  --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+  --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+  --c1:#2fc79a; --c2:#4aa3e8; --c3:#8fd6f7; --c4:#f2b632; --c5:#f2803a; --c6:#e58fc0;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{min-height:100vh;background:var(--bg);color:var(--text);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono)}
+code{font-family:var(--mono);font-size:.9em;background:var(--panel-2);border:1px solid var(--border);border-radius:5px;padding:1px 5px}
+.sr-only{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---- header ---- */
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:8px 16px;min-height:56px;background:var(--panel);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--accent);color:var(--on-accent)}
+.brand-name{font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.spacer{flex:1}
+.nav{display:flex;gap:2px;min-width:0;overflow-x:auto;scrollbar-width:thin;margin-left:8px}
+.nav a{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;color:var(--muted);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap}
+.nav a:hover{background:var(--panel-2);color:var(--text)}
+.nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+
+/* ---- shared controls (same as index.html) ---- */
+.btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel);font-weight:600;font-size:13px;white-space:nowrap;transition:background .15s,border-color .15s,box-shadow .15s}
+.btn:hover:not(:disabled){background:var(--panel-2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover:not(:disabled){background:var(--accent-h);border-color:var(--accent-h)}
+.btn.danger{color:var(--bad)}
+.btn.sm{height:28px;padding:0 10px;font-size:12px}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover:not(:disabled){background:var(--panel-2)}
+.icon-btn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--panel-2);color:var(--text)}
+.input,.select,.textarea{width:100%;border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:7px 10px;min-height:34px;transition:border-color .15s,box-shadow .15s}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.select{padding-right:6px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+.pill{display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:99px;font-size:11px;font-weight:600;background:var(--panel-2);color:var(--muted)}
+.pill.easy{background:var(--good-bg);color:var(--good)}
+.pill.medium{background:var(--warn-bg);color:var(--warn)}
+.pill.hard{background:var(--bad-bg);color:var(--bad)}
+.tabs{display:flex;gap:2px;flex-wrap:wrap}
+.tab{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-weight:600;font-size:13px}
+.tab:hover{background:var(--panel-2);color:var(--text)}
+.tab[aria-selected="true"]{background:var(--accent-soft);color:var(--accent)}
+.seg{display:inline-flex;padding:3px;border-radius:9px;background:var(--panel-2);border:1px solid var(--border);gap:2px}
+.seg button{border:0;background:transparent;border-radius:7px;padding:5px 14px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--accent);box-shadow:var(--shadow)}
+.kbd{font-family:var(--mono);font-size:10px;opacity:.85;border:1px solid currentColor;border-radius:4px;padding:0 4px;margin:0 1px}
+.bar{height:6px;background:var(--panel-2);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--good);border-radius:99px;transition:width .3s}
+.spinner{width:12px;height:12px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--accent);animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fade{from{opacity:0}}
+#toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;z-index:60}
+.toast{background:var(--text);color:var(--bg);padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);font-weight:600;font-size:13px;animation:fade .2s;max-width:340px}
+.toast.bad{background:var(--bad);color:#fff}
+
+/* ---- page ---- */
+.page{max-width:1080px;margin:0 auto;padding:16px 16px 56px;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.intro h1{font-size:22px;line-height:1.3;margin:6px 0 4px;letter-spacing:-.01em}
+.intro p{margin:0;color:var(--muted);max-width:70ch}
+.sec{padding:18px 20px;min-width:0}
+.sec h2{font-size:17px;line-height:1.3;margin:0 0 4px;letter-spacing:-.01em}
+.sec h3{font-size:13px;margin:0 0 6px}
+.lead{margin:0 0 14px;color:var(--muted);max-width:75ch}
+.note{font-size:12.5px;color:var(--muted);margin:8px 0}
+.small{font-size:12px;color:var(--muted)}
+.lbl{display:block;font-size:12px;font-weight:600;color:var(--muted);margin:0 0 4px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:99px;border:1px solid var(--border);background:var(--panel);font-weight:600;font-size:12.5px;color:var(--muted)}
+.chip:hover{background:var(--panel-2)}
+.chip[aria-pressed="true"]{color:var(--text);background:var(--panel-2);border-color:var(--muted)}
+.chip[aria-pressed="false"]{text-decoration:line-through}
+.chip[aria-pressed="false"] .sw{opacity:.35}
+.sw{display:inline-block;width:20px;height:0;border-top:3px solid var(--sw,var(--accent));flex:none;vertical-align:middle}
+.sw.dash{border-top-style:dashed}
+.slider-row{display:grid;grid-template-columns:auto minmax(0,1fr) 4ch;gap:12px;align-items:center;margin-bottom:10px}
+.slider-row label{font-weight:600}
+.slider-row output{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent);height:24px;margin:0}
+.chart-wrap{position:relative;border:1px solid var(--border);border-radius:10px;background:var(--code-bg);overflow:hidden}
+canvas.chart{display:block;width:100%;height:clamp(240px,44vw,360px);touch-action:pan-y}
+canvas.chart:focus-visible{outline-offset:-2px}
+.readout{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 0 4px;font-size:12.5px;align-items:center}
+.readout .ro-n{font-weight:700}
+.ro{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.ro i{width:10px;height:10px;border-radius:3px;background:var(--sw,var(--accent));flex:none}
+.tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin-top:8px;-webkit-overflow-scrolling:touch;max-width:100%}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
+.tbl th{text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--panel-2);padding:8px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl tbody th{text-transform:none;letter-spacing:0;font-size:13px;font-weight:700;color:var(--text);background:transparent;white-space:nowrap}
+.tbl td,.tbl tbody th{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+.tbl tbody tr:last-child td,.tbl tbody tr:last-child th{border-bottom:0}
+.tbl td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl.wide{min-width:720px}
+.tbl .sw{margin-right:8px;width:16px}
+.cx{display:inline-flex;align-items:center;padding:0 7px;height:20px;border-radius:6px;font:600 12px var(--mono);white-space:nowrap;background:var(--warn-bg);color:var(--warn)}
+.cx.good{background:var(--good-bg);color:var(--good)}
+.cx.bad{background:var(--bad-bg);color:var(--bad)}
+.cxn{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.tab-panel{margin-top:12px}
+.patterns{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:12px}
+.pat{border:1px solid var(--border);border-radius:10px;padding:12px;background:var(--panel);min-width:0;display:grid;gap:8px;align-content:start}
+.pat-h{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.pat-h b{font-size:13px}
+.pat p{margin:0;font-size:12.5px;color:var(--muted)}
+.codeblock{margin:0;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--code-bg);font:12.5px/1.6 var(--mono);overflow:auto;white-space:pre;tab-size:2}
+.codeblock code{background:none;border:0;padding:0;font-size:inherit}
+
+/* try your code */
+.ex-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
+.ex-row .lbl{margin:0 4px 0 0}
+.textarea.code{font:13px/1.6 var(--mono);min-height:230px;resize:vertical;white-space:pre;overflow:auto;tab-size:2;background:var(--code-bg)}
+.textarea.gen{font:13px/1.5 var(--mono);min-height:64px;resize:vertical;white-space:pre;overflow:auto;background:var(--code-bg)}
+.hint{margin:6px 0 12px;font-size:12px;color:var(--muted)}
+.form-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-bottom:4px}
+.fld{margin-bottom:8px;min-width:0}
+.run-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
+.msg{margin:10px 0;padding:10px 12px;border-radius:10px;background:var(--panel-2);font-size:13px;display:flex;gap:8px;align-items:flex-start}
+.msg.bad{background:var(--bad-bg);color:var(--bad)}
+.msg.warn{background:var(--warn-bg);color:var(--warn)}
+.msg.ok{background:var(--good-bg);color:var(--good)}
+.msg .spinner{margin-top:4px;flex:none}
+.prog{margin:8px 0 4px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.stat{border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--panel)}
+.stat-l{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.stat-v{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:2px;word-break:break-word}
+.explain{border:1px solid var(--border);border-radius:10px;padding:12px 14px;background:var(--panel-2);font-size:13.5px}
+.explain p{margin:0 0 8px}.explain p:last-child{margin:0}
+.res-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 8px;font-size:12px;color:var(--muted)}
+
+/* quiz */
+.quiz-top{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.score{font-weight:700}
+.qopts{display:grid;gap:8px;margin:12px 0;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+.qopt{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel);font:600 13px var(--mono)}
+.qopt:hover:not([aria-disabled="true"]){background:var(--panel-2)}
+.qopt[aria-disabled="true"]{cursor:default}
+.qopt.right{border-color:var(--good);background:var(--good-bg);color:var(--good)}
+.qopt.wrong{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+.qopt .mark{font:700 11px var(--sans)}
+.q-final{text-align:center;padding:14px 8px}
+.q-final .big{font-size:28px;font-weight:700;margin:4px 0}
+
+@media (max-width:720px){
+  .topbar{flex-wrap:wrap;padding:8px 16px 6px}
+  .nav{order:5;width:100%;margin-left:0;padding-bottom:2px}
+}
+@media (max-width:640px){
+  .form-grid{grid-template-columns:minmax(0,1fr)}
+  .sec{padding:14px}
+  .slider-row{grid-template-columns:auto minmax(0,1fr) 3.4ch;gap:8px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" id="logo"></span>
+    <span class="brand-name">Levelup</span>
+  </div>
+  <nav class="nav" aria-label="Levelup pages" data-levelup-nav></nav>
+  <div class="spacer"></div>
+  <button class="icon-btn" id="theme-btn" aria-label="Toggle light/dark theme"></button>
+</header>
+
+<main class="page" id="main">
+  <div class="intro">
+    <h1>Big-O explorer</h1>
+    <p>Big-O describes how the work a piece of code does <em>grows</em> as its input grows. Play with the curves, keep the cheat sheets handy, then measure your own function and see which curve it follows.</p>
+  </div>
+
+  <!-- ============ 1. Growth chart ============ -->
+  <section class="card sec" aria-labelledby="h-growth">
+    <h2 id="h-growth">How fast do things grow?</h2>
+    <p class="lead">Drag <b>n</b> to zoom the chart. Hover, touch, or use the arrow keys on the chart to read every curve at one point.</p>
+
+    <div class="controls">
+      <div class="chips" id="chips" role="group" aria-label="Show or hide curves"></div>
+      <div class="seg" role="group" aria-label="Y-axis scale">
+        <button type="button" data-yscale="cap" aria-pressed="true">Capped</button>
+        <button type="button" data-yscale="log" aria-pressed="false">Log scale</button>
+      </div>
+    </div>
+
+    <div class="slider-row">
+      <label for="n-range">Input size n</label>
+      <input type="range" id="n-range" min="1" max="100" value="20" step="1">
+      <output id="n-out" for="n-range">20</output>
+    </div>
+
+    <div class="chart-wrap" id="growth-wrap">
+      <canvas class="chart" id="growth-canvas" tabindex="0" role="img"
+        aria-label="Line chart of operations versus input size for the selected complexity classes. Focus the chart and use the left and right arrow keys to read values."
+        aria-describedby="growth-summary"></canvas>
+    </div>
+    <p class="note" id="y-note"></p>
+    <div class="readout" id="readout"></div>
+    <p class="sr-only" id="growth-summary"></p>
+
+    <div class="tablewrap" tabindex="0" role="region" aria-label="Operation counts and estimated times for the chosen n">
+      <table class="tbl wide">
+        <caption class="sr-only" id="ops-caption">Operation counts</caption>
+        <thead><tr><th scope="col">Class</th><th scope="col">Operations</th><th scope="col">Time at 1 billion ops/s</th><th scope="col">In plain English</th></tr></thead>
+        <tbody id="ops-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 2. Cheat sheets ============ -->
+  <section class="card sec" aria-labelledby="h-cheat">
+    <h2 id="h-cheat">Cheat sheets</h2>
+    <p class="lead">Quick reference for the things you will meet in interviews and exams.</p>
+    <div class="tabs" id="cheat-tabs" role="tablist" aria-label="Cheat sheets">
+      <button class="tab" role="tab" id="tab-sort" aria-controls="panel-sort" aria-selected="true" tabindex="0">Sorting</button>
+      <button class="tab" role="tab" id="tab-ds" aria-controls="panel-ds" aria-selected="false" tabindex="-1">Data structures</button>
+      <button class="tab" role="tab" id="tab-spot" aria-controls="panel-spot" aria-selected="false" tabindex="-1">Spot it in code</button>
+    </div>
+    <div class="tab-panel" id="panel-sort" role="tabpanel" aria-labelledby="tab-sort"></div>
+    <div class="tab-panel" id="panel-ds" role="tabpanel" aria-labelledby="tab-ds" hidden></div>
+    <div class="tab-panel" id="panel-spot" role="tabpanel" aria-labelledby="tab-spot" hidden></div>
+  </section>
+
+  <!-- ============ 3. Try your code ============ -->
+  <section class="card sec" id="try" aria-labelledby="h-try">
+    <h2 id="h-try">Try your code</h2>
+    <p class="lead">Paste a JavaScript function. It is run at growing input sizes inside a sandboxed Web Worker (never on this page) and timed. A 12 second limit stops runaway code.</p>
+
+    <div class="ex-row" role="group" aria-label="Load an example">
+      <span class="lbl" aria-hidden="true">Examples</span>
+      <button type="button" class="btn sm" data-ex="linear">Linear scan</button>
+      <button type="button" class="btn sm" data-ex="pairs">Nested-loop pair search</button>
+      <button type="button" class="btn sm" data-ex="binary">Binary search</button>
+      <button type="button" class="btn sm" data-ex="sort">Sort-based</button>
+    </div>
+
+    <label class="lbl" for="code">Your function</label>
+    <textarea class="textarea code" id="code" spellcheck="false" wrap="off" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+    <p class="hint"><span class="kbd">Tab</span> inserts 2 spaces. Press <span class="kbd">Esc</span> then <span class="kbd">Tab</span> to move focus out. <span class="kbd">Ctrl</span>+<span class="kbd">Enter</span> measures.</p>
+
+    <div class="form-grid">
+      <div class="fld">
+        <label class="lbl" for="fn-name">Function name</label>
+        <input class="input mono" id="fn-name" type="text" autocomplete="off" spellcheck="false" placeholder="detected from your code">
+      </div>
+      <div class="fld">
+        <label class="lbl" for="in-type">Input type</label>
+        <select class="select" id="in-type">
+          <option value="array">array of numbers (n items)</option>
+          <option value="string">string of length n</option>
+          <option value="number">number n</option>
+          <option value="sorted">sorted array of numbers</option>
+          <option value="worst">array of numbers for worst-case search (target not present)</option>
+          <option value="custom">Custom generator</option>
+        </select>
+      </div>
+    </div>
+    <div class="fld" id="gen-fld" hidden>
+      <label class="lbl" for="gen-src">Custom generator: a function of n that returns the list of arguments</label>
+      <textarea class="textarea gen" id="gen-src" spellcheck="false" wrap="off" placeholder="(n) => [Array.from({length: n}, (_, i) => i), 42]"></textarea>
+    </div>
+    <p class="hint" id="type-hint"></p>
+
+    <div class="run-row">
+      <button type="button" class="btn primary" id="measure-btn">Measure</button>
+      <button type="button" class="btn danger" id="stop-btn" hidden>Stop</button>
+    </div>
+    <div class="prog" id="prog" hidden>
+      <div class="bar" role="progressbar" aria-label="Measurement progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="prog-fill" style="width:0%"></i></div>
+    </div>
+    <div id="try-msg" role="status" aria-live="polite"></div>
+
+    <div id="res" hidden>
+      <div class="res-legend" id="res-legend"></div>
+      <div class="chart-wrap"><canvas class="chart" id="res-canvas" role="img" aria-label="Log-log chart of measured time against input size, with reference lines for O(n), O(n log n) and O(n squared)" aria-describedby="res-summary"></canvas></div>
+      <p class="sr-only" id="res-summary"></p>
+      <div id="analysis" hidden>
+        <div class="stats">
+          <div class="stat"><div class="stat-l">Growth exponent</div><div class="stat-v" id="st-slope">-</div></div>
+          <div class="stat"><div class="stat-l">Looks like</div><div class="stat-v" id="st-class">-</div></div>
+          <div class="stat"><div class="stat-l">Sizes measured</div><div class="stat-v" id="st-count">-</div></div>
+        </div>
+        <div class="explain" id="explain"></div>
+      </div>
+      <div class="tablewrap" tabindex="0" role="region" aria-label="Measured times">
+        <table class="tbl">
+          <caption class="sr-only">Measured time per call for each input size</caption>
+          <thead><tr><th scope="col">n</th><th scope="col">Time per call</th></tr></thead>
+          <tbody id="res-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <p class="note"><b>Be honest with yourself:</b> timings are noisy (other tabs, CPU speed changes, JIT warm-up, coarse browser timers), so the fitted class is a <em>trend, not a proof</em>. O(1) vs O(log n) and O(n) vs O(n log n) sit very close together. Always confirm by reading the code.</p>
+  </section>
+
+  <!-- ============ 4. Quiz ============ -->
+  <section class="card sec" aria-labelledby="h-quiz">
+    <h2 id="h-quiz">Quiz me</h2>
+    <p class="lead">Six quick questions. What is the time complexity of each snippet?</p>
+    <div class="quiz-top">
+      <span class="score" id="q-score" aria-live="polite"></span>
+      <button type="button" class="btn sm" id="q-restart">Restart</button>
+    </div>
+    <div id="q-body"></div>
+  </section>
+</main>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+'use strict';
+/*@@PURE-BEGIN*/
+/* ==========================================================================
+   Pure logic (no DOM): formatting, classification, curves, worker source
+   ========================================================================== */
+const SUPMAP={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻'};
+const sup=s=>String(s).replace(/[0-9-]/g,c=>SUPMAP[c]);
+const commas=s=>String(s).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const trimNum=v=>String(Math.round(v*100)/100);
+function sig(v){ return v>=100?String(Math.round(v)):v>=10?String(Math.round(v*10)/10):String(Math.round(v*100)/100); }
+function sci(x){
+  if(!(x>0)) return '0';
+  let e=Math.floor(Math.log10(x)), m=x/Math.pow(10,e);
+  m=Math.round(m*100)/100;
+  if(m>=10){ m=1; e++; }
+  return trimNum(m)+'×10'+sup(e);
+}
+/* operation counts: exact-ish below 10^15, scientific above */
+function fmtOps(x){
+  if(!isFinite(x)) return '∞';
+  if(x>=1e15) return sci(x);
+  if(x>=1000) return commas(Math.round(x));
+  return trimNum(x);
+}
+const YEAR=31557600, UNIVERSE_YEARS=1.38e10;
+const UNITS=[['ns','ns',1e-9,1000],['µs','µs',1e-6,1000],['ms','ms',1e-3,1000],['s','s',1,60],['min','min',60,60],['hour','hours',3600,24],['day','days',86400,365]];
+/* seconds -> "664 ns", "1.5 ms", "4 min", "3.2 years", ">10^30 years" */
+function humanTime(sec){
+  if(!isFinite(sec)) return '>10^30 years';
+  if(!(sec>0)) return '0 ns';
+  for(const [sg,pl,f,max] of UNITS){
+    const s=sig(sec/f);
+    if(Number(s)<max) return s+' '+(s==='1'?sg:pl);
+  }
+  const y=sec/YEAR;
+  if(y>1e30) return '>10^30 years';
+  if(y<1e6){ const s=y<1000?sig(y):commas(Math.round(y)); return s+' '+(s==='1'?'year':'years'); }
+  return sci(y)+' years';
+}
+const olderThanUniverse=sec=>sec/YEAR>UNIVERSE_YEARS;
+const fmtMs=ms=>humanTime(ms/1000);
+const fmtN=n=>n>=1e6?trimNum(n/1e6)+'M':n>=1e3?trimNum(n/1e3)+'k':String(Math.round(n));
+function fmtAxis(v){
+  if(v>=1e6){ const e=Math.round(Math.log10(v)); return Math.abs(v-Math.pow(10,e))<v*1e-9?'10'+sup(e):sci(v); }
+  if(v>=1e3) return trimNum(v/1e3)+'k';
+  return trimNum(v);
+}
+
+/* least-squares fit of ln(time) against ln(n): slope is the growth exponent */
+function fitSlope(points){
+  const p=(points||[]).filter(q=>q&&q.n>0&&q.ms>0&&isFinite(q.ms));
+  if(p.length<2) return null;
+  const xs=p.map(q=>Math.log(q.n)), ys=p.map(q=>Math.log(q.ms));
+  const k=p.length, mx=xs.reduce((a,b)=>a+b,0)/k, my=ys.reduce((a,b)=>a+b,0)/k;
+  let sxx=0,sxy=0,syy=0;
+  for(let i=0;i<k;i++){ sxx+=(xs[i]-mx)**2; sxy+=(xs[i]-mx)*(ys[i]-my); syy+=(ys[i]-my)**2; }
+  if(sxx===0) return null;
+  const slope=sxy/sxx, intercept=my-slope*mx;
+  return {slope, intercept, r2: syy===0?1:(sxy*sxy)/(sxx*syy), count:k};
+}
+function classify(s){
+  if(s<0.15) return {key:'o1',label:'O(1)'};
+  if(s<0.45) return {key:'ologn',label:'O(log n)'};
+  if(s<1.2)  return {key:'on',label:'O(n)'};
+  if(s<1.5)  return {key:'onlogn',label:'O(n log n)'};
+  if(s<2.5)  return {key:'on2',label:'O(n²)'};
+  if(s<3.5)  return {key:'on3',label:'O(n³)'};
+  return {key:'exp',label:'exponential or worse'};
+}
+function caveat(s){
+  if(s<0.45) return 'Very flat curves are hard to label: O(1) and O(log n) look alike in real measurements, because timers and CPU caches add more wobble than a handful of extra steps.';
+  if(s>=1.05&&s<1.35) return 'O(n) and O(n log n) sit close together. A well-known n log n algorithm such as sorting usually reads 1.1 to 1.3 here, so check the code before deciding.';
+  return '';
+}
+const CLASS_TEXT={
+  o1:'Constant time: the cost does not depend on the input size. Doubling n changes nothing.',
+  ologn:'Logarithmic time: each time the input doubles, the work grows by just one small step. This is the signature of halving the problem (binary search).',
+  on:'Linear time: the work grows in step with n. Twice the data takes about twice as long.',
+  onlogn:'Linearithmic time: a bit worse than linear. This is where efficient sorting algorithms live.',
+  on2:'Quadratic time: doubling n makes it about 4 times slower, typically from a loop nested inside a loop. Fine for hundreds of items, painful for hundreds of thousands.',
+  on3:'Cubic time: doubling n makes it about 8 times slower, typically three nested loops. Only practical for small inputs.',
+  exp:'Exponential or worse: every extra bit of input multiplies the work. Beyond a few dozen items it will not finish in any reasonable time.'
+};
+/* how much slower is class `key` at n2 compared with n1 */
+function classRatio(key,n2,n1){
+  const nl=n=>n*Math.log2(Math.max(n,2));
+  switch(key){
+    case 'o1': return 1;
+    case 'ologn': return Math.log2(Math.max(n2,2))/Math.log2(Math.max(n1,2));
+    case 'on': return n2/n1;
+    case 'onlogn': return nl(n2)/nl(n1);
+    case 'on2': return (n2/n1)**2;
+    case 'on3': return (n2/n1)**3;
+    default: return null;
+  }
+}
+/* estimated ms at `target` n, anchored on the largest measured point */
+function extrapolate(key,points,target){
+  const p=(points||[]).filter(q=>q.ms>0);
+  if(!p.length) return null;
+  const last=p.reduce((a,b)=>b.n>a.n?b:a);
+  const r=classRatio(key,target,last.n);
+  return r==null?null:last.ms*r;
+}
+/* growth curves for the chart + table */
+const CLASSES=[
+  {key:'o1',    label:'O(1)',       f:n=>1,               cvar:'--c1',dash:[],     plain:'Same effort however big the input. Like looking up a word when you already know its page number.'},
+  {key:'ologn', label:'O(log n)',   f:n=>Math.log2(n),    cvar:'--c2',dash:[7,4],  plain:'Halve the problem each step. Like finding a name in a phone book by opening it in the middle: doubling the book adds just one step.'},
+  {key:'on',    label:'O(n)',       f:n=>n,               cvar:'--c3',dash:[],     plain:'Look at every item once. Like reading every page to find a quote: twice the pages, twice the time.'},
+  {key:'onlogn',label:'O(n log n)', f:n=>n*Math.log2(n),  cvar:'--c4',dash:[7,4],  plain:'Split in halves, then do linear work at every level. Like sorting a deck by halving, sorting, and merging.'},
+  {key:'on2',   label:'O(n²)', f:n=>n*n,             cvar:'--c5',dash:[],     plain:'Every item meets every other item. Like a party where everyone shakes hands with everyone: double the guests, four times the handshakes.'},
+  {key:'exp',   label:'O(2ⁿ)', f:n=>Math.pow(2,n),   cvar:'--c6',dash:[2,3,8,3],plain:'Every extra item doubles the work. Like trying every combination on a lock where each added dial doubles the options.'}
+];
+
+function detectName(code){
+  const src=String(code||'').replace(/\/\*[\s\S]*?\*\//g,'').replace(/(^|[^:\\])\/\/.*$/gm,'$1');
+  let m=/(?:^|[^\w$.])function\s*\*?\s*([A-Za-z_$][\w$]*)\s*\(/.exec(src);
+  if(m) return m[1];
+  m=/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:function\b|\([^)]*\)\s*=>|[A-Za-z_$][\w$]*\s*=>)/.exec(src);
+  return m?m[1]:'';
+}
+function niceTicks(lo,hi,count,int){
+  const span=hi-lo; if(!(span>0)) return [lo];
+  const raw=span/Math.max(1,count), p=Math.pow(10,Math.floor(Math.log10(raw))), m=raw/p;
+  let step=(m<=1?1:m<=2?2:m<=5?5:10)*p; if(int) step=Math.max(1,Math.round(step));
+  const out=[];
+  for(let v=Math.ceil(lo/step-1e-9)*step; v<=hi+step*1e-9; v+=step) out.push(Math.round(v*1e9)/1e9+0);
+  return out;
+}
+function logTicks(lo,hi,mants){
+  const out=[];
+  for(let k=Math.floor(Math.log10(lo)); k<=Math.ceil(Math.log10(hi)); k++)
+    for(const m of mants){ const v=m*Math.pow(10,k); if(v>=lo*(1-1e-9)&&v<=hi*(1+1e-9)) out.push(v); }
+  return out;
+}
+
+/* ---- Web Worker body. Stringified and run from a Blob: never eval'd on the page ---- */
+function workerMain(){
+  var NAME=/^[A-Za-z_$][\w$]*$/;
+  function emsg(e){ return e&&e.name&&e.message!==undefined ? e.name+': '+e.message : String(e); }
+  function fail(kind,message,n){ var m={t:'error',kind:kind,message:message}; if(n!==undefined) m.n=n; postMessage(m); }
+  function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; var t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+  function same(a,b){
+    if(Object.is(a,b)) return true;
+    if(typeof a!=='object'||typeof b!=='object'||!a||!b) return false;
+    var ar=Array.isArray(a);
+    if(ar!==Array.isArray(b)) return false;
+    if(ar){ if(a.length!==b.length) return false; for(var i=0;i<a.length;i++) if(!same(a[i],b[i])) return false; return true; }
+    if(Object.getPrototypeOf(a)!==Object.prototype||Object.getPrototypeOf(b)!==Object.prototype) return false;
+    var ka=Object.keys(a), kb=Object.keys(b);
+    if(ka.length!==kb.length) return false;
+    for(var j=0;j<ka.length;j++){ if(!Object.prototype.hasOwnProperty.call(b,ka[j])||!same(a[ka[j]],b[ka[j]])) return false; }
+    return true;
+  }
+  var GENS={
+    array:function(n){ var r=rng(n+1), a=[]; for(var i=0;i<n;i++) a.push(Math.floor(r()*1e6)); return [a]; },
+    string:function(n){ var r=rng(n+7), a=[]; for(var i=0;i<n;i++) a.push(String.fromCharCode(97+Math.floor(r()*26))); return [a.join('')]; },
+    number:function(n){ return [n]; },
+    sorted:function(n){ var a=[]; for(var i=0;i<n;i++) a.push(i*2); return [a]; },
+    worst:function(n){ var a=[]; for(var i=0;i<n;i++) a.push(i*2); return [a,-1]; }
+  };
+  var sink;
+  self.onmessage=function(e){ run(e.data).catch(function(x){ fail('internal',emsg(x)); }); };
+
+  async function run(d){
+    var fn=String(d.fn||'').trim();
+    if(!NAME.test(fn)) return fail('name','"'+fn+'" is not a valid function name. Use letters, digits, _ or $.');
+    var f;
+    try{ f=new Function(String(d.code)+'\n;return typeof '+fn+'==="function" ? '+fn+' : undefined;')(); }
+    catch(x){ return fail('syntax','Your code could not be loaded: '+emsg(x)); }
+    if(!f) return fail('missing','I could not find a function called "'+fn+'". Declare it like: function '+fn+'(arr) { ... }');
+
+    var gen;
+    if(d.gen&&typeof d.gen.custom==='string'){
+      try{ gen=new Function('return ('+d.gen.custom.replace(/[;\s]+$/,'')+'\n)')(); }
+      catch(x){ return fail('generator','Your generator could not be parsed: '+emsg(x)); }
+      if(typeof gen!=='function') return fail('generator','The custom generator must be a function like (n) => [arg1, arg2].');
+    }else{
+      gen=GENS[d.gen&&d.gen.type];
+      if(!gen) return fail('generator','Unknown input type.');
+    }
+
+    async function measure(n){
+      var base;
+      try{ base=gen(n); }catch(x){ throw {kind:'generator',message:'Your generator threw an error at n = '+n+': '+emsg(x),n:n}; }
+      if(!Array.isArray(base)) throw {kind:'generator',message:'The generator must return an array of arguments, for example (n) => [arr, target]. It returned '+(base===null?'null':typeof base)+'.',n:n};
+      var canClone=true;
+      function mk(){
+        if(canClone){ try{ return structuredClone(base); }catch(x){ canClone=false; } }
+        return gen(n);
+      }
+      try{
+        var a0=mk(), c0=performance.now(), r0=f.apply(null,a0), isAsync=false;
+        if(r0&&typeof r0.then==='function'){ isAsync=true; sink=await r0; } else sink=r0;
+        var t1=performance.now()-c0, mutated=!same(a0,base), ms, k, j;
+        if(t1<5&&!isAsync){
+          if(!mutated){
+            /* arguments untouched by the call: reuse them and calibrate a batch to ~30ms */
+            k=Math.min(Math.ceil(30/Math.max(t1,0.002)),20000);
+            var el;
+            for(;;){
+              var s=performance.now();
+              for(j=0;j<k;j++) sink=f.apply(null,a0);
+              el=performance.now()-s;
+              if(el>=24||k>=2e6) break;
+              k=Math.min(2e6,Math.ceil(k*Math.min(50,Math.max(2,30/Math.max(el,0.05)))));
+            }
+            ms=el/k;
+          }else{
+            k=Math.max(1,Math.min(Math.ceil(30/Math.max(t1,0.005)),Math.floor(3e6/n),3000));
+            var pre=[]; for(j=0;j<k;j++) pre.push(mk());
+            var s2=performance.now();
+            for(j=0;j<k;j++) sink=f.apply(null,pre[j]);
+            ms=(performance.now()-s2)/k;
+          }
+        }else{
+          var reps=t1>=100?1:(t1>=30?2:3), pre2=[];
+          for(j=0;j<reps;j++) pre2.push(mk());
+          var s3=performance.now();
+          for(j=0;j<reps;j++){ var r=f.apply(null,pre2[j]); if(r&&typeof r.then==='function') r=await r; sink=r; }
+          ms=(performance.now()-s3)/reps;
+        }
+        return Math.max(ms,1e-6);
+      }catch(x){
+        if(x&&x.kind) throw x;
+        throw {kind:'throw',message:'Your function threw an error when called with n = '+n+': '+emsg(x),n:n};
+      }
+    }
+
+    var sizes=d.sizes.slice(), pts=[], total=sizes.length, done=0, stopped='end';
+    function yieldNow(){ return new Promise(function(r){ setTimeout(r,0); }); }
+    async function step(n){
+      postMessage({t:'start',n:n,done:done,total:total});
+      var ms;
+      try{ ms=await measure(n); }catch(x){ if(x&&x.kind){ fail(x.kind,x.message,x.n); return null; } throw x; }
+      pts.push({n:n,ms:ms}); pts.sort(function(a,b){ return a.n-b.n; }); done++;
+      postMessage({t:'point',n:n,ms:ms,done:done,total:total});
+      await yieldNow();
+      return ms;
+    }
+    var first=await step(sizes[0]);
+    if(first===null) return;
+    if(first>60){                         /* heavy code: also probe smaller sizes */
+      var m=sizes[0], last=first, added=0;
+      while(last>10&&m>16&&added<4){ m=Math.floor(m/2); total++; added++; last=await step(m); if(last===null) return; }
+    }
+    for(var i=1;i<sizes.length;i++){
+      var top=pts[pts.length-1];
+      if(top.ms>350){ stopped='slow'; break; }
+      if(pts.length>=2&&top.ms>5){        /* would the next size blow the time budget? */
+        var prev=pts[pts.length-2];
+        var e=Math.log(top.ms/prev.ms)/Math.log(top.n/prev.n);
+        if(top.ms*Math.pow(sizes[i]/top.n,Math.max(e,0))>3500){ stopped='predict'; break; }
+      }
+      if(await step(sizes[i])===null) return;
+    }
+    if(stopped==='end'&&pts[pts.length-1].ms>350) stopped='slow';
+    /* too slow to get 3 points going up? probe smaller (cheap) sizes so a trend can still be fitted */
+    for(var fill=0;pts.length<3&&pts[0].n>16&&fill<6;fill++){ total++; if(await step(Math.floor(pts[0].n/2))===null) return; }
+    postMessage({t:'done',stopped:stopped,points:pts,sink:typeof sink});
+  }
+}
+const WORKER_SRC='('+workerMain.toString()+')();';
+/*@@PURE-END*/
+
+/* ==========================================================================
+   DOM helpers + theme
+   ========================================================================== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const P={
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M20.5 14A8.5 8.5 0 1110 3.5a7 7 0 0010.5 10.5z"/>',
+  code:'<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>'
+};
+const ic=(n,s=16)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+function toast(msg,bad){
+  const t=document.createElement('div'); t.className='toast'+(bad?' bad':''); t.textContent=msg;
+  $('#toasts').appendChild(t); setTimeout(()=>t.remove(),2600);
+}
+const KEY='code-playground:v1';
+function readState(){
+  try{ const o=JSON.parse(localStorage.getItem(KEY)); return o&&typeof o==='object'&&!Array.isArray(o)?o:{}; }catch(e){ return {}; }
+}
+let theme=(()=>{ const t=readState().theme; return t==='light'||t==='dark'?t:null; })();
+const prefersDark=()=>{ try{ return !!(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches); }catch(e){ return false; } };
+const isDark=()=>theme?theme==='dark':prefersDark();
+function applyTheme(){
+  if(theme) document.documentElement.dataset.theme=theme; else delete document.documentElement.dataset.theme;
+  $('#theme-btn').innerHTML=ic(isDark()?'sun':'moon',18);
+  $('#theme-btn').title=isDark()?'Switch to light theme':'Switch to dark theme';
+  redrawAll();
+}
+function toggleTheme(){
+  theme=isDark()?'light':'dark';
+  try{ const o=readState(); o.theme=theme; localStorage.setItem(KEY,JSON.stringify(o)); }catch(e){}
+  applyTheme();
+}
+const cssVar=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function palette(){
+  const g=(n,d)=>cssVar(n)||d;
+  return {text:g('--text','#1a1e27'),muted:g('--muted','#667085'),border:g('--border','#e1e4ea'),panel:g('--panel','#fff'),bg:g('--code-bg','#fbfbfd'),accent:g('--accent','#4f46e5'),sans:g('--sans','sans-serif'),
+    c:['--c1','--c2','--c3','--c4','--c5','--c6'].map((v,i)=>g(v,['#009e73','#0072b2','#2b90c8','#b87d00','#d55e00','#b5548f'][i]))};
+}
+function setupCanvas(cv,fw,fh){
+  const dpr=Math.max(1,window.devicePixelRatio||1);
+  const w=cv.clientWidth||fw, h=cv.clientHeight||fh;
+  const bw=Math.round(w*dpr), bh=Math.round(h*dpr);
+  if(cv.width!==bw) cv.width=bw;
+  if(cv.height!==bh) cv.height=bh;
+  const ctx=cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
+  return {ctx,w,h};
+}
+function redrawAll(){ drawGrowth(); if(T.points.length) drawResult(); }
+
+/* ==========================================================================
+   1. Growth chart
+   ========================================================================== */
+const G={n:20,on:{o1:true,ologn:true,on:true,onlogn:true,on2:true,exp:true},scale:'cap',hover:null};
+const GP={L:48,R:14,T:14,B:30};
+const activeClasses=()=>CLASSES.filter(c=>G.on[c.key]);
+const growthCap=N=>Math.max(16,N*Math.log2(N+1)*1.1);
+
+function drawGrowth(){
+  const cv=$('#growth-canvas'); if(!cv||!cv.getContext) return;
+  const {ctx,w,h}=setupCanvas(cv,640,320), C=palette();
+  const N=Math.max(2,G.n), {L,R,T:Tp,B}=GP, pw=Math.max(10,w-L-R), ph=Math.max(10,h-Tp-B);
+  const act=activeClasses(), logMode=G.scale==='log';
+  const X=n=>L+pw*(n-1)/(N-1);
+  let cap, Y, yTicks;
+  if(logMode){
+    const mx=Math.max(10,...act.map(c=>c.f(N)));
+    const top=Math.max(1,Math.ceil(Math.log10(mx)));
+    cap=Math.pow(10,top);
+    Y=v=>Tp+ph*(1-Math.log10(Math.max(v,1))/top);
+    const st=Math.max(1,Math.ceil(top/5)); yTicks=[]; for(let k=0;k<=top;k+=st) yTicks.push(Math.pow(10,k));
+  }else{
+    cap=growthCap(N);
+    Y=v=>Tp+ph*(1-Math.min(v,cap*20)/cap);
+    yTicks=niceTicks(0,cap,5,false);
+  }
+  ctx.font='11px '+C.sans; ctx.lineWidth=1;
+  ctx.fillStyle=C.bg; ctx.fillRect(0,0,w,h);
+  /* grid + y labels */
+  ctx.textAlign='right'; ctx.textBaseline='middle';
+  yTicks.forEach(v=>{
+    const y=Math.round(Y(v))+.5;
+    ctx.strokeStyle=C.border; ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(L+pw,y); ctx.stroke();
+    ctx.fillStyle=C.muted; ctx.fillText(fmtAxis(v),L-6,y);
+  });
+  /* x labels */
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  niceTicks(1,N,Math.max(2,Math.floor(pw/70)),true).forEach(v=>{
+    const x=Math.round(X(v))+.5;
+    ctx.strokeStyle=C.border; ctx.beginPath(); ctx.moveTo(x,Tp); ctx.lineTo(x,Tp+ph); ctx.stroke();
+    ctx.fillStyle=C.muted; ctx.fillText(String(v),x,Tp+ph+6);
+  });
+  ctx.strokeStyle=C.muted; ctx.beginPath(); ctx.moveTo(L+.5,Tp); ctx.lineTo(L+.5,Tp+ph+.5); ctx.lineTo(L+pw,Tp+ph+.5); ctx.stroke();
+  ctx.fillStyle=C.muted; ctx.textAlign='right'; ctx.textBaseline='bottom'; ctx.fillText('n',L+pw,h-1);
+  ctx.textAlign='left'; ctx.textBaseline='top'; ctx.fillText('operations',L+6,1);
+  /* curves */
+  ctx.save(); ctx.beginPath(); ctx.rect(L,Tp,pw,ph); ctx.clip();
+  const S=Math.max(60,Math.min(240,Math.floor(pw/2)));
+  act.forEach(c=>{
+    ctx.strokeStyle=C.c[CLASSES.indexOf(c)]; ctx.lineWidth=2.4; ctx.lineJoin='round'; ctx.setLineDash(c.dash);
+    ctx.beginPath();
+    for(let i=0;i<=S;i++){ const n=1+(N-1)*i/S, x=X(n), y=Y(c.f(n)); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+    ctx.stroke();
+  });
+  ctx.setLineDash([]); ctx.restore();
+  const dot=(n,c)=>{ const y=Y(c.f(n)); if(y<Tp-1||y>Tp+ph+1) return; ctx.fillStyle=C.c[CLASSES.indexOf(c)]; ctx.strokeStyle=C.panel; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(X(n),y,4,0,Math.PI*2); ctx.fill(); ctx.stroke(); };
+  act.forEach(c=>dot(N,c));
+  if(G.hover!=null){
+    const hn=Math.min(Math.max(G.hover,1),N), x=Math.round(X(hn))+.5;
+    ctx.strokeStyle=C.text; ctx.globalAlpha=.55; ctx.setLineDash([4,3]); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,Tp); ctx.lineTo(x,Tp+ph); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
+    act.forEach(c=>dot(hn,c));
+    ctx.fillStyle=C.text; ctx.textBaseline='top'; ctx.textAlign=x>L+pw/2?'right':'left';
+    ctx.fillText('n = '+hn,x+(x>L+pw/2?-6:6),Tp+2);
+  }
+  $('#y-note').textContent=logMode
+    ? 'Log scale: each gridline is 10 times the last, so every curve fits. Exponential growth shows up as a straight, steep line.'
+    : 'Y-axis capped at '+fmtOps(Math.round(cap))+' operations so the fast curves stay readable. Curves that leave the top keep climbing: see the table for their real values, or try the log scale.';
+}
+function updateReadout(){
+  const n=G.hover!=null?G.hover:G.n, act=activeClasses();
+  $('#readout').innerHTML='<span class="ro-n">At n = '+n+':</span>'+(act.length?act.map(c=>`<span class="ro" style="--sw:var(${c.cvar})"><i></i>${c.label} = <b>${fmtOps(c.f(n))}</b></span>`).join(''):'<span class="muted">No curves selected.</span>');
+}
+function updateGrowthSummary(){
+  const n=G.n;
+  $('#growth-summary').textContent='Chart of operations for input sizes 1 to '+n+'. At n = '+n+': '+CLASSES.map(c=>c.label+' takes '+fmtOps(c.f(n))+' operations').join(', ')+'. Exponential and quadratic growth leave the top of the chart quickly.';
+}
+function renderOps(){
+  const n=G.n;
+  $('#ops-caption').textContent='Operation counts and estimated times for n = '+n;
+  $('#ops-body').innerHTML=CLASSES.map(c=>{
+    const ops=c.f(n), sec=ops/1e9;
+    return `<tr><th scope="row"><span class="sw${c.dash.length?' dash':''}" style="--sw:var(${c.cvar})"></span>${c.label}</th><td class="num">${fmtOps(ops)}</td><td class="num">${humanTime(sec)}${olderThanUniverse(sec)?'<span class="cxn">longer than the age of the universe</span>':''}</td><td>${esc(c.plain)}</td></tr>`;
+  }).join('');
+}
+function updateGrowth(){ renderOps(); updateGrowthSummary(); updateReadout(); drawGrowth(); }
+function initGrowth(){
+  $('#chips').innerHTML=CLASSES.map(c=>`<button type="button" class="chip" data-k="${c.key}" aria-pressed="true"><span class="sw${c.dash.length?' dash':''}" style="--sw:var(${c.cvar})"></span>${c.label}</button>`).join('');
+  $('#chips').addEventListener('click',e=>{
+    const b=e.target.closest('.chip'); if(!b) return;
+    G.on[b.dataset.k]=!G.on[b.dataset.k]; b.setAttribute('aria-pressed',String(G.on[b.dataset.k])); updateGrowth();
+  });
+  $$('[data-yscale]').forEach(b=>b.addEventListener('click',()=>{
+    G.scale=b.dataset.yscale; $$('[data-yscale]').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); updateGrowth();
+  }));
+  const rng=$('#n-range');
+  rng.addEventListener('input',()=>{ G.n=+rng.value; G.hover=null; $('#n-out').textContent=rng.value; updateGrowth(); });
+  const cv=$('#growth-canvas');
+  const setHover=e=>{
+    const r=cv.getBoundingClientRect(); if(!r.width) return;
+    const N=Math.max(2,G.n), frac=(e.clientX-r.left-GP.L)/Math.max(1,r.width-GP.L-GP.R);
+    G.hover=Math.min(N,Math.max(1,Math.round(1+frac*(N-1)))); updateReadout(); drawGrowth();
+  };
+  cv.addEventListener('pointermove',setHover);
+  cv.addEventListener('pointerdown',setHover);
+  cv.addEventListener('pointerleave',e=>{ if(e.pointerType==='touch'||e.pointerType==='pen') return; G.hover=null; updateReadout(); drawGrowth(); });
+  cv.addEventListener('keydown',e=>{
+    const N=Math.max(2,G.n); let h=G.hover!=null?G.hover:N;
+    if(e.key==='ArrowLeft') h--; else if(e.key==='ArrowRight') h++; else if(e.key==='Home') h=1; else if(e.key==='End') h=N;
+    else if(e.key==='Escape'){ G.hover=null; updateReadout(); drawGrowth(); return; } else return;
+    e.preventDefault(); G.hover=Math.min(N,Math.max(1,h)); updateReadout(); drawGrowth();
+  });
+  cv.addEventListener('blur',()=>{ if(G.hover!=null){ G.hover=null; updateReadout(); drawGrowth(); } });
+  updateGrowth();
+}
+
+/* ==========================================================================
+   2. Cheat sheets
+   ========================================================================== */
+/* "O(n)|note" -> badge plus small note */
+function cxTone(t){ return /[²³ⁿ!]/.test(t)?'bad':/^O\((1|log n)\)/.test(t)?'good':''; }
+function cx(cell){
+  const [t,note]=String(cell).split('|');
+  return `<span class="cx ${cxTone(t)}">${esc(t)}</span>${note?`<span class="cxn">${esc(note)}</span>`:''}`;
+}
+const SORTS=[
+  ['Bubble sort','O(n)|already sorted, with early exit','O(n²)','O(n²)','O(1)','Yes','Simple, but only for teaching.'],
+  ['Selection sort','O(n²)','O(n²)','O(n²)','O(1)','No','Always n² comparisons, but at most n swaps.'],
+  ['Insertion sort','O(n)|nearly sorted','O(n²)','O(n²)','O(1)','Yes','Great for tiny or almost-sorted arrays; used inside real sorts.'],
+  ['Merge sort','O(n log n)','O(n log n)','O(n log n)','O(n)','Yes','Predictable speed, needs extra memory.'],
+  ['Quick sort','O(n log n)','O(n log n)','O(n²)|bad pivots','O(log n)','No','Fast in practice; a poor pivot choice hits the worst case.'],
+  ['Heap sort','O(n log n)','O(n log n)','O(n log n)','O(1)','No','In-place with a guaranteed bound, but poor cache behaviour.'],
+  ['Counting sort','O(n + k)','O(n + k)','O(n + k)','O(k)','Yes','Not comparison-based: integers in a small range k.'],
+  ['Radix sort','O(d(n + k))','O(d(n + k))','O(d(n + k))','O(n + k)','Yes','Sorts digit by digit (d digits).'],
+  ['Timsort','O(n)|already sorted','O(n log n)','O(n log n)','O(n)','Yes','What Array.prototype.sort uses in modern engines.']
+];
+const DSTRUCTS=[
+  ['Array','O(1)','O(n)','O(n)|O(1) amortized at the end','O(n)|O(1) at the end','Fast by index; shifting items is the cost.'],
+  ['Linked list','O(n)','O(n)','O(1)|at a known node or the head','O(1)|given the node','No random access; cheap splicing once you are there.'],
+  ['Hash map / Map','O(1)|by key, average','O(1)|average','O(1)|average','O(1)|average','Worst case O(n) if many keys collide.'],
+  ['Set','n/a','O(1)|has(), average','O(1)|add(), average','O(1)|delete(), average','A hash map with only keys. Great for duplicates checks.'],
+  ['Stack','O(1)|top only','O(n)','O(1)|push','O(1)|pop','Last in, first out.'],
+  ['Queue','O(1)|front only','O(n)','O(1)|enqueue','O(1)|dequeue','First in, first out. Note: array.shift() can be O(n).'],
+  ['Binary heap','O(1)|min or max','O(n)','O(log n)','O(log n)|remove min or max','Backbone of priority queues.'],
+  ['Balanced BST','O(log n)','O(log n)','O(log n)','O(log n)','Keeps keys in order; in-order walk is O(n).']
+];
+const PATTERNS=[
+  {t:'One loop over the input',c:'O(n)',code:'for (const x of arr) {\n  total += x;\n}',why:'The body runs once per item, so the work grows in step with n.'},
+  {t:'Loops one after another',c:'O(n)',code:'for (const x of a) sum += x;\nfor (const x of a) max = Math.max(max, x);',why:'n + n = 2n. Constants are dropped. Loops only multiply when they are nested.'},
+  {t:'Nested loops over the input',c:'O(n²)',code:'for (let i = 0; i < n; i++) {\n  for (let j = 0; j < n; j++) {\n    pairs.push([a[i], a[j]]);\n  }\n}',why:'n passes of n steps each. Even when j starts at i, it is n²/2, still O(n²).'},
+  {t:'A loop that halves',c:'O(log n)',code:'while (n > 1) {\n  n = Math.floor(n / 2);\n}',why:'How many times can you halve n before reaching 1? About log₂ n. Binary search works the same way.'},
+  {t:'Sort inside a loop',c:'O(n² log n)',code:'for (const x of arr) {\n  const s = [...arr].sort((a, b) => a - b);\n  use(x, s);\n}',why:'n iterations, each paying n log n. Hoist the sort out of the loop to get O(n log n).'},
+  {t:'Recursion with two calls',c:'O(2ⁿ)',code:'function fib(n) {\n  if (n < 2) return n;\n  return fib(n - 1) + fib(n - 2);\n}',why:'Every call spawns two more, so the call tree doubles per level. Memoising makes it O(n).'},
+  {t:'indexOf / includes inside a loop',c:'O(n²)',code:'for (const x of a) {\n  if (b.indexOf(x) !== -1) out.push(x);\n}',why:'indexOf is itself a loop, so this is n × m. Put b in a Set first and it becomes O(n).'},
+  {t:'One sort, then a scan',c:'O(n log n)',code:'const s = [...arr].sort((a, b) => a - b);\nreturn s[0];',why:'The sort dominates; the cheaper O(n) parts vanish. (A single pass for the minimum would be O(n).)'}
+];
+function tableHtml(head,rows,label,wide){
+  return `<div class="tablewrap" tabindex="0" role="region" aria-label="${esc(label)}"><table class="tbl${wide?' wide':''}"><thead><tr>${head.map(h=>`<th scope="col">${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function renderCheats(){
+  $('#panel-sort').innerHTML=tableHtml(['Algorithm','Best','Average','Worst','Space','Stable?','Note'],
+    SORTS.map(r=>`<tr><th scope="row">${esc(r[0])}</th><td>${cx(r[1])}</td><td>${cx(r[2])}</td><td>${cx(r[3])}</td><td>${cx(r[4])}</td><td>${r[5]}</td><td>${esc(r[6])}</td></tr>`).join(''),
+    'Sorting algorithm complexities',true)+'<p class="note">Stable means equal items keep their original order. k is the value range, d is the digit count.</p>';
+  $('#panel-ds').innerHTML=tableHtml(['Structure','Access','Search','Insert','Delete','Note'],
+    DSTRUCTS.map(r=>`<tr><th scope="row">${esc(r[0])}</th><td>${r[1]==='n/a'?'<span class="muted">n/a</span>':cx(r[1])}</td><td>${cx(r[2])}</td><td>${cx(r[3])}</td><td>${cx(r[4])}</td><td>${esc(r[5])}</td></tr>`).join(''),
+    'Data structure operation complexities',true)+'<p class="note">Typical costs. "Access" means reading by position (or the top/front/min for stacks, queues and heaps).</p>';
+  $('#panel-spot').innerHTML='<div class="patterns">'+PATTERNS.map(p=>`<article class="pat"><div class="pat-h"><b>${esc(p.t)}</b>${cx(p.c)}</div><pre class="codeblock" tabindex="0"><code>${esc(p.code)}</code></pre><p>${esc(p.why)}</p></article>`).join('')+'</div>';
+}
+function initTabs(){
+  const tabs=$$('#cheat-tabs [role=tab]');
+  const select=(t,focus)=>{
+    tabs.forEach(x=>{ const on=x===t; x.setAttribute('aria-selected',String(on)); x.tabIndex=on?0:-1; $('#'+x.getAttribute('aria-controls')).hidden=!on; });
+    if(focus) t.focus();
+  };
+  tabs.forEach((t,i)=>{
+    t.addEventListener('click',()=>select(t));
+    t.addEventListener('keydown',e=>{
+      let j=null;
+      if(e.key==='ArrowRight') j=(i+1)%tabs.length; else if(e.key==='ArrowLeft') j=(i-1+tabs.length)%tabs.length;
+      else if(e.key==='Home') j=0; else if(e.key==='End') j=tabs.length-1;
+      if(j!==null){ e.preventDefault(); select(tabs[j],true); }
+    });
+  });
+}
+
+/* ==========================================================================
+   3. Try your code
+   ========================================================================== */
+const EXAMPLES={
+  linear:{type:'worst',code:`// Linear scan: looks at every element once.
+// Expect O(n): doubling n roughly doubles the time.
+// (The input is a sorted array and the target -1 is never present, so the whole array is scanned.)
+function findIndex(arr, target) {
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] === target) return i;
+  }
+  return -1;
+}
+`},
+  pairs:{type:'worst',code:`// Nested-loop pair search: compares every pair of elements.
+// Expect O(n^2): doubling n makes it about 4x slower.
+// (The target -1 is never found, so no early exit helps.)
+function hasPairWithSum(arr, target) {
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = i + 1; j < arr.length; j++) {
+      if (arr[i] + arr[j] === target) return true;
+    }
+  }
+  return false;
+}
+`},
+  binary:{type:'worst',code:`// Binary search: halves the search range every step.
+// Expect O(log n): the curve is almost flat, so the tool may say O(1) or O(log n).
+// (Needs a sorted array; the target -1 is never present, which is the worst case.)
+function binarySearch(arr, target) {
+  let lo = 0, hi = arr.length - 1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (arr[mid] === target) return mid;
+    if (arr[mid] < target) lo = mid + 1;
+    else hi = mid - 1;
+  }
+  return -1;
+}
+`},
+  sort:{type:'array',code:`// Sort-based: sorts a copy, then scans it once.
+// Expect O(n log n): a little steeper than linear, so the tool may say O(n) or O(n log n).
+function smallestGap(arr) {
+  const sorted = arr.slice().sort((a, b) => a - b);
+  let best = Infinity;
+  for (let i = 1; i < sorted.length; i++) {
+    best = Math.min(best, sorted[i] - sorted[i - 1]);
+  }
+  return best;
+}
+`}
+};
+const TYPE_HINTS={
+  array:'Calls f(arr) with n random whole numbers.',
+  string:'Calls f(str) with a random lowercase string of length n.',
+  number:'Calls f(n). Sizes start at 8 and double, so the function must cope with small n.',
+  sorted:'Calls f(arr) with the sorted array [0, 2, 4, ...] of n numbers.',
+  worst:'Calls f(arr, -1) with the sorted array [0, 2, 4, ...]. The target -1 is never present, so this is the worst case for searches.',
+  custom:'Write (n) => [arg1, arg2, ...]. It runs once per size and must return the array of arguments. Sizes start at 500 and double.'
+};
+const sizesFor=type=>{ const a=[]; if(type==='number'){ for(let n=8;n<=2097152;n*=2) a.push(n); } else { for(let n=500;n<=256000;n*=2) a.push(n); } return a; };
+const TIME_LIMIT=12000;
+const T={worker:null,url:null,timer:null,running:false,points:[],fit:null,nameTouched:false};
+
+function setMsg(kind,html,spin){
+  $('#try-msg').innerHTML=html?`<div class="msg ${kind||''}">${spin?'<span class="spinner" aria-hidden="true"></span>':''}<div>${html}</div></div>`:'';
+}
+function setProgress(pct){
+  const bar=$('#prog .bar'); bar.setAttribute('aria-valuenow',String(Math.round(pct))); $('#prog-fill').style.width=Math.round(pct)+'%';
+}
+function endWorker(){
+  clearTimeout(T.timer); T.timer=null;
+  if(T.worker){ try{ T.worker.terminate(); }catch(e){} T.worker=null; }
+  if(T.url){ try{ URL.revokeObjectURL(T.url); }catch(e){} T.url=null; }
+  T.running=false;
+  $('#measure-btn').disabled=false; $('#stop-btn').hidden=true;
+}
+function startMeasure(){
+  if(T.running) return;
+  const code=$('#code').value;
+  if(!code.trim()) return setMsg('bad','Paste or write a function first, or load one of the examples.');
+  let fn=$('#fn-name').value.trim();
+  if(!fn){ fn=detectName(code); $('#fn-name').value=fn; }
+  if(!fn) return setMsg('bad','I could not find a function name. Declare one like <code>function myFunc(arr) { ... }</code> or type its name in the Function name box.');
+  if(!/^[A-Za-z_$][\w$]*$/.test(fn)) return setMsg('bad','"'+esc(fn)+'" is not a valid function name. Use letters, digits, _ or $.');
+  const type=$('#in-type').value;
+  let gen={type};
+  if(type==='custom'){
+    const src=$('#gen-src').value.trim();
+    if(!src) return setMsg('bad','Write a generator such as <code>(n) =&gt; [Array.from({length: n}, (_, i) =&gt; i)]</code> or pick another input type.');
+    gen={custom:src};
+  }
+  if(typeof Worker==='undefined'||typeof Blob==='undefined') return setMsg('bad','This browser cannot run Web Workers, so I cannot measure code safely here.');
+  let w,url;
+  try{
+    url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'}));
+    w=new Worker(url);
+  }catch(e){
+    if(url) try{ URL.revokeObjectURL(url); }catch(_){}
+    return setMsg('bad','Could not start the measuring worker: '+esc(e&&e.message||e)+'. Some browsers or strict page policies block workers made from Blobs.');
+  }
+  T.worker=w; T.url=url; T.running=true; T.points=[]; T.fit=null;
+  $('#measure-btn').disabled=true; $('#stop-btn').hidden=false;
+  $('#prog').hidden=false; setProgress(0);
+  $('#analysis').hidden=true; $('#res').hidden=false; renderPoints(); drawResult();
+  setMsg('', 'Measuring <code>'+esc(fn)+'</code>...', true);
+  w.onmessage=e=>{ if(T.worker===w) onWorker(e.data); };
+  w.onerror=e=>{ if(T.worker!==w) return; if(e&&e.preventDefault) e.preventDefault(); finish('error','The worker crashed: '+esc(e&&e.message||'unknown error')); };
+  T.timer=setTimeout(()=>{ if(T.worker===w) finish('timeout'); },TIME_LIMIT);
+  w.postMessage({code,fn,gen,sizes:sizesFor(type)});
+}
+function onWorker(m){
+  if(!m) return;
+  if(m.t==='start'){
+    setProgress(100*m.done/Math.max(1,m.total));
+    setMsg('','Measuring... testing n = <b>'+commas(m.n)+'</b>. If this step stalls the code is probably very slow.',true);
+  }else if(m.t==='point'){
+    T.points.push({n:m.n,ms:m.ms}); T.points.sort((a,b)=>a.n-b.n);
+    setProgress(100*m.done/Math.max(1,m.total)); renderPoints(); drawResult();
+  }else if(m.t==='done'){
+    finish('done',m.stopped);
+  }else if(m.t==='error'){
+    finish('error',esc(m.message));
+  }
+}
+function stopMeasure(){ if(T.running) finish('stopped'); }
+function finish(kind,extra){
+  endWorker();
+  setProgress(kind==='done'?100:parseFloat($('#prog .bar').getAttribute('aria-valuenow'))||0);
+  let html='', level='';
+  const enough=T.points.length>=3;
+  if(kind==='error'){ level='bad'; html=extra+(T.points.length?' The points measured before the problem are shown below.':''); }
+  else if(kind==='timeout'){ level='warn'; html='Stopped after '+(TIME_LIMIT/1000)+' seconds. Your code is very slow at the next size, or it never finishes (an infinite loop?).'+(enough?' Here is what I measured before that:':' Not enough sizes finished to see a trend.'); }
+  else if(kind==='stopped'){ level='warn'; html='Stopped.'+(enough?' Here is what was measured so far:':''); }
+  else if(extra==='slow'){ html='Done. I stopped growing the input once a single call took more than about 350 ms.'; }
+  else if(extra==='predict'){ html='Done. I stopped early because the next size would have taken too long.'; }
+  else { html='Done.'; }
+  if(kind==='done'&&!enough){ level='warn'; html='Your code is slow enough that fewer than 3 sizes could be measured, so there is no trend to fit. Try a smaller input or a custom generator.'; }
+  setMsg(level,html);
+  if(enough){ T.fit=fitSlope(T.points); showAnalysis(); } else { T.fit=null; $('#analysis').hidden=true; }
+  renderPoints(); drawResult();
+}
+function renderPoints(){
+  $('#res-body').innerHTML=T.points.map(p=>`<tr><td class="num">${commas(p.n)}</td><td class="num">${fmtMs(p.ms)}</td></tr>`).join('');
+}
+function showAnalysis(){
+  const fit=T.fit; if(!fit) return;
+  const cls=classify(fit.slope);
+  $('#analysis').hidden=false;
+  $('#st-slope').textContent=(Math.round(fit.slope*100)/100).toFixed(2);
+  $('#st-class').textContent=cls.label;
+  $('#st-count').textContent=String(T.points.length);
+  const est=extrapolate(cls.key,T.points,1e6);
+  const feel=cls.key==='exp'
+    ? 'At n = 1,000,000 it would not finish in your lifetime; even n = 100 would be out of reach.'
+    : 'At n = 1,000,000 expect roughly <b>'+esc(humanTime(est/1000))+'</b> per call on this machine (extrapolated from your largest measurement, so treat it as a ballpark).'+(est/1000>3600?' That is far too slow to be practical.':est/1000>1?' That is noticeable to a user.':' That is fast enough to feel instant.');
+  const cav=caveat(fit.slope);
+  $('#explain').innerHTML=`<p><b>${esc(cls.label)}</b>. ${esc(CLASS_TEXT[cls.key])}</p><p>${feel}</p>`+
+    `<p class="small">Fit: time is proportional to n<sup>${(Math.round(fit.slope*100)/100).toFixed(2)}</sup> (R² = ${fit.r2.toFixed(3)}). Thresholds: under 0.15 is O(1), under 0.45 O(log n), under 1.2 O(n), under 1.5 O(n log n), under 2.5 O(n²), under 3.5 O(n³), otherwise exponential or worse.</p>`+
+    (cav?`<p class="small">${esc(cav)}</p>`:'');
+}
+function drawResult(){
+  const cv=$('#res-canvas'); if(!cv||!cv.getContext) return;
+  const {ctx,w,h}=setupCanvas(cv,640,320), C=palette();
+  ctx.fillStyle=C.bg; ctx.fillRect(0,0,w,h);
+  const pts=T.points;
+  const legend=[['--accent','Measured',false],['--c3','O(n) reference',true],['--c4','O(n log n) reference',true],['--c5','O(n²) reference',true]];
+  $('#res-legend').innerHTML=legend.map(l=>`<span class="ro" style="--sw:var(${l[0]})"><span class="sw${l[2]?' dash':''}" style="width:18px"></span>${l[1]}</span>`).join('')+'<span class="ro"><span class="sw dash" style="--sw:var(--muted);width:18px"></span>Fitted line</span>';
+  $('#res-summary').textContent=pts.length
+    ? 'Log-log chart of time per call against n. '+pts.map(p=>'n = '+commas(p.n)+': '+fmtMs(p.ms)).join('; ')+'.'+(T.fit?' Fitted growth exponent '+T.fit.slope.toFixed(2)+', which looks like '+classify(T.fit.slope).label+'.':'')
+    : 'No measurements yet.';
+  if(!pts.length) return;
+  const L=64,R=14,Tp=14,B=32, pw=Math.max(10,w-L-R), ph=Math.max(10,h-Tp-B);
+  let x0=Math.min(...pts.map(p=>p.n))/1.3, x1=Math.max(...pts.map(p=>p.n))*1.3;
+  let y0=Math.min(...pts.map(p=>p.ms))/1.7, y1=Math.max(...pts.map(p=>p.ms))*1.7;
+  if(y1/y0<10){ const c=Math.sqrt(y0*y1); y0=c/Math.sqrt(10); y1=c*Math.sqrt(10); }
+  const lx0=Math.log(x0), lx1=Math.log(x1), ly0=Math.log(y0), ly1=Math.log(y1);
+  const X=n=>L+pw*(Math.log(n)-lx0)/(lx1-lx0), Y=v=>Tp+ph*(1-(Math.log(v)-ly0)/(ly1-ly0));
+  ctx.font='11px '+C.sans; ctx.lineWidth=1;
+  const xd=Math.log10(x1/x0), yd=Math.log10(y1/y0);
+  ctx.textAlign='right'; ctx.textBaseline='middle';
+  logTicks(y0,y1,yd>3?[1]:[1,2,5]).forEach(v=>{
+    const y=Math.round(Y(v))+.5;
+    ctx.strokeStyle=C.border; ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(L+pw,y); ctx.stroke();
+    ctx.fillStyle=C.muted; ctx.fillText(fmtMs(v),L-6,y);
+  });
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  logTicks(x0,x1,xd>3?[1]:[1,2,5]).forEach(v=>{
+    const x=Math.round(X(v))+.5;
+    ctx.strokeStyle=C.border; ctx.beginPath(); ctx.moveTo(x,Tp); ctx.lineTo(x,Tp+ph); ctx.stroke();
+    ctx.fillStyle=C.muted; ctx.fillText(fmtN(v),x,Tp+ph+6);
+  });
+  ctx.strokeStyle=C.muted; ctx.beginPath(); ctx.moveTo(L+.5,Tp); ctx.lineTo(L+.5,Tp+ph+.5); ctx.lineTo(L+pw,Tp+ph+.5); ctx.stroke();
+  ctx.fillStyle=C.muted; ctx.textAlign='right'; ctx.textBaseline='bottom'; ctx.fillText('n (log scale)',L+pw,h-1);
+  ctx.textAlign='left'; ctx.textBaseline='top'; ctx.fillText('time per call (log scale)',L+6,1);
+  ctx.save(); ctx.beginPath(); ctx.rect(L,Tp,pw,ph); ctx.clip();
+  const line=(fn,color,dash,width)=>{
+    ctx.strokeStyle=color; ctx.setLineDash(dash); ctx.lineWidth=width; ctx.beginPath();
+    const S=60; for(let i=0;i<=S;i++){ const n=Math.exp(lx0+(lx1-lx0)*i/S), x=X(n), y=Y(fn(n)); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+    ctx.stroke(); ctx.setLineDash([]);
+  };
+  const b=pts[0], nl=n=>n*Math.log2(Math.max(n,2));
+  line(n=>b.ms*n/b.n,C.c[2],[6,4],1.6);
+  line(n=>b.ms*nl(n)/nl(b.n),C.c[3],[6,4],1.6);
+  line(n=>b.ms*(n/b.n)**2,C.c[4],[6,4],1.6);
+  if(T.fit) line(n=>Math.exp(T.fit.intercept)*Math.pow(n,T.fit.slope),C.muted,[2,3],1.4);
+  ctx.strokeStyle=C.accent; ctx.lineWidth=2.4; ctx.lineJoin='round'; ctx.beginPath();
+  pts.forEach((p,i)=>{ if(i===0) ctx.moveTo(X(p.n),Y(p.ms)); else ctx.lineTo(X(p.n),Y(p.ms)); }); ctx.stroke();
+  ctx.restore();
+  pts.forEach(p=>{ ctx.fillStyle=C.accent; ctx.strokeStyle=C.panel; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(X(p.n),Y(p.ms),4.2,0,Math.PI*2); ctx.fill(); ctx.stroke(); });
+}
+function initTry(){
+  const code=$('#code'), name=$('#fn-name'), type=$('#in-type');
+  const syncName=()=>{ if(!T.nameTouched) name.value=detectName(code.value); };
+  const syncType=()=>{ $('#gen-fld').hidden=type.value!=='custom'; $('#type-hint').textContent=TYPE_HINTS[type.value]||''; };
+  code.value=EXAMPLES.linear.code; type.value=EXAMPLES.linear.type; syncName(); syncType();
+  code.addEventListener('input',syncName);
+  name.addEventListener('input',()=>{ T.nameTouched=name.value.trim()!==''; if(!T.nameTouched) syncName(); });
+  type.addEventListener('change',syncType);
+  let escaped=false;
+  code.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){ escaped=true; return; }
+    if(e.key==='Tab'&&!e.shiftKey&&!e.ctrlKey&&!e.altKey&&!e.metaKey){
+      if(escaped){ escaped=false; return; }
+      e.preventDefault();
+      const s=code.selectionStart, en=code.selectionEnd;
+      code.setRangeText('  ',s,en,'end');
+      code.dispatchEvent(new Event('input',{bubbles:true}));
+      return;
+    }
+    if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); startMeasure(); return; }
+    if(e.key.length===1||e.key==='Backspace') escaped=false;
+  });
+  code.addEventListener('blur',()=>{ escaped=false; });
+  $$('[data-ex]').forEach(b=>b.addEventListener('click',()=>{
+    if(T.running) return toast('Wait for the current measurement or press Stop.',true);
+    const ex=EXAMPLES[b.dataset.ex];
+    code.value=ex.code; type.value=ex.type; T.nameTouched=false; syncName(); syncType();
+    setMsg('',''); toast('Example loaded: '+b.textContent);
+  }));
+  $('#measure-btn').addEventListener('click',startMeasure);
+  $('#stop-btn').addEventListener('click',stopMeasure);
+}
+
+/* ==========================================================================
+   4. Quiz
+   ========================================================================== */
+const QUIZ=[
+  {code:'function firstAndLast(arr) {\n  return arr[0] + arr[arr.length - 1];\n}',opts:['O(n)','O(1)','O(log n)','O(n²)'],ans:1,why:'Two array reads and no loop. The cost stays the same however long arr is.'},
+  {code:'function stats(arr) {\n  let sum = 0, max = -Infinity;\n  for (const x of arr) sum += x;\n  for (const x of arr) max = Math.max(max, x);\n  return [sum, max];\n}',opts:['O(n²)','O(n log n)','O(n)','O(1)'],ans:2,why:'Two loops one after another cost n + n = 2n, and constants are dropped. Loops only multiply when one is nested inside the other.'},
+  {code:'function countPairs(arr) {\n  let count = 0;\n  for (let i = 0; i < arr.length; i++) {\n    for (let j = i; j < arr.length; j++) count++;\n  }\n  return count;\n}',opts:['O(n)','O(n log n)','O(2ⁿ)','O(n²)'],ans:3,why:'The inner loop runs n, n-1, n-2 ... 1 times, which adds up to about n²/2. Dropping the constant leaves O(n²).'},
+  {code:'function countHalvings(n) {\n  let steps = 0;\n  while (n > 1) {\n    n = Math.floor(n / 2);\n    steps++;\n  }\n  return steps;\n}',opts:['O(1)','O(n)','O(log n)','O(n²)'],ans:2,why:'n is halved each time, so it takes about log₂ n steps to reach 1. Doubling n adds only one more step.'},
+  {code:'function smallest(arr) {\n  const sorted = [...arr].sort((a, b) => a - b);\n  return sorted[0];\n}',opts:['O(n)','O(1)','O(n log n)','O(n²)'],ans:2,why:'Sorting costs O(n log n) and dominates the O(n) copy and O(1) read. (A single pass to find the minimum would be O(n), so the sort is wasteful.)'},
+  {code:'function fib(n) {\n  if (n < 2) return n;\n  return fib(n - 1) + fib(n - 2);\n}',opts:['O(n)','O(n²)','O(log n)','O(2ⁿ)'],ans:3,why:'Each call makes two more calls, so the call tree roughly doubles at every level. Caching results (memoisation) would bring it down to O(n).'}
+];
+const Q={i:0,score:0,answered:0,picked:null,done:false};
+function renderQuiz(){
+  const body=$('#q-body');
+  $('#q-score').textContent='Score: '+Q.score+' / '+Q.answered+' answered';
+  if(Q.done){
+    const msg=Q.score===QUIZ.length?'Perfect. You can read complexity at a glance.':Q.score>=4?'Nice work. Review the ones you missed in the cheat sheets above.':'Good start. Try the cheat sheets and the "Spot it in code" tab, then restart.';
+    body.innerHTML=`<div class="q-final"><div class="small">Final score</div><div class="big">${Q.score} / ${QUIZ.length}</div><p>${msg}</p></div>`;
+    return;
+  }
+  const q=QUIZ[Q.i], answered=Q.picked!==null;
+  body.innerHTML=`<div id="q-card" tabindex="-1"><div class="small">Question ${Q.i+1} of ${QUIZ.length}</div>
+    <h3 style="margin:4px 0 8px;font-size:15px">What is the time complexity of this snippet?</h3>
+    <pre class="codeblock" tabindex="0"><code>${esc(q.code)}</code></pre>
+    <div class="qopts" role="group" aria-label="Answer choices">${q.opts.map((o,k)=>{
+      let cls='',mark='';
+      if(answered){ if(k===q.ans){ cls=' right'; mark='Correct'; } else if(k===Q.picked){ cls=' wrong'; mark='Your answer'; } }
+      return `<button type="button" class="qopt${cls}" data-k="${k}" aria-disabled="${answered}">${esc(o)}<span class="mark">${mark}</span></button>`;
+    }).join('')}</div>
+    <div id="q-fb" role="status" aria-live="polite">${answered?`<div class="msg ${Q.picked===q.ans?'ok':'bad'}"><div><b>${Q.picked===q.ans?'Correct.':'Not quite. The answer is '+esc(q.opts[q.ans])+'.'}</b> ${esc(q.why)}</div></div>`:''}</div>
+    ${answered?`<div class="run-row"><button type="button" class="btn primary" id="q-next">${Q.i===QUIZ.length-1?'See my score':'Next question'}</button></div>`:''}</div>`;
+}
+function initQuiz(){
+  $('#q-body').addEventListener('click',e=>{
+    const o=e.target.closest('.qopt');
+    if(o){
+      if(Q.picked!==null||Q.done) return;
+      Q.picked=+o.dataset.k; Q.answered++; if(Q.picked===QUIZ[Q.i].ans) Q.score++;
+      renderQuiz(); const nb=$('#q-next'); if(nb) nb.focus();
+      return;
+    }
+    if(e.target.closest('#q-next')){
+      if(Q.i===QUIZ.length-1){ Q.done=true; renderQuiz(); }
+      else { Q.i++; Q.picked=null; renderQuiz(); const c=$('#q-card'); if(c) c.focus(); }
+    }
+  });
+  $('#q-restart').addEventListener('click',()=>{ Q.i=0; Q.score=0; Q.answered=0; Q.picked=null; Q.done=false; renderQuiz(); toast('Quiz restarted'); });
+  renderQuiz();
+}
+
+/* ==========================================================================
+   Wire up
+   ========================================================================== */
+function init(){
+  $('#logo').innerHTML=ic('code',18);
+  $('#theme-btn').addEventListener('click',toggleTheme);
+  renderCheats(); initTabs(); initGrowth(); initTry(); initQuiz();
+  applyTheme();
+  try{ if(window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{ if(!theme) applyTheme(); }); }catch(e){}
+  let raf=0; const redraw=()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(redrawAll); };
+  if(typeof ResizeObserver!=='undefined') $$('.chart-wrap').forEach(el=>new ResizeObserver(redraw).observe(el));
+  window.addEventListener('resize',redraw);
+}
+init();
+</script>
+<script src="levelup-nav.js"></script>
+</body>
+</html>

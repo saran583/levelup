@@ -1,0 +1,1962 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mock Interview - Levelup</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f5f8; --panel:#ffffff; --panel-2:#f1f3f7; --border:#e1e4ea; --text:#1a1e27; --muted:#667085;
+  --accent:#4f46e5; --accent-h:#4338ca; --accent-soft:#eceeff; --on-accent:#ffffff;
+  --good:#137a4b; --good-bg:#e5f6ed; --bad:#c0362c; --bad-bg:#fdecea; --warn:#9a5b06; --warn-bg:#fff3de;
+  --code-bg:#fbfbfd; --gutter:#f1f3f7; --shadow:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.06);
+  --mono: ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+    --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+    --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+    --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+  --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+  --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+  --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg);color:var(--text);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono)}
+code{font-family:var(--mono);font-size:.9em;background:var(--panel-2);border:1px solid var(--border);border-radius:5px;padding:1px 5px}
+h1,h2,h3{letter-spacing:-.01em}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* header (shared look with the other pages) */
+.topbar{display:flex;align-items:center;gap:10px;padding:0 16px;min-height:56px;background:var(--panel);border-bottom:1px solid var(--border);flex:none}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--accent);color:var(--on-accent)}
+.brand-name{font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.topnav{display:flex;gap:2px;min-width:0;margin-left:8px;overflow-x:auto;scrollbar-width:none}
+.topnav::-webkit-scrollbar{display:none}
+.topnav a{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;color:var(--muted);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap}
+.topnav a:hover{background:var(--panel-2);color:var(--text)}
+.topnav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.spacer{flex:1}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel);font-weight:600;font-size:13px;white-space:nowrap;transition:background .15s,border-color .15s,box-shadow .15s}
+.btn:hover:not(:disabled){background:var(--panel-2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover:not(:disabled){background:var(--accent-h);border-color:var(--accent-h)}
+.btn.success{background:var(--good);border-color:var(--good);color:#fff}
+.btn.danger{color:var(--bad)}
+.btn.lg{height:42px;padding:0 22px;font-size:14px;border-radius:10px}
+.btn.sm{height:28px;padding:0 10px;font-size:12px}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover:not(:disabled){background:var(--panel-2)}
+.icon-btn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--panel-2);color:var(--text)}
+.input,.select,.textarea{width:100%;border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:7px 10px;min-height:34px;transition:border-color .15s,box-shadow .15s}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.kbd{font-family:var(--mono);font-size:10px;opacity:.75;border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:2px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+.pill{display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:99px;font-size:11px;font-weight:600;background:var(--panel-2);color:var(--muted);white-space:nowrap}
+.pill.easy{background:var(--good-bg);color:var(--good)}
+.pill.medium{background:var(--warn-bg);color:var(--warn)}
+.pill.hard{background:var(--bad-bg);color:var(--bad)}
+.pill.accent{background:var(--accent-soft);color:var(--accent)}
+.seg{display:inline-flex;flex-wrap:wrap;padding:3px;border-radius:9px;background:var(--panel-2);border:1px solid var(--border);gap:2px}
+.seg button{border:0;background:transparent;border-radius:7px;padding:5px 14px;min-height:30px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button:hover:not(:disabled){color:var(--text)}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--accent);box-shadow:var(--shadow)}
+.seg button:disabled{opacity:.55;cursor:not-allowed}
+.tabs{display:flex;gap:2px}
+.tab{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-weight:600;font-size:13px}
+.tab:hover{background:var(--panel-2);color:var(--text)}
+.tab[aria-selected="true"]{background:var(--accent-soft);color:var(--accent)}
+.tab .count{font-size:11px;background:var(--panel-2);color:var(--muted);border-radius:99px;padding:0 6px}
+.tab[aria-selected="true"] .count{background:var(--panel);color:var(--accent)}
+
+/* generic pages (lobby / results / shared) */
+.page{width:min(1040px,100%);margin:0 auto;padding:20px 16px 56px;flex:1}
+.page h1{font-size:24px;line-height:1.25;margin:0 0 6px}
+.page h1:focus{outline:none}
+.page h2{font-size:16px;margin:0 0 10px}
+.pad{padding:20px 22px}
+.lead{color:var(--muted);margin:0 0 14px}
+.lobby-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;margin-top:16px;align-items:start}
+.points{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
+.points li{display:flex;gap:12px;align-items:flex-start}
+.points .pt-ic{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--accent-soft);color:var(--accent)}
+.points b{display:block}
+.field{display:grid;gap:6px;margin:0 0 16px;border:0;padding:0;min-width:0}
+.field>.lbl,.field>legend{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:0}
+.field .hint{font-size:12px;color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row.end{justify-content:flex-end}
+.note{border:1px solid var(--border);background:var(--panel-2);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--muted)}
+.note.warn{background:var(--warn-bg);border-color:transparent;color:var(--warn)}
+.note.bad{background:var(--bad-bg);border-color:transparent;color:var(--bad)}
+.note.good{background:var(--good-bg);border-color:transparent;color:var(--good)}
+.note b{color:inherit}
+.tbl-wrap{overflow-x:auto;max-width:100%}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl .qcell{min-width:150px}
+.best{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);color:var(--accent);margin-bottom:12px;font-weight:600}
+.best b{font-size:22px;letter-spacing:-.02em}
+
+/* interview screen */
+.iv{flex:1;min-height:0;display:flex;flex-direction:column}
+.ibar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 16px 10px;background:var(--panel);border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
+.timer-wrap{display:flex;align-items:center;gap:10px}
+.timer{display:inline-flex;align-items:center;gap:8px;padding:2px 12px;border-radius:10px;font:700 28px/1.25 var(--mono);letter-spacing:.02em;font-variant-numeric:tabular-nums;background:var(--panel-2);color:var(--text);border:2px solid transparent}
+.timer svg{flex:none}
+.timer.warn{background:var(--warn-bg);color:var(--warn);border-color:currentColor}
+.timer.danger{background:var(--bad-bg);color:var(--bad);border-color:currentColor;border-style:dashed}
+.tstate{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.tstate.warn{color:var(--warn)}
+.tstate.danger{color:var(--bad)}
+.tbar{position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--panel-2)}
+.tbar i{display:block;height:100%;width:100%;background:var(--accent);transform-origin:left;transition:width .5s linear}
+.tbar.warn i{background:var(--warn)}
+.tbar.danger i{background:var(--bad)}
+.qnav{display:flex;gap:6px;flex:1;min-width:0;overflow-x:auto;padding:2px}
+.qtab{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:9px;border:1px solid var(--border);background:var(--panel);font-weight:600;font-size:13px;white-space:nowrap}
+.qtab:hover{background:var(--panel-2)}
+.qtab[aria-current="true"]{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 40%,transparent);color:var(--accent)}
+.qdot{flex:none;display:grid;place-items:center;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--muted);color:transparent}
+.qdot.pass{background:var(--good);border-color:var(--good);color:#fff}
+.iv-main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(300px,34%) minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:12px;padding:12px}
+.problem{overflow:auto;padding:20px 22px;min-height:0}
+.problem h2{font-size:20px;line-height:1.3;margin:0 0 10px}
+.problem h2:focus{outline:none}
+.problem .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.problem p{margin:0 0 12px}
+.problem ul{margin:0 0 12px;padding-left:20px}
+.problem li{margin:3px 0}
+.problem h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:20px 0 8px}
+.ex{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px;background:var(--panel)}
+.ex-h{padding:5px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--panel-2);border-bottom:1px solid var(--border)}
+.ex-b{padding:8px 12px;display:grid;gap:6px}
+.ex-row{display:grid;grid-template-columns:64px minmax(0,1fr);gap:8px;align-items:baseline;font-size:13px}
+.ex-row>span{color:var(--muted);font-weight:600;font-size:12px}
+.ex-row code{white-space:pre-wrap;word-break:break-word;background:none;border:0;padding:0;font-size:12.5px}
+.workspace{display:grid;grid-template-rows:var(--editor-h,58%) 10px minmax(0,1fr);min-height:0;min-width:0}
+.pane{display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
+.pane-h{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 14px;border-bottom:1px solid var(--border);background:var(--panel);min-height:48px;flex-wrap:wrap}
+.file{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13px}
+.file svg{color:var(--muted)}
+.tools{display:flex;align-items:center;gap:6px;margin-left:auto;flex-wrap:wrap}
+.tools .sep{width:1px;height:20px;background:var(--border);margin:0 4px}
+.editor{--fs:13px;flex:1;display:flex;min-height:0;background:var(--code-bg);overflow:hidden;font:var(--fs)/1.6 var(--mono)}
+.gutter{margin:0;flex:none;min-width:46px;padding:12px 10px 24px 8px;text-align:right;color:var(--muted);background:var(--gutter);border-right:1px solid var(--border);overflow:hidden;user-select:none;font:inherit;opacity:.85}
+.code{flex:1;min-width:0;border:0;outline:none;resize:none;background:transparent;color:var(--text);padding:12px 14px;white-space:pre;overflow:auto;tab-size:2;font:inherit}
+.editor:focus-within{box-shadow:inset 0 0 0 2px var(--accent)}
+.splitter{cursor:row-resize;display:grid;place-items:center;touch-action:none}
+.splitter::after{content:"";width:44px;height:4px;border-radius:99px;background:var(--border);transition:background .15s}
+.splitter:hover::after,.splitter:focus-visible::after{background:var(--accent)}
+.status{margin-left:auto;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.rbody{flex:1;min-height:0;position:relative;background:var(--panel)}
+.panel{position:absolute;inset:0;overflow:auto;padding:12px 14px}
+.log{display:flex;gap:8px;padding:6px 10px;border-radius:8px;font:12.5px/1.5 var(--mono);border:1px solid transparent;margin-bottom:4px}
+.log pre{margin:0;white-space:pre-wrap;word-break:break-word;font:inherit}
+.log-log,.log-info,.log-debug{background:var(--panel-2)}
+.log-warn{background:var(--warn-bg);color:var(--warn)}
+.log-error{background:var(--bad-bg);color:var(--bad)}
+.log-result{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.log-meta{color:var(--muted);padding-left:2px}
+.summary{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;margin-bottom:12px;border:1px solid var(--border);background:var(--panel-2)}
+.summary.ok{background:var(--good-bg);border-color:transparent;color:var(--good)}
+.summary.bad{background:var(--bad-bg);border-color:transparent;color:var(--bad)}
+.summary strong{font-size:14px;white-space:nowrap}
+.bar{height:6px;background:var(--panel-2);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--good);border-radius:99px;transition:width .3s}
+.summary .bar{flex:1;background:rgba(127,127,127,.2)}
+.summary.bad .bar>i{background:var(--bad)}
+.tcase{border:1px solid var(--border);border-radius:10px;padding:10px 12px 8px;margin-bottom:10px;background:var(--panel)}
+.tcase.pass{border-left:4px solid var(--good)}
+.tcase.fail{border-left:4px solid var(--bad)}
+.tcase.running{border-left:4px solid var(--accent)}
+.tcase-h{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.tnum{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tbadge{font-size:12px;font-weight:600;padding:1px 8px;border-radius:99px;display:inline-flex;align-items:center;gap:4px}
+.tbadge.pass{background:var(--good-bg);color:var(--good)}
+.tbadge.fail{background:var(--bad-bg);color:var(--bad)}
+.tbadge.running{background:var(--accent-soft);color:var(--accent)}
+.kv{display:grid;grid-template-columns:70px 1fr;gap:8px;font-size:12.5px;padding:3px 0;align-items:start}
+.kv>span{color:var(--muted);font-weight:600}
+.kv code{background:none;border:0;padding:0;white-space:pre-wrap;word-break:break-word;font-size:12.5px}
+.kv.err code{color:var(--bad)}
+.kv.ok code{color:var(--good)}
+.spinner{width:12px;height:12px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--accent);animation:spin .7s linear infinite;display:inline-block;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.placeholder{display:grid;place-items:center;height:100%;text-align:center;color:var(--muted);padding:24px}
+.placeholder strong{display:block;color:var(--text);margin-bottom:4px}
+
+/* results */
+.score-hero{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+.ring{--p:0;--c:var(--accent);flex:none;width:148px;height:148px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--panel-2) 0);display:grid;place-items:center}
+.ring>div{width:118px;height:118px;border-radius:50%;background:var(--panel);display:grid;place-items:center;text-align:center;align-content:center}
+.ring b{font-size:44px;line-height:1;letter-spacing:-.03em}
+.ring small{color:var(--muted);font-size:12px}
+.ring.good{--c:var(--good)}.ring.warn{--c:var(--warn)}.ring.bad{--c:var(--bad)}
+.hero-copy{flex:1;min-width:200px}
+.grade{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:2px 12px;border-radius:99px;background:var(--accent-soft);color:var(--accent);margin-bottom:8px}
+.grade.good{background:var(--good-bg);color:var(--good)}.grade.warn{background:var(--warn-bg);color:var(--warn)}.grade.bad{background:var(--bad-bg);color:var(--bad)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:16px}
+.tile{border:1px solid var(--border);border-radius:10px;padding:10px 14px;background:var(--panel)}
+.tile-l{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.tile-v{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.tile-s{font-size:12px;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.acc{border:1px solid var(--border);border-radius:10px;background:var(--panel);margin-bottom:10px;overflow:hidden}
+.acc summary{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;font-weight:600;list-style:none}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary::before{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s;flex:none}
+.acc[open] summary::before{transform:rotate(45deg)}
+.acc summary .grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.acc-b{padding:4px 14px 14px;border-top:1px solid var(--border)}
+.acc-b h4{margin:14px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.codeblock{margin:0;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--code-bg);font:12.5px/1.6 var(--mono);overflow:auto;white-space:pre;tab-size:2;max-height:340px}
+.expl p{margin:0 0 10px}.expl ul{margin:0 0 10px;padding-left:20px}
+.progress-line{display:flex;align-items:center;gap:10px}
+.sharebox{display:grid;gap:10px}
+.share-card .big{font-size:56px;font-weight:800;letter-spacing:-.03em;line-height:1}
+
+/* dialogs / toasts */
+.overlay{position:fixed;inset:0;background:rgba(10,12,18,.55);display:grid;place-items:center;padding:16px;z-index:50;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.dialog{width:min(560px,100%);max-height:calc(100dvh - 32px);display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden}
+.dialog.narrow{width:min(420px,100%)}
+.dialog-h{display:flex;align-items:center;padding:14px 16px 14px 20px;border-bottom:1px solid var(--border)}
+.dialog-h h2{margin:0;font-size:16px}
+.dialog-h .icon-btn{margin-left:auto}
+.dialog-b{padding:16px 20px;overflow:auto}
+.dialog-f{display:flex;gap:8px;justify-content:flex-end;align-items:center;padding:12px 20px;border-top:1px solid var(--border);background:var(--panel-2)}
+#toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;z-index:60}
+.toast{background:var(--text);color:var(--bg);padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);font-weight:600;font-size:13px;animation:fade .2s;max-width:340px}
+.toast.bad{background:var(--bad);color:#fff}
+
+@media (min-width:961px){
+  body.mode-interview{height:100vh;height:100dvh;overflow:hidden}
+}
+@media (max-width:960px){
+  .topbar{flex-wrap:wrap;padding:8px 16px 6px;row-gap:4px}
+  .topnav{order:3;flex-basis:100%;margin:0 -6px;padding-bottom:2px}
+  .lobby-grid{grid-template-columns:minmax(0,1fr)}
+  .iv-main{display:flex;flex-direction:column;padding:12px 16px}
+  .problem{flex:none;overflow:visible}
+  .workspace{flex:none;height:680px}
+  .ibar{padding:8px 16px 10px}
+}
+@media (max-width:560px){
+  .btn .lbl-long{display:none}
+  .timer{font-size:24px}
+  .ring{width:128px;height:128px}.ring>div{width:100px;height:100px}.ring b{font-size:36px}
+  .kv{grid-template-columns:1fr;gap:0}
+  .ex-row{grid-template-columns:1fr;gap:0}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+@media print{
+  :root{color-scheme:light;--bg:#fff;--panel:#fff;--panel-2:#f3f3f3;--text:#000;--muted:#444;--border:#bbb;--shadow:none;--code-bg:#fafafa}
+  body{background:#fff;color:#000;display:block;height:auto!important;overflow:visible!important}
+  .topbar,.no-print,#toasts,#modal-root,.actions,.ibar{display:none!important}
+  .page{padding:0;width:100%}
+  .card,.acc,.tile{box-shadow:none;break-inside:avoid}
+  .acc-b{display:block}
+  .codeblock{max-height:none;white-space:pre-wrap;overflow:visible}
+  .tbl-wrap{overflow:visible}
+  .ring{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" id="logo"></span>
+    <span class="brand-name">Levelup</span>
+  </div>
+  <nav class="topnav" aria-label="Levelup pages" data-levelup-nav></nav>
+  <div class="spacer"></div>
+  <button class="icon-btn" id="theme-btn" aria-label="Toggle light/dark theme"></button>
+</header>
+
+<!-- LOBBY -->
+<main class="page" id="screen-lobby" aria-labelledby="lobby-h">
+  <section class="card pad">
+    <h1 id="lobby-h" tabindex="-1">Mock interview</h1>
+    <p class="lead" style="margin-bottom:0">Practise the way a real technical screen feels: a few coding questions, one clock, no help.</p>
+    <ul class="points" id="points"></ul>
+  </section>
+  <div class="lobby-grid">
+    <section class="card pad" aria-labelledby="setup-h">
+      <h2 id="setup-h">Set up your interview</h2>
+      <div id="setup"></div>
+    </section>
+    <section class="card pad" aria-labelledby="hist-h">
+      <h2 id="hist-h">Your history</h2>
+      <div id="history"></div>
+    </section>
+  </div>
+</main>
+
+<!-- INTERVIEW -->
+<section class="iv" id="screen-interview" aria-label="Interview in progress" hidden>
+  <h1 class="sr-only">Mock interview in progress</h1>
+  <div class="ibar" id="ibar">
+    <div class="timer-wrap">
+      <div class="timer" id="timer" role="timer" aria-label="Time remaining"><span id="timer-ic"></span><span id="timer-text">00:00</span></div>
+      <span class="tstate" id="tstate"></span>
+    </div>
+    <nav class="qnav" id="qnav" aria-label="Questions"></nav>
+    <button class="btn" id="finish-btn"></button>
+    <div class="tbar" id="tbar" aria-hidden="true"><i id="tbar-fill"></i></div>
+  </div>
+  <div class="iv-main">
+    <section class="problem card" id="problem" aria-label="Problem"></section>
+    <section class="workspace" id="workspace">
+      <div class="pane card">
+        <div class="pane-h">
+          <span class="file" id="file-label"></span>
+          <div class="tools">
+            <button class="icon-btn" id="font-dec" aria-label="Smaller font" title="Smaller font"><span style="font-size:11px;font-weight:700">A</span></button>
+            <button class="icon-btn" id="font-inc" aria-label="Larger font" title="Larger font"><span style="font-size:15px;font-weight:700">A</span></button>
+            <button class="btn sm ghost" id="reset-btn" title="Reset to starter code"></button>
+            <span class="sep"></span>
+            <button class="btn" id="run-btn" title="Run (Ctrl/Cmd + Enter)"></button>
+            <button class="btn primary" id="test-btn" title="Run tests (Ctrl/Cmd + Shift + Enter)"></button>
+          </div>
+        </div>
+        <div class="editor" id="editor">
+          <pre class="gutter" id="gutter" aria-hidden="true">1</pre>
+          <textarea class="code" id="code" spellcheck="false" wrap="off" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Code editor" aria-describedby="editor-hint"></textarea>
+        </div>
+        <span class="sr-only" id="editor-hint">Tab inserts indentation. Press Escape, then Tab, to move focus out of the editor.</span>
+      </div>
+      <div class="splitter" id="splitter" role="separator" aria-orientation="horizontal" aria-label="Resize editor and results" tabindex="0"></div>
+      <div class="pane card">
+        <div class="pane-h">
+          <div class="tabs" id="tabs" role="tablist" aria-label="Results"></div>
+          <div class="status" id="status" role="status"></div>
+        </div>
+        <div class="rbody">
+          <div class="panel" id="panel-console" role="tabpanel" aria-label="Console"></div>
+          <div class="panel" id="panel-tests" role="tabpanel" aria-label="Test results" hidden></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<main class="page" id="screen-results" aria-labelledby="res-h" hidden></main>
+
+<!-- SHARED RESULT (read-only) -->
+<main class="page" id="screen-shared" aria-labelledby="shared-h" hidden></main>
+
+<div id="modal-root"></div>
+<div id="toasts" aria-live="polite"></div>
+<div class="sr-only" id="timer-live" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+'use strict';
+/* ==========================================================================
+   Helpers shared with the worker (copied from index.html, injected via toString)
+   ========================================================================== */
+function ser(v){
+  if(v===undefined) return 'undefined';
+  if(typeof v==='function') return v.toString();
+  if(typeof v==='symbol') return v.toString();
+  if(typeof v==='bigint') return v+'n';
+  if(typeof v==='number') return Object.is(v,-0)?'-0':String(v);
+  try{
+    var s=JSON.stringify(v,function(k,x){
+      if(typeof x==='bigint') return x+'n';
+      if(typeof x==='function') return '[Function]';
+      if(typeof x==='symbol') return x.toString();
+      if(typeof x==='number' && !isFinite(x)) return String(x);
+      if(x instanceof Error) return x.name+': '+x.message;
+      if(x instanceof Map) return {'[Map]':Array.from(x)};
+      if(x instanceof Set) return {'[Set]':Array.from(x)};
+      return x;
+    });
+    return s===undefined?String(v):s;
+  }catch(e){ return /circular/i.test(String(e&&e.message))?'[Circular]':String(v); }
+}
+function fmt(v){ return typeof v==='string'?v:ser(v); }
+function emsg(e){ return e&&e.name&&e.message!==undefined ? e.name+': '+e.message : String(e); }
+function eq(a,b){
+  if(a===b||Object.is(a,b)) return true;
+  if(typeof a!=='object'||typeof b!=='object'||!a||!b) return false;
+  if(Array.isArray(a)!==Array.isArray(b)) return false;
+  var ka=Object.keys(a), kb=Object.keys(b);
+  if(ka.length!==kb.length) return false;
+  return ka.every(function(k){ return Object.prototype.hasOwnProperty.call(b,k)&&eq(a[k],b[k]); });
+}
+const SHARED_SRC=[ser,fmt,emsg,eq].map(String).join('\n');
+
+/* ==========================================================================
+   Web Worker: runs candidate JavaScript (run + test modes)
+   ========================================================================== */
+function workerMain(){
+  ['log','info','warn','error','debug'].forEach(function(level){
+    console[level]=function(){ postMessage({t:'log',level:level,text:Array.prototype.map.call(arguments,fmt).join(' ')}); };
+  });
+  self.onmessage=async function(e){
+    var d=e.data, fn=d.fn, tests=d.tests, f;
+    try{
+      f=new Function(d.code+'\n;return typeof '+fn+'==="function" ? '+fn+' : undefined;')();
+    }catch(err){ postMessage({t:'fatal',message:emsg(err)}); return; }
+    try{
+      if(d.mode==='run'){
+        if(!f){ postMessage({t:'log',level:'warn',text:'Function "'+fn+'" is not defined yet, so nothing was called.'}); }
+        else if(tests[0]){
+          try{
+            var args=JSON.parse(tests[0].input);
+            if(Array.isArray(args)){
+              var out=f.apply(null,args); if(out&&typeof out.then==='function') out=await out;
+              postMessage({t:'log',level:'result',text:fn+'('+args.map(ser).join(', ')+')  →  '+ser(out)});
+            }
+          }catch(err){ postMessage({t:'log',level:'error',text:'Sample call threw: '+emsg(err)}); }
+        }
+        postMessage({t:'done'}); return;
+      }
+      if(!f){ postMessage({t:'fatal',message:'Function "'+fn+'" is not defined. Declare it like: function '+fn+'(...) { ... }'}); return; }
+      for(var i=0;i<tests.length;i++){
+        postMessage({t:'start',i:i});
+        var t0=performance.now(), res;
+        try{
+          var a=JSON.parse(tests[i].input), exp=JSON.parse(tests[i].expected);
+          var actual=f.apply(null,a); if(actual&&typeof actual.then==='function') actual=await actual;
+          res={i:i,pass:eq(actual,exp),actual:ser(actual)};
+        }catch(err){ res={i:i,pass:false,error:emsg(err)}; }
+        res.t='result'; res.ms=Math.round(performance.now()-t0);
+        postMessage(res);
+      }
+      postMessage({t:'done'});
+    }catch(err){ postMessage({t:'fatal',message:emsg(err)}); }
+  };
+}
+const WORKER_SRC=SHARED_SRC+'\n('+workerMain+')();';
+
+/* ==========================================================================
+   Question bank (JavaScript only). Every reference solution passes its own tests.
+   ========================================================================== */
+const BANK=[
+  {id:"two-sum",title:"Two Sum",difficulty:"Easy",fn:"twoSum",time:"O(n)",space:"O(n)",
+   description:"Given an array of integers `nums` and an integer `target`, return the indices of the two numbers that add up to `target`.\n\nRules:\n- Exactly one solution exists for each input.\n- You may not use the same element twice.\n- Return the indices in ascending order, e.g. `[0, 1]`.",
+   starter:"function twoSum(nums, target) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[[2,7,11,15], 9]",expected:"[0,1]"},
+    {input:"[[3,2,4], 6]",expected:"[1,2]"},
+    {input:"[[3,3], 6]",expected:"[0,1]"},
+    {input:"[[-1,-2,-3,-4,-5],-8]",expected:"[2,4]"},
+    {input:"[[0,4,3,0],0]",expected:"[0,3]"}],
+   examples:[{input:"nums = [2, 7, 11, 15], target = 9",output:"[0, 1]"},{input:"nums = [3, 2, 4], target = 6",output:"[1, 2]"}],
+   solution:"function twoSum(nums, target) {\n  const seen = new Map(); // number -> index\n  for (let i = 0; i < nums.length; i++) {\n    const need = target - nums[i];\n    if (seen.has(need)) return [seen.get(need), i];\n    seen.set(nums[i], i);\n  }\n}\n",
+   explanation:"Checking every pair works, but it is slow: O(n²). Instead, remember each number you have seen in a Map (value → index).\n\nFor every number, the partner you need is `target - number`. If it is already in the Map, you are done. If not, store the current number and move on.\n\nYou only walk the array once, so the time is O(n). The Map holds at most n numbers, so the extra space is O(n)."},
+  {id:"reverse-string",title:"Reverse String",difficulty:"Easy",fn:"reverseString",time:"O(n)",space:"O(n)",
+   description:"Write `reverseString(s)` that returns the string `s` reversed.\n\nExample: `\"hello\"` becomes `\"olleh\"`.",
+   starter:"function reverseString(s) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[\"hello\"]",expected:"\"olleh\""},
+    {input:"[\"\"]",expected:"\"\""},
+    {input:"[\"Ab c\"]",expected:"\"c bA\""},
+    {input:"[\"a\"]",expected:"\"a\""},
+    {input:"[\"  x \"]",expected:"\" x  \""},
+    {input:"[\"racecar!\"]",expected:"\"!racecar\""}],
+   examples:[{input:"s = \"hello\"",output:"\"olleh\""},{input:"s = \"Ab c\"",output:"\"c bA\""}],
+   solution:"function reverseString(s) {\n  let result = '';\n  for (let i = s.length - 1; i >= 0; i--) {\n    result += s[i];\n  }\n  return result;\n}\n",
+   explanation:"Walk the string from the last character to the first, adding each character to a new string.\n\nEvery character is visited once, so the time is O(n). The new string has the same length as the input, so the space is O(n).\n\nShortcut: `s.split('').reverse().join('')` does the same thing in one line."},
+  {id:"fizzbuzz",title:"FizzBuzz",difficulty:"Easy",fn:"fizzBuzz",time:"O(n)",space:"O(n)",
+   description:"Write `fizzBuzz(n)` that returns an array of strings for the numbers 1 to `n`:\n- multiples of 3 become `\"Fizz\"`\n- multiples of 5 become `\"Buzz\"`\n- multiples of both become `\"FizzBuzz\"`\n- every other number is its own value as a string",
+   starter:"function fizzBuzz(n) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[3]",expected:"[\"1\",\"2\",\"Fizz\"]"},
+    {input:"[5]",expected:"[\"1\",\"2\",\"Fizz\",\"4\",\"Buzz\"]"},
+    {input:"[15]",expected:"[\"1\",\"2\",\"Fizz\",\"4\",\"Buzz\",\"Fizz\",\"7\",\"8\",\"Fizz\",\"Buzz\",\"11\",\"Fizz\",\"13\",\"14\",\"FizzBuzz\"]"},
+    {input:"[1]",expected:"[\"1\"]"},
+    {input:"[0]",expected:"[]"}],
+   examples:[{input:"n = 5",output:"[\"1\", \"2\", \"Fizz\", \"4\", \"Buzz\"]"},{input:"n = 15",output:"[..., \"14\", \"FizzBuzz\"]"}],
+   solution:"function fizzBuzz(n) {\n  const result = [];\n  for (let i = 1; i <= n; i++) {\n    if (i % 15 === 0) result.push('FizzBuzz');\n    else if (i % 3 === 0) result.push('Fizz');\n    else if (i % 5 === 0) result.push('Buzz');\n    else result.push(String(i));\n  }\n  return result;\n}\n",
+   explanation:"Loop from 1 to n. Check the most specific rule first (multiple of both 3 and 5, which means a multiple of 15), then 3, then 5, and otherwise use the number itself.\n\nThe loop runs n times, so the time is O(n). The result array holds n items, so the space is O(n)."},
+  {id:"palindrome",title:"Valid Palindrome",difficulty:"Easy",fn:"isPalindrome",time:"O(n)",space:"O(n)",
+   description:"Write `isPalindrome(s)` that returns `true` if `s` reads the same forwards and backwards.\n\nIgnore case and skip every character that is not a letter or a digit. An empty string counts as a palindrome.",
+   starter:"function isPalindrome(s) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[\"A man, a plan, a canal: Panama\"]",expected:"true"},
+    {input:"[\"race a car\"]",expected:"false"},
+    {input:"[\"\"]",expected:"true"},
+    {input:"[\"0P\"]",expected:"false"},
+    {input:"[\" \"]",expected:"true"},
+    {input:"[\"Was it a car or a cat I saw?\"]",expected:"true"}],
+   examples:[{input:"s = \"A man, a plan, a canal: Panama\"",output:"true"},{input:"s = \"race a car\"",output:"false"}],
+   solution:"function isPalindrome(s) {\n  const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');\n  let left = 0;\n  let right = clean.length - 1;\n  while (left < right) {\n    if (clean[left] !== clean[right]) return false;\n    left++;\n    right--;\n  }\n  return true;\n}\n",
+   explanation:"First clean the string: lowercase it and drop everything that is not a letter or a digit.\n\nThen use two pointers, one at the start and one at the end. If the characters differ, it is not a palindrome. Otherwise move both pointers inwards until they meet.\n\nCleaning and comparing each take one pass, so the time is O(n). The cleaned copy needs O(n) space."},
+  {id:"valid-parentheses",title:"Valid Parentheses",difficulty:"Medium",fn:"isValid",time:"O(n)",space:"O(n)",
+   description:"Given a string `s` made only of the characters `()[]{}`, return `true` if the brackets are valid.\n\nA string is valid when:\n- every opening bracket is closed by the same type of bracket\n- brackets are closed in the correct order",
+   starter:"function isValid(s) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[\"()[]{}\"]",expected:"true"},
+    {input:"[\"(]\"]",expected:"false"},
+    {input:"[\"([{}])\"]",expected:"true"},
+    {input:"[\"((\"]",expected:"false"},
+    {input:"[\"\"]",expected:"true"},
+    {input:"[\"}\"]",expected:"false"},
+    {input:"[\"{[]}\"]",expected:"true"}],
+   examples:[{input:"s = \"()[]{}\"",output:"true"},{input:"s = \"(]\"",output:"false"}],
+   solution:"function isValid(s) {\n  const pairs = { ')': '(', ']': '[', '}': '{' };\n  const stack = [];\n  for (const ch of s) {\n    if (pairs[ch]) {\n      if (stack.pop() !== pairs[ch]) return false;\n    } else {\n      stack.push(ch);\n    }\n  }\n  return stack.length === 0;\n}\n",
+   explanation:"Use a stack. Push every opening bracket. When you meet a closing bracket, pop the stack and check that it is the matching opening bracket.\n\nIf it is not, or the stack is empty, the string is invalid. At the end the stack must be empty, otherwise some bracket was never closed.\n\nEach character is handled once, so the time is O(n). In the worst case the stack holds every character, so the space is O(n)."},
+  {id:"valid-anagram",title:"Valid Anagram",difficulty:"Easy",fn:"isAnagram",time:"O(n)",space:"O(n)",
+   description:"Write `isAnagram(s, t)` that returns `true` if `t` is a rearrangement of the letters of `s`, using every character exactly once.\n\nRules:\n- The comparison is case-sensitive (`\"a\"` and `\"A\"` are different).\n- Two empty strings are anagrams.",
+   starter:"function isAnagram(s, t) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[\"anagram\",\"nagaram\"]",expected:"true"},
+    {input:"[\"rat\",\"car\"]",expected:"false"},
+    {input:"[\"\",\"\"]",expected:"true"},
+    {input:"[\"a\",\"ab\"]",expected:"false"},
+    {input:"[\"aacc\",\"ccac\"]",expected:"false"},
+    {input:"[\"listen\",\"silent\"]",expected:"true"},
+    {input:"[\"Aa\",\"aa\"]",expected:"false"}],
+   examples:[{input:"s = \"anagram\", t = \"nagaram\"",output:"true"},{input:"s = \"rat\", t = \"car\"",output:"false"}],
+   solution:"function isAnagram(s, t) {\n  if (s.length !== t.length) return false;\n  const counts = new Map();\n  for (const ch of s) counts.set(ch, (counts.get(ch) || 0) + 1);\n  for (const ch of t) {\n    const left = counts.get(ch);\n    if (!left) return false;\n    counts.set(ch, left - 1);\n  }\n  return true;\n}\n",
+   explanation:"Two strings are anagrams when every character appears the same number of times in both.\n\nCount the characters of `s` in a Map. Then walk through `t` and use up one count per character. If a character is missing (count 0 or absent) the strings differ. Equal lengths are checked first, so no counts can be left over.\n\nSorting both strings also works but costs O(n log n). Counting is one pass over each string: O(n) time, and the Map holds at most n characters: O(n) space."},
+  {id:"climbing-stairs",title:"Climbing Stairs",difficulty:"Easy",fn:"climbStairs",time:"O(n)",space:"O(1)",
+   description:"You are climbing a staircase with `n` steps. Each move you can climb 1 or 2 steps.\n\nWrite `climbStairs(n)` that returns the number of distinct ways to reach the top.\n\n`n` is between 1 and 45.",
+   starter:"function climbStairs(n) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[1]",expected:"1"},
+    {input:"[2]",expected:"2"},
+    {input:"[3]",expected:"3"},
+    {input:"[5]",expected:"8"},
+    {input:"[10]",expected:"89"},
+    {input:"[30]",expected:"1346269"},
+    {input:"[45]",expected:"1836311903"}],
+   examples:[{input:"n = 2",output:"2"},{input:"n = 3",output:"3"}],
+   solution:"function climbStairs(n) {\n  let prev = 1; // ways to reach step i - 2\n  let curr = 1; // ways to reach step i - 1\n  for (let i = 2; i <= n; i++) {\n    const next = prev + curr;\n    prev = curr;\n    curr = next;\n  }\n  return curr;\n}\n",
+   explanation:"To stand on step `i` you came from step `i - 1` (one step) or step `i - 2` (two steps), so ways(i) = ways(i - 1) + ways(i - 2). This is the Fibonacci sequence.\n\nA plain recursive version repeats the same sub-problems and is exponential. Instead, walk up from the bottom and keep only the last two values.\n\nOne loop gives O(n) time and two variables give O(1) space."},
+  {id:"binary-search",title:"Binary Search",difficulty:"Easy",fn:"search",time:"O(log n)",space:"O(1)",
+   description:"Given an array `nums` of distinct integers sorted in ascending order and an integer `target`, write `search(nums, target)` that returns the index of `target`, or `-1` if it is not in the array.\n\nYour solution should run in O(log n) time.",
+   starter:"function search(nums, target) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[[-1,0,3,5,9,12],9]",expected:"4"},
+    {input:"[[-1,0,3,5,9,12],2]",expected:"-1"},
+    {input:"[[5],5]",expected:"0"},
+    {input:"[[5],-5]",expected:"-1"},
+    {input:"[[],1]",expected:"-1"},
+    {input:"[[1,3,5,7,9,11,13],1]",expected:"0"},
+    {input:"[[1,3,5,7,9,11,13],13]",expected:"6"}],
+   examples:[{input:"nums = [-1, 0, 3, 5, 9, 12], target = 9",output:"4"},{input:"nums = [-1, 0, 3, 5, 9, 12], target = 2",output:"-1"}],
+   solution:"function search(nums, target) {\n  let lo = 0;\n  let hi = nums.length - 1;\n  while (lo <= hi) {\n    const mid = Math.floor((lo + hi) / 2);\n    if (nums[mid] === target) return mid;\n    if (nums[mid] < target) lo = mid + 1;\n    else hi = mid - 1;\n  }\n  return -1;\n}\n",
+   explanation:"Because the array is sorted, looking at the middle element tells you which half can contain the target. If the middle is too small, throw away the left half; if it is too big, throw away the right half.\n\nEach step halves the search range, so at most log2(n) steps are needed: O(log n) time. Only a few index variables are used: O(1) space."},
+  {id:"max-subarray",title:"Maximum Subarray",difficulty:"Medium",fn:"maxSubArray",time:"O(n)",space:"O(1)",
+   description:"Given a non-empty array of integers `nums`, write `maxSubArray(nums)` that returns the largest sum of any contiguous subarray (at least one element).\n\nThe array can contain negative numbers.",
+   starter:"function maxSubArray(nums) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[[-2,1,-3,4,-1,2,1,-5,4]]",expected:"6"},
+    {input:"[[1]]",expected:"1"},
+    {input:"[[5,4,-1,7,8]]",expected:"23"},
+    {input:"[[-3,-1,-2]]",expected:"-1"},
+    {input:"[[-2,-1]]",expected:"-1"},
+    {input:"[[0,0,0]]",expected:"0"},
+    {input:"[[2,-1,2,-1,2]]",expected:"4"}],
+   examples:[{input:"nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]",output:"6"},{input:"nums = [5, 4, -1, 7, 8]",output:"23"}],
+   solution:"function maxSubArray(nums) {\n  let best = nums[0];\n  let current = nums[0];\n  for (let i = 1; i < nums.length; i++) {\n    // extend the running subarray, or start fresh at nums[i]\n    current = Math.max(nums[i], current + nums[i]);\n    best = Math.max(best, current);\n  }\n  return best;\n}\n",
+   explanation:"Kadane's algorithm. At every position decide: is it better to extend the best subarray that ends at the previous element, or to start a new subarray here? `current = max(nums[i], current + nums[i])`. A negative running sum is never worth keeping.\n\nKeep the largest `current` seen so far. Checking all subarrays takes O(n²); this takes one pass, O(n) time, and O(1) space."},
+  {id:"rotate-array",title:"Rotate Array",difficulty:"Medium",fn:"rotate",time:"O(n)",space:"O(1)",
+   description:"Write `rotate(nums, k)` that rotates the array `nums` to the right by `k` steps and returns the rotated array.\n\nRules:\n- `k` is not negative and can be larger than the length of the array.\n- An empty array stays empty.\n- Aim for O(1) extra space (rotating in place).",
+   starter:"function rotate(nums, k) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[[1,2,3,4,5,6,7],3]",expected:"[5,6,7,1,2,3,4]"},
+    {input:"[[-1,-100,3,99],2]",expected:"[3,99,-1,-100]"},
+    {input:"[[1,2],5]",expected:"[2,1]"},
+    {input:"[[1],0]",expected:"[1]"},
+    {input:"[[],3]",expected:"[]"},
+    {input:"[[1,2,3],3]",expected:"[1,2,3]"},
+    {input:"[[1,2,3],0]",expected:"[1,2,3]"}],
+   examples:[{input:"nums = [1, 2, 3, 4, 5, 6, 7], k = 3",output:"[5, 6, 7, 1, 2, 3, 4]"},{input:"nums = [1, 2], k = 5",output:"[2, 1]"}],
+   solution:"function rotate(nums, k) {\n  const n = nums.length;\n  if (n === 0) return nums;\n  k = k % n;\n  reverse(nums, 0, n - 1);\n  reverse(nums, 0, k - 1);\n  reverse(nums, k, n - 1);\n  return nums;\n}\n\nfunction reverse(arr, start, end) {\n  while (start < end) {\n    const tmp = arr[start];\n    arr[start] = arr[end];\n    arr[end] = tmp;\n    start++;\n    end--;\n  }\n}\n",
+   explanation:"Rotating by k is the same as k % n (a full turn changes nothing). Then three reversals do the job in place:\n\n1. reverse the whole array\n2. reverse the first k items\n3. reverse the remaining items\n\nExample: [1,2,3,4,5,6,7] with k = 3 becomes [7,6,5,4,3,2,1], then [5,6,7,4,3,2,1], then [5,6,7,1,2,3,4].\n\nEvery item is moved a constant number of times: O(n) time. Copying into a second array is simpler but needs O(n) extra space; the reversal trick uses O(1)."},
+  {id:"merge-intervals",title:"Merge Intervals",difficulty:"Medium",fn:"mergeIntervals",time:"O(n log n)",space:"O(n)",
+   description:"Given an array of intervals `[start, end]`, write `mergeIntervals(intervals)` that merges all overlapping intervals and returns the merged intervals sorted by start.\n\nRules:\n- Intervals that touch (for example `[1, 4]` and `[4, 5]`) count as overlapping.\n- The input may be unsorted and may be empty.",
+   starter:"function mergeIntervals(intervals) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[[[1,3],[2,6],[8,10],[15,18]]]",expected:"[[1,6],[8,10],[15,18]]"},
+    {input:"[[[1,4],[4,5]]]",expected:"[[1,5]]"},
+    {input:"[[]]",expected:"[]"},
+    {input:"[[[5,7]]]",expected:"[[5,7]]"},
+    {input:"[[[8,10],[1,3],[2,6]]]",expected:"[[1,6],[8,10]]"},
+    {input:"[[[1,10],[2,3],[4,5]]]",expected:"[[1,10]]"},
+    {input:"[[[1,4],[0,4]]]",expected:"[[0,4]]"},
+    {input:"[[[2,3],[4,5],[6,7]]]",expected:"[[2,3],[4,5],[6,7]]"}],
+   examples:[{input:"intervals = [[1, 3], [2, 6], [8, 10], [15, 18]]",output:"[[1, 6], [8, 10], [15, 18]]"},{input:"intervals = [[1, 4], [4, 5]]",output:"[[1, 5]]"}],
+   solution:"function mergeIntervals(intervals) {\n  const sorted = [...intervals].sort((a, b) => a[0] - b[0]);\n  const merged = [];\n  for (const [start, end] of sorted) {\n    const last = merged[merged.length - 1];\n    if (last && start <= last[1]) {\n      last[1] = Math.max(last[1], end);\n    } else {\n      merged.push([start, end]);\n    }\n  }\n  return merged;\n}\n",
+   explanation:"Sort the intervals by their start. Now any interval that overlaps the previous one must start before (or when) the previous one ends.\n\nWalk through the sorted list and keep a result list. If the current interval starts at or before the end of the last merged interval, extend that end (`max` of both ends). Otherwise start a new merged interval.\n\nSorting costs O(n log n) and the walk is O(n), so the total is O(n log n). The result list needs O(n) space."},
+  {id:"flatten-array",title:"Flatten Nested Array",difficulty:"Medium",fn:"flatten",time:"O(n)",space:"O(n)",
+   description:"Write `flatten(arr)` that takes an array that may contain other arrays nested to any depth, and returns a new flat array with all the values in their original left-to-right order.\n\nRules:\n- Values are numbers or strings.\n- Empty arrays disappear from the result.",
+   starter:"function flatten(arr) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[[1,[2,[3,[4]]]]]",expected:"[1,2,3,4]"},
+    {input:"[[]]",expected:"[]"},
+    {input:"[[[],[[]]]]",expected:"[]"},
+    {input:"[[1,2,3]]",expected:"[1,2,3]"},
+    {input:"[[[1],[2,[3]],4,[[5]]]]",expected:"[1,2,3,4,5]"},
+    {input:"[[\"a\",[\"b\",[\"c\"]]]]",expected:"[\"a\",\"b\",\"c\"]"},
+    {input:"[[[[[[42]]]]]]",expected:"[42]"}],
+   examples:[{input:"arr = [1, [2, [3, [4]]]]",output:"[1, 2, 3, 4]"},{input:"arr = [[], [[]], 5]",output:"[5]"}],
+   solution:"function flatten(arr) {\n  const result = [];\n  const walk = (items) => {\n    for (const item of items) {\n      if (Array.isArray(item)) walk(item);\n      else result.push(item);\n    }\n  };\n  walk(arr);\n  return result;\n}\n",
+   explanation:"Use recursion: go through the items; if an item is itself an array, flatten it the same way, otherwise add it to the result.\n\nA single shared `result` array is filled while walking, so nothing is copied over and over (spreading or `concat` inside the recursion would copy the data repeatedly).\n\nEvery value is visited once: O(n) time. The result holds every value and the recursion is as deep as the nesting: O(n) space."},
+  {id:"longest-palindrome",title:"Longest Palindromic Substring",difficulty:"Medium",fn:"longestPalindrome",time:"O(n²)",space:"O(n)",
+   description:"Given a string `s`, write `longestPalindrome(s)` that returns the longest substring of `s` that reads the same forwards and backwards.\n\nRules:\n- If several substrings have the same maximum length, return the one that starts first.\n- For an empty string return an empty string.",
+   starter:"function longestPalindrome(s) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[\"babad\"]",expected:"\"bab\""},
+    {input:"[\"cbbd\"]",expected:"\"bb\""},
+    {input:"[\"a\"]",expected:"\"a\""},
+    {input:"[\"ac\"]",expected:"\"a\""},
+    {input:"[\"racecar\"]",expected:"\"racecar\""},
+    {input:"[\"forgeeksskeegfor\"]",expected:"\"geeksskeeg\""},
+    {input:"[\"\"]",expected:"\"\""},
+    {input:"[\"abacdfgdcaba\"]",expected:"\"aba\""},
+    {input:"[\"aaaa\"]",expected:"\"aaaa\""}],
+   examples:[{input:"s = \"babad\"",output:"\"bab\""},{input:"s = \"cbbd\"",output:"\"bb\""}],
+   solution:"function longestPalindrome(s) {\n  let start = 0;\n  let maxLen = 0;\n  for (let i = 0; i < s.length; i++) {\n    // odd length centred on i, even length centred between i and i + 1\n    const len = Math.max(expand(s, i, i), expand(s, i, i + 1));\n    if (len > maxLen) {\n      maxLen = len;\n      start = i - Math.floor((len - 1) / 2);\n    }\n  }\n  return s.slice(start, start + maxLen);\n}\n\nfunction expand(s, left, right) {\n  while (left >= 0 && right < s.length && s[left] === s[right]) {\n    left--;\n    right++;\n  }\n  return right - left - 1;\n}\n",
+   explanation:"Every palindrome mirrors around its centre. So try every possible centre (a character, or the gap between two characters) and expand outwards while the two sides match.\n\nThere are about 2n centres and each expansion can take up to n steps, so the time is O(n²). Checking every substring and testing it costs O(n³).\n\nThe expansion itself needs no extra memory (the returned substring is the only new string), so the algorithm uses O(1) extra space plus the answer."},
+  {id:"product-except-self",title:"Product of Array Except Self",difficulty:"Medium",fn:"productExceptSelf",time:"O(n)",space:"O(n)",
+   description:"Given an array of integers `nums` with at least two elements, write `productExceptSelf(nums)` that returns an array `answer` where `answer[i]` is the product of every element of `nums` except `nums[i]`.\n\nRules:\n- Do not use division (the array can contain zeros).\n- A solution that runs in O(n) time is expected.",
+   starter:"function productExceptSelf(nums) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[[1,2,3,4]]",expected:"[24,12,8,6]"},
+    {input:"[[-1,1,0,-3,3]]",expected:"[0,0,9,0,0]"},
+    {input:"[[2,3]]",expected:"[3,2]"},
+    {input:"[[0,0]]",expected:"[0,0]"},
+    {input:"[[1,0]]",expected:"[0,1]"},
+    {input:"[[1,1,1,1]]",expected:"[1,1,1,1]"},
+    {input:"[[-2,3,-4]]",expected:"[-12,8,-6]"},
+    {input:"[[0,4,0]]",expected:"[0,0,0]"}],
+   examples:[{input:"nums = [1, 2, 3, 4]",output:"[24, 12, 8, 6]"},{input:"nums = [-1, 1, 0, -3, 3]",output:"[0, 0, 9, 0, 0]"}],
+   solution:"function productExceptSelf(nums) {\n  const n = nums.length;\n  const result = new Array(n).fill(1);\n  let prefix = 1; // product of everything to the left of i\n  for (let i = 0; i < n; i++) {\n    result[i] = prefix;\n    prefix *= nums[i];\n  }\n  let suffix = 1; // product of everything to the right of i\n  for (let i = n - 1; i >= 0; i--) {\n    result[i] *= suffix;\n    suffix *= nums[i];\n  }\n  return result;\n}\n",
+   explanation:"The answer for position i is (product of everything to its left) x (product of everything to its right). Multiplying all the other numbers for every i costs O(n²).\n\nInstead, make two passes. The first pass walks left to right and stores the running product of the left side in `result[i]`. The second pass walks right to left, multiplies each `result[i]` by the running product of the right side, and updates that running product.\n\nNo division is needed, so zeros are handled naturally. Two passes give O(n) time, and the result array is the only extra memory: O(n) space (O(1) if the output array is not counted)."},
+  {id:"trapping-rain-water",title:"Trapping Rain Water",difficulty:"Hard",fn:"trap",time:"O(n)",space:"O(1)",
+   description:"Given an array `height` of non-negative integers where each value is the height of a bar of width 1, write `trap(height)` that returns how many units of water are trapped between the bars after it rains.\n\nWater above a bar is limited by the shorter of the tallest bar to its left and the tallest bar to its right.",
+   starter:"function trap(height) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[[0,1,0,2,1,0,1,3,2,1,2,1]]",expected:"6"},
+    {input:"[[4,2,0,3,2,5]]",expected:"9"},
+    {input:"[[]]",expected:"0"},
+    {input:"[[3]]",expected:"0"},
+    {input:"[[1,2,3]]",expected:"0"},
+    {input:"[[3,0,3]]",expected:"3"},
+    {input:"[[5,4,1,2]]",expected:"1"},
+    {input:"[[0,7,1,4,6]]",expected:"7"}],
+   examples:[{input:"height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]",output:"6"},{input:"height = [4, 2, 0, 3, 2, 5]",output:"9"}],
+   solution:"function trap(height) {\n  let left = 0;\n  let right = height.length - 1;\n  let leftMax = 0;\n  let rightMax = 0;\n  let water = 0;\n  while (left < right) {\n    if (height[left] < height[right]) {\n      leftMax = Math.max(leftMax, height[left]);\n      water += leftMax - height[left];\n      left++;\n    } else {\n      rightMax = Math.max(rightMax, height[right]);\n      water += rightMax - height[right];\n      right--;\n    }\n  }\n  return water;\n}\n",
+   explanation:"The water above bar i is `min(tallest to the left, tallest to the right) - height[i]`. Computing both maxima for every bar costs O(n²), and storing them in two helper arrays costs O(n) space.\n\nTwo pointers avoid the arrays. Move inwards from both ends. Whichever side has the lower current bar is limited by its own running maximum, because the other side is guaranteed to have something at least as tall. So add `leftMax - height[left]` (or the right equivalent) and move that pointer.\n\nEach bar is visited once: O(n) time and O(1) space."},
+  {id:"edit-distance",title:"Edit Distance",difficulty:"Hard",fn:"minDistance",time:"O(n²)",space:"O(n²)",
+   description:"Given two strings `a` and `b`, write `minDistance(a, b)` that returns the minimum number of single-character operations needed to turn `a` into `b`.\n\nAllowed operations:\n- insert a character\n- delete a character\n- replace a character",
+   starter:"function minDistance(a, b) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[\"horse\",\"ros\"]",expected:"3"},
+    {input:"[\"intention\",\"execution\"]",expected:"5"},
+    {input:"[\"\",\"\"]",expected:"0"},
+    {input:"[\"\",\"abc\"]",expected:"3"},
+    {input:"[\"abc\",\"\"]",expected:"3"},
+    {input:"[\"abc\",\"abc\"]",expected:"0"},
+    {input:"[\"kitten\",\"sitting\"]",expected:"3"},
+    {input:"[\"a\",\"b\"]",expected:"1"},
+    {input:"[\"sunday\",\"saturday\"]",expected:"3"}],
+   examples:[{input:"a = \"horse\", b = \"ros\"",output:"3"},{input:"a = \"abc\", b = \"abc\"",output:"0"}],
+   solution:"function minDistance(a, b) {\n  const rows = a.length + 1;\n  const cols = b.length + 1;\n  const dp = Array.from({ length: rows }, () => new Array(cols).fill(0));\n  for (let i = 0; i < rows; i++) dp[i][0] = i; // delete i characters\n  for (let j = 0; j < cols; j++) dp[0][j] = j; // insert j characters\n  for (let i = 1; i < rows; i++) {\n    for (let j = 1; j < cols; j++) {\n      if (a[i - 1] === b[j - 1]) dp[i][j] = dp[i - 1][j - 1];\n      else dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);\n    }\n  }\n  return dp[a.length][b.length];\n}\n",
+   explanation:"Dynamic programming. Let `dp[i][j]` be the edit distance between the first i characters of `a` and the first j characters of `b`.\n\n- If both strings are empty the distance is 0. If one is empty, you need as many inserts (or deletes) as the other one is long.\n- If `a[i-1]` equals `b[j-1]`, no edit is needed: `dp[i][j] = dp[i-1][j-1]`.\n- Otherwise take the cheapest of delete (`dp[i-1][j]`), insert (`dp[i][j-1]`) or replace (`dp[i-1][j-1]`) and add 1.\n\nThe table has (n+1) x (m+1) cells, each filled in O(1): O(n²) time (n = length of the longer string) and O(n²) space. Keeping only two rows reduces the space to O(n)."},
+  {id:"longest-increasing-subsequence",title:"Longest Increasing Subsequence",difficulty:"Hard",fn:"lengthOfLIS",time:"O(n log n)",space:"O(n)",
+   description:"Given an array of integers `nums`, write `lengthOfLIS(nums)` that returns the length of the longest strictly increasing subsequence.\n\nA subsequence keeps the original order but may skip elements (for example `[2, 5, 7]` is a subsequence of `[2, 9, 5, 1, 7]`).\n\nAn O(n²) solution is acceptable, but O(n log n) is what interviewers hope for.",
+   starter:"function lengthOfLIS(nums) {\n  // your code here\n}\n",
+   tests:[
+    {input:"[[10,9,2,5,3,7,101,18]]",expected:"4"},
+    {input:"[[0,1,0,3,2,3]]",expected:"4"},
+    {input:"[[7,7,7,7,7]]",expected:"1"},
+    {input:"[[]]",expected:"0"},
+    {input:"[[1]]",expected:"1"},
+    {input:"[[1,2,3,4,5]]",expected:"5"},
+    {input:"[[5,4,3,2,1]]",expected:"1"},
+    {input:"[[4,10,4,3,8,9]]",expected:"3"},
+    {input:"[[3,5,6,2,5,4,19,5,6,7,12]]",expected:"6"}],
+   examples:[{input:"nums = [10, 9, 2, 5, 3, 7, 101, 18]",output:"4"},{input:"nums = [7, 7, 7, 7, 7]",output:"1"}],
+   solution:"function lengthOfLIS(nums) {\n  // tails[k] = smallest possible last value of an increasing subsequence of length k + 1\n  const tails = [];\n  for (const x of nums) {\n    let lo = 0;\n    let hi = tails.length;\n    while (lo < hi) {\n      const mid = Math.floor((lo + hi) / 2);\n      if (tails[mid] < x) lo = mid + 1;\n      else hi = mid;\n    }\n    tails[lo] = x; // either extends the longest subsequence or improves one\n  }\n  return tails.length;\n}\n",
+   explanation:"Simple approach: `best[i]` = length of the longest increasing subsequence ending at `i`, found by checking all earlier elements. That is O(n²).\n\nFaster approach: keep an array `tails` where `tails[k]` is the smallest value that can end an increasing subsequence of length k + 1. It is always sorted, so for every number `x` binary search the first tail that is not smaller than `x` and overwrite it (or append `x` if none). The final length of `tails` is the answer.\n\nOne pass with a binary search per element gives O(n log n) time and O(n) space."}
+];
+
+/* ==========================================================================
+   Static complexity estimator (copied from index.html)
+   ========================================================================== */
+const has=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+const RANKS={'o(1)':0,'o(logn)':1,'o(n)':2,'o(nlogn)':3,'o(n²)':4,'o(n^2)':4,'o(n²logn)':5,'o(n³)':6,'o(n^3)':6,'o(2ⁿ)':100,'o(2^n)':100};
+const rankOf=t=>{ const k=String(t||'').toLowerCase().replace(/\s+/g,''); return has(RANKS,k)?RANKS[k]:null; };
+const SUP=['','','²','³','⁴','⁵','⁶'];
+function cLabel(deg,l){
+  const lg=l>1?'log'+(SUP[l]||'^'+l)+' n':l===1?'log n':'';
+  if(deg===0) return 'O('+(lg||'1')+')';
+  const nn=deg===1?'n':'n'+(SUP[deg]||'^'+deg);
+  return 'O('+nn+(lg?' '+lg:'')+')';
+}
+const cRank=(deg,l)=>deg*2+(l?1:0);
+
+/* blank out comments, strings and regex literals but keep positions */
+function stripCode(src){
+  let out='', i=0, prev='';
+  const n=src.length;
+  const blank=(a,b)=>src.slice(a,b).replace(/[^\n]/g,' ');
+  while(i<n){
+    const c=src[i], d=src[i+1];
+    if(c==='/'&&d==='/'){ let j=src.indexOf('\n',i); if(j<0) j=n; out+=blank(i,j); i=j; continue; }
+    if(c==='/'&&d==='*'){ let j=src.indexOf('*/',i+2); j=j<0?n:j+2; out+=blank(i,j); i=j; continue; }
+    if(c==='"'||c==="'"||c==='`'){
+      let j=i+1; while(j<n&&src[j]!==c){ if(src[j]==='\\') j++; j++; }
+      out+=c+blank(i+1,j)+(src[j]||''); i=j+1; prev=c; continue;
+    }
+    if(c==='/'&&(prev===''||/[(,=:\[!&|?{};+\-*%<>~^]/.test(prev)||/(return|typeof)\s*$/.test(out.slice(-8)))){
+      let j=i+1, cls=false;
+      while(j<n&&src[j]!=='\n'&&(cls||src[j]!=='/')){ if(src[j]==='\\') j++; else if(src[j]==='[') cls=true; else if(src[j]===']') cls=false; j++; }
+      if(src[j]==='/'){ j++; while(/[a-z]/i.test(src[j]||'')) j++; out+=blank(i,j); i=j; prev='x'; continue; }
+    }
+    out+=c; if(!/\s/.test(c)) prev=c; i++;
+  }
+  return out;
+}
+function matchClose(t,open){
+  const o=t[open], c={'(':')','{':'}','[':']'}[o]; let d=0;
+  for(let i=open;i<t.length;i++){ if(t[i]===o) d++; else if(t[i]===c){ d--; if(!d) return i; } }
+  return t.length-1;
+}
+function stmtEnd(t,i){
+  let d=0;
+  for(;i<t.length;i++){
+    const c=t[i];
+    if('([{'.includes(c)) d++;
+    else if(')]}'.includes(c)){ if(d===0) return i; d--; }
+    else if((c===';'||c==='\n')&&d===0){ if(c===';') return i; const rest=t.slice(i).match(/^\s*(\S)/); if(!rest||!/[.+\-*/?:&|,]/.test(rest[1])) return i; }
+  }
+  return t.length;
+}
+const LINEAR_CALLS=['indexOf','lastIndexOf','includes','slice','splice','concat','join','reverse','split','shift','unshift','substring','substr','padStart','padEnd','repeat','trim','toLowerCase','toUpperCase','replace','replaceAll','flat','fill','copyWithin','startsWith','endsWith'];
+const ITER_CALLS=['forEach','map','filter','reduce','reduceRight','some','every','find','findIndex','findLast','flatMap'];
+const LOG_LOOP=/\/=\s*2|>>=\s*1|\*=\s*2|<<=\s*1|Math\.floor\([^)]*\/\s*2\)|>>\s*1|\bmid\b/;
+
+function analyzeCode(code,q){
+  const t=stripCode(code);
+  const loops=[], events=[], reasons=[], spaceReasons=[];
+  /* loops */
+  const re=/\b(for|while|do)\b(?:\s+await)?\s*(\(|\{)?/g; let m;
+  while((m=re.exec(t))){
+    const kw=m[1]; let bodyStart, bodyEnd, header='';
+    const at=m.index+m[0].length;
+    if(kw==='do'){ const b=t.indexOf('{',m.index); if(b<0||t.slice(m.index+2,b).trim()) continue; bodyStart=b+1; bodyEnd=matchClose(t,b); }
+    else{
+      const po=t.indexOf('(',m.index+kw.length); if(po<0||t.slice(m.index+kw.length,po).replace(/await/,'').trim()) continue;
+      const pc=matchClose(t,po); header=t.slice(po+1,pc);
+      let k=pc+1; while(/\s/.test(t[k]||'')) k++;
+      if(t[k]===';'){ continue; }
+      if(t[k]==='{'){ bodyStart=k+1; bodyEnd=matchClose(t,k); }
+      else{ bodyStart=k; bodyEnd=stmtEnd(t,k); }
+    }
+    const body=t.slice(bodyStart,bodyEnd);
+    let constant=false;
+    if(kw==='for'&&!/\b(of|in)\b/.test(header)){ const ids=header.replace(/\b(let|var|const)\b/g,'').match(/[A-Za-z_$][\w$]*/g)||[]; constant=new Set(ids).size<=1&&/\d/.test(header); }
+    if(kw==='for'&&/\bof\s*\[(?!\s*\.\.\.)/.test(header)) constant=true;
+    loops.push({kw,start:bodyStart,end:bodyEnd,log:false,hdr:header,constant,line:t.slice(0,m.index).split('\n').length});
+  }
+  /* iteration callbacks: .map( ... ) etc */
+  const ire=new RegExp('\\.\\s*('+ITER_CALLS.join('|')+')\\s*\\(','g');
+  while((m=ire.exec(t))){
+    const po=m.index+m[0].length-1, pc=matchClose(t,po);
+    loops.push({kw:'.'+m[1]+'()',start:po+1,end:pc,log:false,constant:false,line:t.slice(0,m.index).split('\n').length,method:true});
+  }
+  loops.forEach(l=>{ /* own text only: blank the bodies of loops nested inside this one */
+    if(l.constant||l.method) return;
+    let own=t.slice(l.start,l.end).split('');
+    loops.forEach(o=>{ if(o!==l&&!o.constant&&o.start>=l.start&&o.end<=l.end) for(let i=o.start;i<o.end;i++) own[i-l.start]=' '; });
+    own=own.join('');
+    l.log=LOG_LOOP.test(l.kw==='for'?l.hdr+' '+own:own+' '+l.hdr);
+  });
+  const real=loops.filter(l=>!l.constant);
+  const chainAt=pos=>real.filter(l=>pos>=l.start&&pos<l.end);
+  const degOf=ch=>({deg:ch.filter(l=>!l.log).length,l:ch.filter(l=>l.log).length});
+  /* loop events (each loop's own chain) */
+  real.forEach(l=>{
+    const ch=real.filter(o=>l.start>=o.start&&l.end<=o.end);
+    const c=degOf(ch); events.push({deg:c.deg,l:c.l,why:null,loop:l,depth:ch.length});
+  });
+  /* hidden linear/sort work */
+  const lre=new RegExp('\\.\\s*('+LINEAR_CALLS.join('|')+'|sort)\\s*\\(','g'), spread=/\[\s*\.\.\.|\(\s*\.\.\./g;
+  const extras=[];
+  while((m=lre.exec(t))){ extras.push({pos:m.index,name:m[1],sort:m[1]==='sort'}); }
+  while((m=spread.exec(t))){ extras.push({pos:m.index,name:'spread (...)',sort:false}); }
+  const extraRe=/\b(Array\.from|Object\.(keys|values|entries)|JSON\.stringify|JSON\.parse)\b/g;
+  while((m=extraRe.exec(t))){ extras.push({pos:m.index,name:m[0],sort:false}); }
+  extras.forEach(x=>{
+    const c=degOf(chainAt(x.pos));
+    if(x.name==='reverse'||x.name==='trim'||x.name==='toLowerCase'||x.name==='toUpperCase'||x.name==='replace'||x.name==='join'||x.name==='split'||x.name==='repeat'||x.name==='startsWith'||x.name==='endsWith'||x.name==='padStart'||x.name==='padEnd'||true){
+      events.push({deg:c.deg+1,l:c.l+(x.sort?1:0),why:null,extra:x,inLoop:chainAt(x.pos).length});
+    }
+  });
+  /* recursion */
+  const fnName=q&&q.fn;
+  let recursive=false, branching=false;
+  const defs=[...t.matchAll(/function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(x=>x[1]).concat([...t.matchAll(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:function|\([^)]*\)\s*=>|[\w$]+\s*=>)/g)].map(x=>x[1]));
+  defs.forEach(name=>{
+    const dm=new RegExp('(?:function\\s+'+name.replace(/\$/g,'\\$')+'\\s*\\(|(?:const|let|var)\\s+'+name.replace(/\$/g,'\\$')+'\\s*=)').exec(t);
+    if(!dm) return;
+    let bodyTxt='';
+    const po=t.indexOf('(',dm.index), isFn=/^function/.test(dm[0]);
+    if(isFn&&po>=0){ const b=t.indexOf('{',matchClose(t,po)); if(b>=0) bodyTxt=t.slice(b,matchClose(t,b)+1); }
+    else{ const ar=t.indexOf('=>',dm.index); if(ar>=0){ let k=ar+2; while(/\s/.test(t[k]||'')) k++; bodyTxt=t[k]==='{'?t.slice(k,matchClose(t,k)+1):t.slice(k,stmtEnd(t,k)); } }
+    const callRe=new RegExp('(?<![\\w$.])'+name.replace(/\$/g,'\\$')+'\\s*\\(','g');
+    const cnt=x=>(x.match(callRe)||[]).length;
+    let calls=0, retMax=0;
+    bodyTxt.split(';').forEach(stmt=>{
+      let c=cnt(stmt); if(!c) return;
+      const qm=stmt.indexOf('?'), cm=qm>=0?stmt.indexOf(':',qm):-1;
+      if(cm>0) c=Math.max(cnt(stmt.slice(0,cm)),cnt(stmt.slice(cm)));
+      if(/(^|[\s})])return\b/.test(stmt)) retMax=Math.max(retMax,c); else calls+=c;
+    });
+    calls+=retMax;
+    if(calls>0){ recursive=true; if(calls>=2&&!/\.(has|get)\s*\(|\b\w+\s*\[[^\]]+\]\s*=[^=]|\b(memo|cache|dp)\b/i.test(bodyTxt)) branching=true; }
+  });
+  /* time result */
+  let best={deg:0,l:0};
+  const better=(a,b)=>cRank(a.deg,a.l)>cRank(b.deg,b.l);
+  events.forEach(e=>{ if(better(e,best)) best={deg:e.deg,l:e.l}; });
+  if(recursive&&!branching&&best.deg<1) best={deg:1,l:0};
+  let timeLabel=cLabel(best.deg,best.l), timeRank=cRank(best.deg,best.l);
+  if(branching){ timeLabel='O(2ⁿ)'; timeRank=100; }
+  const maxDepth=real.reduce((mx,l)=>Math.max(mx,real.filter(o=>l.start>=o.start&&l.end<=o.end).length),0);
+  /* reasons */
+  const nloops=real.filter(l=>!l.method).length, ncb=real.filter(l=>l.method).length;
+  if(branching) reasons.push('A recursive function calls itself more than once per call without caching results, which usually grows exponentially.');
+  else if(recursive) reasons.push('The code is recursive. Each call adds work, so the cost grows with the recursion depth.');
+  if(maxDepth>=2) reasons.push('Loops are nested '+maxDepth+' levels deep (including array callbacks like map/filter), so the work multiplies.');
+  else if(maxDepth===1) reasons.push('There is one loop that goes over the input once.');
+  if(real.some(l=>l.log)) reasons.push('A loop halves the search range each step (binary-search style), which is O(log n).');
+  const seenMsg=new Set();
+  extras.forEach(x=>{
+    const nest=chainAt(x.pos).length;
+    if(x.sort&&!seenMsg.has('sort')){ seenMsg.add('sort'); reasons.push('`sort` takes O(n log n)'+(nest?' and it is called inside a loop, which multiplies the cost':'')+'.'); }
+    else if(!x.sort&&nest>0&&!seenMsg.has(x.name)&&['indexOf','lastIndexOf','includes','slice','splice','concat','shift','unshift','join','reverse','split','spread (...)'].includes(x.name)){
+      seenMsg.add(x.name); reasons.push('`'+x.name+'` inside a loop scans or copies the data each time, so it adds another O(n) level.');
+    }
+  });
+  if(!reasons.length&&!events.length) reasons.push('No loops, recursion or whole-input operations were found, so the work does not grow with the input.');
+  /* space */
+  let sp=0; const setSp=(r,why)=>{ if(r>sp) sp=r; spaceReasons.push(why); };
+  const strVars=[...t.matchAll(/(?:let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:''|""|``)/g)].map(x=>x[1]);
+  const growth=/\.\s*(push|unshift|add|set)\s*\(|\]\s*=[^=]/;
+  const alloc=/\bnew\s+(Map|Set|Array|WeakMap)\b|\bArray\s*\(|\bArray\.from\b|\.\s*(slice|concat|split|map|filter|flatMap|flat|substring|substr|repeat|padStart|padEnd|replace|replaceAll|toLowerCase|toUpperCase|trim|join)\s*\(|\[\s*\.\.\./;
+  if(recursive) setSp(2,'Recursion keeps one stack frame per call, so memory grows with the recursion depth.');
+  if(/\bnew\s+(Map|Set)\b/.test(t)&&growth.test(t)) setSp(2,'A Map/Set is filled from the input, so it can hold up to n items.');
+  else if(growth.test(t)&&/(?:let|const|var)\s+[\w$]+\s*=\s*(\[\s*\]|\{\s*\})/.test(t)&&real.length) setSp(2,'An array/object is filled while looping, so it can grow with the input.');
+  if(strVars.some(v=>new RegExp('\\b'+v+'\\s*\\+=').test(t))&&real.length) setSp(2,'A string is built up character by character, so its size grows with the input.');
+  const allocOnce=t.match(alloc);
+  if(allocOnce&&!spaceReasons.length) setSp(2,'A new array/string/collection is created from the input (`'+allocOnce[0].replace(/\s+/g,'')+'`), so it takes O(n) space.');
+  else if(allocOnce&&sp<2) setSp(2,'A new array/string/collection is created from the input.');
+  if(/\bArray\b[^;]*?(?:fill|from|map)[^;]*?(?:new\s+Array|Array\s*\(|\[\s*\])/.test(t)&&/\[[^\]]+\]\s*\[[^\]]+\]/.test(t)){ setSp(4,'A 2-dimensional table is created (an array of arrays), which takes O(n²) space.'); }
+  if(!spaceReasons.length) spaceReasons.push('Only a fixed number of variables are used, so extra memory does not grow with the input.');
+  const spaceRank=sp;
+  const spaceLabel={0:'O(1)',2:'O(n)',4:'O(n²)'}[sp]||'O(n)';
+  /* metrics */
+  const codeLines=code.split('\n').filter(l=>l.trim()&&!/^\s*(\/\/|\/\*|\*)/.test(l)).length;
+  const structs=[]; ['Map','Set','Array','Object'].forEach(k=>{ if(new RegExp('\\bnew\\s+'+k+'\\b|\\b'+k+'\\.').test(t)) structs.push(k); });
+  if(/(?:const|let|var)\s+[\w$]+\s*=\s*\[/.test(t)&&!structs.includes('Array')) structs.push('Array');
+  if(/(?:const|let|var)\s+[\w$]+\s*=\s*\{/.test(t)&&!structs.includes('Object')) structs.push('Object');
+  /* quality hints */
+  const hints=[];
+  if(/\bvar\b/.test(t)) hints.push({w:1,text:'Use `let` or `const` instead of `var`. They are safer because they stay inside their block.'});
+  if(/[^=!<>]==[^=]|!=[^=]/.test(t)) hints.push({w:1,text:'Prefer `===` and `!==` over `==` and `!=`. They avoid surprising type conversions.'});
+  if(/console\.(log|debug)\s*\(/.test(t)) hints.push({w:0,text:'There is a `console.log` left in the code. Remove debug output once it works.'});
+  if(codeLines>40) hints.push({w:0,text:'This solution is long ('+codeLines+' lines). Consider splitting it into small helper functions.'});
+  return {time:{label:timeLabel,rank:timeRank,reasons},space:{label:spaceLabel,rank:spaceRank,reasons:[...new Set(spaceReasons)]},
+    metrics:{lines:codeLines,loops:nloops,callbacks:ncb,maxDepth,recursive,structs},hints};
+}
+
+/* ==========================================================================
+   Constants, small utils, icons
+   ========================================================================== */
+const KEY='code-playground:interview:v1', THEME_KEY='code-playground:v1';
+const TIMEOUT=5000, DURATIONS=[15,30,45], MAX_Q=3, MAX_DECODED=200*1024, MAX_ENCODED=300000, MAX_HISTORY=10, MAX_NAME=24, CODE_MAX=20000;
+const MILESTONES=[600,300,60];
+const MIXES=['Easy','Medium','Hard','Mixed'];
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+const isObj=o=>!!o&&typeof o==='object'&&!Array.isArray(o);
+const isInt=x=>typeof x==='number'&&Number.isInteger(x);
+const inRange=(x,a,b)=>isInt(x)&&x>=a&&x<=b;
+const clip=(s,n)=>{ s=String(s); return s.length>n?s.slice(0,n)+'… (truncated)':s; };
+const QMAP=new Map(BANK.map(q=>[q.id,q]));
+const qOf=id=>QMAP.get(id);
+const knownId=id=>typeof id==='string'&&QMAP.has(id);
+const validIds=a=>Array.isArray(a)&&a.length>=1&&a.length<=MAX_Q&&a.every(knownId)&&new Set(a).size===a.length;
+const diffCls=d=>String(d).toLowerCase();
+const P={
+  play:'<path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/>',
+  stop:'<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M20.5 14A8.5 8.5 0 1110 3.5a7 7 0 0010.5 10.5z"/>',
+  download:'<path d="M12 4v11m-5-4.5l5 5 5-5M5 20h14"/>',
+  reset:'<path d="M3.5 12a8.5 8.5 0 108.5-8.5A8.5 8.5 0 006 6L3.5 8.5M3.5 3.5v5h5"/>',
+  code:'<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
+  flask:'<path d="M9 3h6M10 3v6L4.6 18.6A1.6 1.6 0 006 21h12a1.6 1.6 0 001.4-2.4L14 9V3"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  alert:'<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/>',
+  bell:'<path d="M6 16v-5a6 6 0 0112 0v5l2 2H4zM10 21h4"/>',
+  copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 012-2h9"/>',
+  share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/>',
+  print:'<path d="M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z"/>',
+  trophy:'<path d="M8 4h8v6a4 4 0 01-8 0zM8 6H4v1a4 4 0 004 4M16 6h4v1a4 4 0 01-4 4M12 14v4M8 21h8"/>',
+  flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+  target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>'
+};
+const ic=(n,s=16)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+function toast(msg,bad){
+  const t=document.createElement('div'); t.className='toast'+(bad?' bad':''); t.textContent=msg;
+  $('#toasts').appendChild(t); setTimeout(()=>t.remove(),3400);
+}
+function fmtDesc(t){
+  const inline=s=>esc(s).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  const out=[]; let list=null, para=[];
+  const fp=()=>{ if(para.length){ out.push('<p>'+para.join('<br>')+'</p>'); para=[]; } };
+  const fl=()=>{ if(list){ out.push('<ul>'+list.map(x=>'<li>'+x+'</li>').join('')+'</ul>'); list=null; } };
+  for(const line of String(t||'').split('\n')){
+    if(/^\s*[-*]\s+/.test(line)||/^\s*\d+\.\s+/.test(line)){ fp(); (list=list||[]).push(inline(line.replace(/^\s*(?:[-*]|\d+\.)\s+/,''))); }
+    else if(!line.trim()){ fp(); fl(); }
+    else { fl(); para.push(inline(line)); }
+  }
+  fp(); fl();
+  return out.join('')||'<p class="muted">No description.</p>';
+}
+const pad2=n=>String(n).padStart(2,'0');
+function fmtClock(ms){ const s=Math.max(0,Math.ceil(ms/1000)); return pad2(Math.floor(s/60))+':'+pad2(s%60); }
+function fmtUsed(sec){ sec=Math.max(0,Math.round(sec)); const m=Math.floor(sec/60), s=sec%60; return m+'m '+pad2(s)+'s'; }
+function fmtDate(t){ try{ return new Date(t).toLocaleString(undefined,{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(e){ return new Date(t).toISOString(); } }
+const NUM_WORD=['no','one','two','three'];
+
+/* ==========================================================================
+   Scoring (pure)
+   ========================================================================== */
+/* levels: time uses the rank ladder O(1)<O(log n)<O(n)<O(n log n)<O(n^2)<...<exponential.
+   space only ever comes out of the estimator as O(1) / O(n) / O(n^2), so its ranks are
+   compressed (0 | 1-2 | 3-4 | 5-6 | exp) so that "one level worse" is a real step. */
+const timeLevel=r=>r>=100?7:r;
+const spaceLevel=r=>r>=100?4:r<=0?0:r<=2?1:r<=4?2:3;
+function effPart(est,ref,kind,max){
+  if(!isInt(est)||!isInt(ref)) return {pts:max,verdict:'unknown'};   // nothing to compare with: full marks
+  const lv=kind==='space'?spaceLevel:timeLevel, d=lv(est)-lv(ref);
+  if(d<0) return {pts:max,verdict:'better'};
+  if(d===0) return {pts:max,verdict:'same'};
+  if(d===1) return {pts:max/2,verdict:'worse'};
+  return {pts:0,verdict:'much-worse'};
+}
+function scoreQuestion(o){
+  const total=isInt(o.total)&&o.total>0?o.total:0, passed=clamp(isInt(o.passed)?o.passed:0,0,total);
+  const correct=total?60*passed/total:0, allPass=total>0&&passed===total;
+  let eff={time:{pts:0,verdict:'n/a'},space:{pts:0,verdict:'n/a'},pts:0}, speed=0;
+  if(allPass){
+    const est=o.est||{}, ref=o.ref||{};
+    const t=effPart(est.time,ref.time,'time',15), s=effPart(est.space,ref.space,'space',10);
+    eff={time:t,space:s,pts:t.pts+s.pts};
+    const f=typeof o.remainFrac==='number'&&isFinite(o.remainFrac)?clamp(o.remainFrac,0,1):0;
+    speed=15*f;
+  }
+  return {correct,eff,speed,total:correct+eff.pts+speed,allPass};
+}
+const interviewScore=list=>list.length?clamp(Math.round(list.reduce((s,x)=>s+x.total,0)/list.length),0,100):0;
+function gradeFor(s){
+  return s>=90?{label:'Outstanding',tone:'good'}:s>=75?{label:'Strong',tone:'good'}:s>=60?{label:'Solid',tone:'warn'}:s>=40?{label:'Getting there',tone:'warn'}:{label:'Keep practising',tone:'bad'};
+}
+function summarize(res){
+  const qs=res.qs, n=qs.length, full=qs.filter(q=>q.sc.allPass), part=qs.filter(q=>!q.sc.allPass&&q.passed>0);
+  const slow=full.filter(q=>q.sc.eff.pts<25), parts=[];
+  if(full.length===n) parts.push(n===1?'you solved the question':'you solved every question');
+  else if(full.length) parts.push('you solved '+NUM_WORD[full.length]+' of '+NUM_WORD[n]+' questions completely');
+  else parts.push(part.length?'no question passed all of its tests yet ('+NUM_WORD[part.length]+(part.length===1?' has':' have')+' some passing)':'no tests passed');
+  if(full.length){
+    if(!slow.length) parts.push(full.length===1?'the solution matched the reference efficiency':'every solution matched the reference efficiency');
+    else parts.push(NUM_WORD[slow.length]+(slow.length===1?' solution':' solutions')+' could be faster');
+    const left=1-res.used/(res.dur*60);
+    parts.push(left>=0.5?'you finished with plenty of time to spare':left>=0.15?'you kept a little time in hand':'you used almost the whole clock');
+  }
+  const joined=parts.length>1?parts.slice(0,-1).join(', ')+', and '+parts[parts.length-1]:parts[0];
+  return gradeFor(res.score).label+': '+joined+'.'+(full.length?'':' Review the reference solutions below and try again.');
+}
+
+/* ==========================================================================
+   Timer logic (pure; time is always derived from an absolute end timestamp)
+   ========================================================================== */
+const remainingMs=(a,now)=>Math.max(0,a.end-now);
+const timerState=ms=>{ const s=Math.ceil(ms/1000); return s<=0?'over':s<60?'danger':s<300?'warn':'ok'; };   // based on the displayed seconds
+function initAnnounced(ms){ const s=new Set(); MILESTONES.forEach(t=>{ if(ms<=t*1000) s.add(t); }); return s; }
+function dueMilestone(ms,announced){
+  let due=null;
+  MILESTONES.forEach(t=>{ if(ms<=t*1000&&!announced.has(t)){ announced.add(t); due=due===null?t:Math.min(due,t); } });
+  return due;
+}
+
+/* ==========================================================================
+   Question picking (pure apart from the injectable rng)
+   ========================================================================== */
+function pickQuestions(mix,count,exclude,rng){
+  rng=rng||Math.random; exclude=exclude||[]; count=clamp(isInt(count)?count:1,1,MAX_Q);
+  const plan=mix==='Mixed'?[['Medium'],['Easy','Medium'],['Easy','Medium','Hard']][count-1]:Array(count).fill(MIXES.includes(mix)?mix:'Medium');
+  const chosen=[];
+  const take=d=>{
+    const order=[d].concat(['Medium','Easy','Hard'].filter(x=>x!==d));
+    for(const dd of order){
+      const cand=BANK.filter(q=>q.difficulty===dd&&!chosen.includes(q.id));
+      const fresh=cand.filter(q=>!exclude.includes(q.id)), list=fresh.length?fresh:cand;
+      if(list.length) return list[Math.floor(rng()*list.length)].id;
+    }
+    return null;
+  };
+  plan.forEach(d=>{ const id=take(d); if(id) chosen.push(id); });
+  return chosen;
+}
+
+/* ==========================================================================
+   Share links: #c=<challenge> and #r=<result>. Encoded, never trusted.
+   ========================================================================== */
+const B64=/^[A-Za-z0-9_-]*$/;
+function b64urlEncode(bytes){
+  let s=''; for(let i=0;i<bytes.length;i+=0x8000) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));
+  return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function b64urlDecode(str){
+  if(typeof str!=='string'||!B64.test(str)||str.length%4===1) throw new Error('Not valid base64.');
+  let b=str.replace(/-/g,'+').replace(/_/g,'/'); while(b.length%4) b+='=';
+  const bin=atob(b), out=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i);
+  return out;
+}
+async function pipeBytes(Kind,bytes,limit){
+  const t=new Kind('deflate-raw'), w=t.writable.getWriter();
+  w.write(bytes).catch(()=>{}); w.close().catch(()=>{});
+  const r=t.readable.getReader(), chunks=[]; let n=0;
+  for(;;){
+    const x=await r.read(); if(x.done) break;
+    n+=x.value.length;
+    if(limit&&n>limit){ try{ await r.cancel(); }catch(e){} throw new Error('Payload is too large.'); }
+    chunks.push(x.value);
+  }
+  const out=new Uint8Array(n); let o=0; chunks.forEach(c=>{ out.set(c,o); o+=c.length; });
+  return out;
+}
+async function encodePayload(obj){
+  const bytes=new TextEncoder().encode(JSON.stringify(obj));
+  if(bytes.length>MAX_DECODED) throw new Error('Payload is too large.');
+  const plain='0.'+b64urlEncode(bytes);
+  if(typeof CompressionStream==='function'){
+    try{ const z='1.'+b64urlEncode(await pipeBytes(CompressionStream,bytes,0)); return z.length<plain.length?z:plain; }catch(e){}
+  }
+  return plain;
+}
+async function decodePayload(str){
+  if(typeof str!=='string'||str.length>MAX_ENCODED) throw new Error('Link is too long.');
+  const m=/^([01])\.([A-Za-z0-9_-]*)$/.exec(str); if(!m) throw new Error('Unknown link format.');
+  let bytes=b64urlDecode(m[2]);
+  if(m[1]==='1'){
+    if(typeof DecompressionStream!=='function') throw new Error('This browser cannot open compressed links.');
+    bytes=await pipeBytes(DecompressionStream,bytes,MAX_DECODED);
+  }else if(bytes.length>MAX_DECODED) throw new Error('Payload is too large.');
+  if(bytes.length>MAX_DECODED) throw new Error('Payload is too large.');
+  return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));
+}
+const keysWithin=(o,allowed)=>Object.keys(o).every(k=>allowed.includes(k));
+const cleanName=s=>String(s).replace(/[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁦-⁩﻿]/g,'').replace(/\s+/g,' ').trim().slice(0,MAX_NAME);
+function validateChallenge(o){
+  if(!isObj(o)||!keysWithin(o,['v','q','d','n'])||o.v!==1||!validIds(o.q)||!DURATIONS.includes(o.d)||o.n!==o.q.length) return null;
+  return {q:o.q.slice(),d:o.d};
+}
+function validateResultPayload(o){
+  if(!isObj(o)||!keysWithin(o,['v','s','d','u','t','nm','q'])||o.v!==1) return null;
+  if(!inRange(o.s,0,100)||!DURATIONS.includes(o.d)||!inRange(o.u,0,o.d*60)||!inRange(o.t,1e12,4.2e12)) return null;
+  if(o.nm!==undefined&&(typeof o.nm!=='string'||o.nm.length>40)) return null;
+  if(!Array.isArray(o.q)||o.q.length<1||o.q.length>MAX_Q) return null;
+  const seen=new Set(), q=[];
+  for(const x of o.q){
+    if(!Array.isArray(x)||x.length!==4||!knownId(x[0])||seen.has(x[0])) return null;
+    if(!inRange(x[1],0,100)||!inRange(x[3],1,50)||!inRange(x[2],0,x[3])) return null;
+    seen.add(x[0]); q.push([x[0],x[1],x[2],x[3]]);
+  }
+  return {s:o.s,d:o.d,u:o.u,t:o.t,nm:o.nm===undefined?'':cleanName(o.nm),q};
+}
+const challengePayload=(ids,dur)=>({v:1,q:ids.slice(),d:dur,n:ids.length});
+function resultPayload(res,name){
+  const o={v:1,s:res.score,d:res.dur,u:clamp(Math.round(res.used),0,res.dur*60),t:res.t,q:res.qs.map(x=>[x.id,clamp(Math.round(x.sc.total),0,100),x.passed,x.total])};
+  const nm=cleanName(name||''); if(nm) o.nm=nm;
+  return o;
+}
+function parseHash(h){
+  const m=/^#?(c|r)=(.+)$/.exec(String(h||'')); return m?{kind:m[1],payload:m[2]}:null;
+}
+function linkFromInput(text){
+  text=String(text||'').trim(); const i=text.indexOf('#');
+  return parseHash(i>=0?text.slice(i):(/^[cr]=/.test(text)?text:''));
+}
+const linkBase=()=>{ try{ return location.href.split('#')[0]; }catch(e){ return 'interview.html'; } };
+
+/* ==========================================================================
+   State + storage
+   ========================================================================== */
+const defaultSettings=()=>({dur:30,mix:'Mixed',count:2,source:'bank'});
+const defaultState=()=>({history:[],best:null,name:'',font:13,settings:defaultSettings(),shared:null,active:null,last:null,view:'lobby'});
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ return false; } }
+function lsJSON(k){ try{ const s=lsGet(k); return s?JSON.parse(s):null; }catch(e){ return null; } }
+function sanitizeSettings(s){
+  const d=defaultSettings(); if(!isObj(s)) return d;
+  return {dur:DURATIONS.includes(s.dur)?s.dur:d.dur,mix:MIXES.includes(s.mix)?s.mix:d.mix,count:inRange(s.count,1,MAX_Q)?s.count:d.count,source:s.source==='shared'?'shared':'bank'};
+}
+function sanitizeHistEntry(h){
+  if(!isObj(h)||!inRange(h.t,1e12,4.2e12)||!inRange(h.score,0,100)||!DURATIONS.includes(h.dur)||!inRange(h.used,0,h.dur*60)||!Array.isArray(h.qs)||h.qs.length<1||h.qs.length>MAX_Q) return null;
+  const qs=[];
+  for(const x of h.qs){
+    if(!isObj(x)||!knownId(x.id)||!inRange(x.score,0,100)||!inRange(x.total,1,50)||!inRange(x.passed,0,x.total)) return null;
+    qs.push({id:x.id,score:x.score,passed:x.passed,total:x.total});
+  }
+  return {t:h.t,score:h.score,dur:h.dur,used:h.used,qs};
+}
+function sanitizeActive(a){
+  if(!isObj(a)||!validIds(a.ids)||!DURATIONS.includes(a.dur)||!isInt(a.start)||!isInt(a.end)||a.end<=a.start||a.end-a.start>a.dur*60000) return null;
+  const code={}, passedCode={};
+  a.ids.forEach(id=>{
+    code[id]=isObj(a.code)&&has(a.code,id)&&typeof a.code[id]==='string'?a.code[id].slice(0,CODE_MAX):qOf(id).starter;
+    if(isObj(a.passedCode)&&has(a.passedCode,id)&&typeof a.passedCode[id]==='string') passedCode[id]=a.passedCode[id];
+  });
+  return {start:a.start,end:a.end,dur:a.dur,ids:a.ids.slice(),code,passedCode,cur:inRange(a.cur,0,a.ids.length-1)?a.cur:0,status:a.status==='finishing'?'finishing':'running',finishedAt:isInt(a.finishedAt)?a.finishedAt:null,settings:sanitizeSettings(a.settings)};
+}
+function sanitizeResult(r){
+  if(!isObj(r)||r.v!==1||!validIds(r.ids)||!inRange(r.score,0,100)||!DURATIONS.includes(r.dur)||!isInt(r.t)||typeof r.used!=='number'||!Array.isArray(r.qs)||r.qs.length!==r.ids.length) return null;
+  for(let i=0;i<r.qs.length;i++){
+    const q=r.qs[i];
+    if(!isObj(q)||q.id!==r.ids[i]||typeof q.code!=='string'||!isInt(q.passed)||!isInt(q.total)||!isObj(q.ref)||!isObj(q.sc)||!isObj(q.sc.eff)||!isObj(q.sc.eff.time)||!isObj(q.sc.eff.space)||typeof q.sc.total!=='number'||typeof q.sc.correct!=='number'||typeof q.sc.speed!=='number'||!Array.isArray(q.failed)) return null;
+  }
+  return r;
+}
+function sanitizeState(o){
+  const s=defaultState(); if(!isObj(o)) return s;
+  if(Array.isArray(o.history)) s.history=o.history.map(sanitizeHistEntry).filter(Boolean).slice(0,MAX_HISTORY);
+  if(isObj(o.best)&&inRange(o.best.score,0,100)&&inRange(o.best.t,1e12,4.2e12)) s.best={score:o.best.score,t:o.best.t};
+  if(typeof o.name==='string') s.name=cleanName(o.name);
+  if(inRange(o.font,10,22)) s.font=o.font;
+  s.settings=sanitizeSettings(o.settings);
+  if(isObj(o.shared)&&validIds(o.shared.ids)&&DURATIONS.includes(o.shared.dur)) s.shared={ids:o.shared.ids.slice(),dur:o.shared.dur};
+  s.active=sanitizeActive(o.active);
+  s.last=sanitizeResult(o.last);
+  s.view=o.view==='results'&&s.last?'results':'lobby';
+  return s;
+}
+let S=sanitizeState(lsJSON(KEY));
+function save(){ lsSet(KEY,JSON.stringify(S)); }
+
+/* theme (shared key with index.html; only the `theme` field is ever written) */
+let themeMem=null;
+function readTheme(){ const o=lsJSON(THEME_KEY); const t=isObj(o)?o.theme:null; return t==='light'||t==='dark'?t:themeMem; }
+function writeTheme(t){
+  themeMem=t; let o=lsJSON(THEME_KEY); if(!isObj(o)) o={};
+  o.theme=t; lsSet(THEME_KEY,JSON.stringify(o));
+}
+const isDark=()=>{ const t=readTheme(); if(t) return t==='dark'; try{ return matchMedia('(prefers-color-scheme: dark)').matches; }catch(e){ return false; } };
+function applyTheme(){
+  const t=readTheme(); if(t) document.documentElement.dataset.theme=t; else delete document.documentElement.dataset.theme;
+  $('#theme-btn').innerHTML=ic(isDark()?'sun':'moon',18);
+  $('#theme-btn').title=isDark()?'Switch to light theme':'Switch to dark theme';
+}
+
+/* ==========================================================================
+   Modals
+   ========================================================================== */
+function modal(html,{narrow=false}={}){
+  const ov=document.createElement('div'); ov.className='overlay';
+  ov.innerHTML=`<div class="dialog${narrow?' narrow':''}" role="dialog" aria-modal="true">${html}</div>`;
+  const prev=document.activeElement;
+  const close=()=>{ if(!ov.isConnected) return; ov.remove(); document.removeEventListener('keydown',onKey,true); if(prev&&prev.focus&&document.contains(prev)) prev.focus(); };
+  const onKey=e=>{
+    if(e.key==='Escape'){ e.stopPropagation(); close(); return; }
+    if(e.key==='Tab'){
+      const f=$$('input:not([readonly]):not([disabled]),textarea,select,button:not([disabled]),[href]',ov);
+      if(!f.length) return;
+      const a=f[0], z=f[f.length-1];
+      if(e.shiftKey&&(document.activeElement===a||!ov.contains(document.activeElement))){ e.preventDefault(); z.focus(); }
+      else if(!e.shiftKey&&(document.activeElement===z||!ov.contains(document.activeElement))){ e.preventDefault(); a.focus(); }
+    }
+  };
+  document.addEventListener('keydown',onKey,true);
+  ov.addEventListener('mousedown',e=>{ if(e.target===ov) close(); });
+  ov.addEventListener('click',e=>{ if(e.target.closest('[data-close]')) close(); });
+  $('#modal-root').appendChild(ov);
+  const dlg=ov.firstElementChild, lbl=$('h2',dlg); if(lbl){ lbl.id='dlg-title'; dlg.setAttribute('aria-labelledby','dlg-title'); }
+  const first=$('input:not([readonly]),textarea,select,button.btn.primary',ov)||$('button',ov); if(first) first.focus();
+  return {el:ov,close};
+}
+const modalOpen=()=>!!$('#modal-root .overlay');
+function closeModals(){ $$('#modal-root .overlay').forEach(o=>o.remove()); }
+function confirmDialog(title,message,okLabel){
+  return new Promise(res=>{
+    const m=modal(`<div class="dialog-h"><h2>${esc(title)}</h2></div><div class="dialog-b"><p style="margin:0">${esc(message)}</p></div>
+      <div class="dialog-f"><button class="btn" data-close>Cancel</button><button class="btn primary" id="ok-btn">${esc(okLabel||'OK')}</button></div>`,{narrow:true});
+    let done=false;
+    $('#ok-btn',m.el).addEventListener('click',()=>{ done=true; m.close(); res(true); });
+    const obs=new MutationObserver(()=>{ if(!m.el.isConnected){ obs.disconnect(); if(!done) res(false); } });
+    obs.observe($('#modal-root'),{childList:true});
+  });
+}
+
+/* ==========================================================================
+   Screens
+   ========================================================================== */
+const SCREENS=['lobby','interview','results','shared'];
+let currentScreen='lobby';
+function showScreen(name,focus){
+  currentScreen=name;
+  SCREENS.forEach(n=>{ $('#screen-'+n).hidden=n!==name; });
+  document.body.classList.toggle('mode-interview',name==='interview');
+  document.documentElement.scrollTop=0; document.body.scrollTop=0;
+  if(focus){
+    const t={lobby:'#lobby-h',interview:'#problem h2',results:'#res-h',shared:'#shared-h'}[name], el=t&&$(t);
+    if(el){ if(!el.hasAttribute('tabindex')) el.setAttribute('tabindex','-1'); try{ el.focus({preventScroll:true}); }catch(e){} }
+  }
+}
+
+/* ==========================================================================
+   Lobby
+   ========================================================================== */
+let pick=null;                 // {key, ids}: questions chosen for sharing, reused by Start
+let lobbyMsg=null;             // {tone, text} shown at the top of the setup card
+const pickKey=()=>S.settings.mix+'|'+S.settings.count;
+function segHTML(name,label,opts,cur,disabled){
+  return `<div class="seg" role="group" aria-label="${esc(label)}">${opts.map(o=>`<button type="button" data-seg="${name}" data-v="${esc(o.v)}" aria-pressed="${String(String(o.v)===String(cur))}"${disabled?' disabled':''}>${esc(o.l)}</button>`).join('')}</div>`;
+}
+function diffSummary(ids){ return ids.map(id=>qOf(id).difficulty).join(', '); }
+function renderPoints(){
+  $('#points').innerHTML=[
+    ['clock','One clock for everything','Pick 15, 30 or 45 minutes. Refreshing the page will not stop it, and when it reaches zero your code is submitted automatically.'],
+    ['lock','No hints, no answers','You get the problem, two examples and a test runner. Reference solutions and explanations unlock only after you finish.'],
+    ['target','Scored on correctness, efficiency and speed','Each question is worth 100 points: 60 for passing tests, 25 for an efficient solution and 15 for finishing with time to spare.']
+  ].map(p=>`<li><span class="pt-ic">${ic(p[0],16)}</span><div><b>${p[1]}</b><span class="muted">${p[2]}</span></div></li>`).join('');
+}
+function renderSetup(){
+  const st=S.settings, shared=st.source==='shared', sh=S.shared;
+  const dur=shared&&sh?sh.dur:st.dur;
+  let h='';
+  if(lobbyMsg) h+=`<div class="note ${lobbyMsg.tone}" role="${lobbyMsg.tone==='bad'?'alert':'status'}" style="margin-bottom:14px">${esc(lobbyMsg.text)}</div>`;
+  h+=`<fieldset class="field"><legend>Question source</legend>${segHTML('source','Question source',[{v:'bank',l:'Built-in bank'},{v:'shared',l:'Shared challenge'}],st.source)}</fieldset>`;
+  if(shared){
+    h+=`<div class="field"><label class="lbl" for="link-in">Challenge link</label><div class="row"><input class="input" id="link-in" style="flex:1;min-width:0" placeholder="Paste a challenge link" autocomplete="off" spellcheck="false"><button type="button" class="btn" id="link-load">Load</button></div>`
+      +`<span class="hint">Someone sent you a link? Paste it here, or just open it in this browser.</span></div>`;
+    h+=sh?`<div class="note good" style="margin-bottom:16px">${ic('check',14)} Challenge loaded: <b>${sh.ids.length} question${sh.ids.length>1?'s':''}</b> (${esc(diffSummary(sh.ids))}), <b>${sh.dur} minutes</b>. Duration and questions are fixed by the challenge.</div>`
+      :`<div class="note" style="margin-bottom:16px">No challenge loaded yet.</div>`;
+  }
+  h+=`<fieldset class="field"><legend>Duration</legend>${segHTML('dur','Duration in minutes',DURATIONS.map(d=>({v:d,l:d+' min'})),dur,shared)}</fieldset>`;
+  if(!shared){
+    h+=`<fieldset class="field"><legend>Difficulty mix</legend>${segHTML('mix','Difficulty mix',MIXES.map(m=>({v:m,l:m})),st.mix)}<span class="hint">${st.mix==='Mixed'?'Mixed builds a ladder from easy to hard.':'All questions are '+st.mix.toLowerCase()+'.'}</span></fieldset>`;
+    h+=`<fieldset class="field"><legend>Number of questions</legend>${segHTML('count','Number of questions',[1,2,3].map(n=>({v:n,l:String(n)})),st.count)}</fieldset>`;
+  }
+  const can=!shared||!!sh;
+  h+=`<div class="row" style="margin-top:4px"><button type="button" class="btn primary lg" id="start-btn"${can?'':' disabled'}>${ic('play',14)} Start interview</button><button type="button" class="btn" id="share-ch-btn"${can?'':' disabled'}>${ic('share',15)} Share this challenge</button></div>`;
+  h+=`<p class="small muted" style="margin:12px 0 0;font-size:12px">${BANK.length} questions in the built-in bank. JavaScript only. The timer starts as soon as you press Start.</p>`;
+  const keep=document.activeElement&&document.activeElement.id==='link-in'?$('#link-in').value:null;
+  $('#setup').innerHTML=h;
+  if(keep!==null&&$('#link-in')) $('#link-in').value=keep;
+}
+function renderHistory(){
+  const hs=S.history; let h='';
+  if(S.best) h+=`<div class="best">${ic('trophy',24)}<div><div style="font-size:12px;font-weight:600">Personal best</div><b>${S.best.score}</b> / 100</div></div>`;
+  if(!hs.length) h+=`<div class="note">No attempts yet. Your last ${MAX_HISTORY} interviews will show up here.</div>`;
+  else{
+    h+=`<div class="tbl-wrap" tabindex="0" role="region" aria-label="Last attempts"><table class="tbl"><thead><tr><th scope="col">Date</th><th scope="col" class="num">Score</th><th scope="col" class="num">Time</th><th scope="col">Questions</th></tr></thead><tbody>`
+      +hs.map(e=>`<tr><td>${esc(fmtDate(e.t))}</td><td class="num"><b>${e.score}</b></td><td class="num">${esc(fmtUsed(e.used))} / ${e.dur} min</td><td>${e.qs.map(q=>esc(qOf(q.id).title)).join(', ')}</td></tr>`).join('')
+      +`</tbody></table></div>`;
+  }
+  if(hs.length||S.best) h+=`<div class="row" style="margin-top:12px"><button type="button" class="btn sm danger" id="clear-hist">Clear history</button></div>`;
+  $('#history').innerHTML=h;
+}
+function renderLobby(){ renderPoints(); renderSetup(); renderHistory(); }
+function showLobby(focus){
+  S.view='lobby'; save(); renderLobby(); showScreen('lobby',focus);
+}
+function currentPlan(){
+  const st=S.settings;
+  if(st.source==='shared') return S.shared?{ids:S.shared.ids.slice(),dur:S.shared.dur}:null;
+  if(!pick||pick.key!==pickKey()) pick={key:pickKey(),ids:pickQuestions(st.mix,st.count,[])};
+  return {ids:pick.ids.slice(),dur:st.dur};
+}
+function onSetupClick(e){
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.seg){
+    const k=b.dataset.seg, v=b.dataset.v;
+    if(k==='source') S.settings.source=v==='shared'?'shared':'bank';
+    else if(k==='dur') S.settings.dur=+v;
+    else if(k==='mix') S.settings.mix=v;
+    else if(k==='count') S.settings.count=+v;
+    S.settings=sanitizeSettings(S.settings); pick=null; lobbyMsg=null; save(); renderSetup();
+    const again=$(`[data-seg="${k}"][data-v="${v}"]`); if(again) again.focus();
+    return;
+  }
+  if(b.id==='start-btn') return startFromLobby();
+  if(b.id==='share-ch-btn'){ const p=currentPlan(); if(p) openLinkDialog({title:'Share this challenge',intro:`Anyone who opens this link gets the same ${p.ids.length} question${p.ids.length>1?'s':''} and ${p.dur} minutes. The questions stay hidden until they start.`,build:()=>encodePayload(challengePayload(p.ids,p.dur)).then(s=>linkBase()+'#c='+s)}); return; }
+  if(b.id==='link-load') return loadFromInput();
+}
+async function loadFromInput(){
+  const inp=$('#link-in'); const h=linkFromInput(inp&&inp.value);
+  if(!h){ lobbyMsg={tone:'bad',text:'That does not look like a challenge link. It should contain #c=...'}; renderSetup(); return; }
+  await applyLink(h,false);
+}
+async function onClearHistory(){
+  if(await confirmDialog('Clear history?','This removes your saved attempts and your personal best from this browser.','Clear history')){
+    S.history=[]; S.best=null; S.last=null; save(); renderHistory(); toast('History cleared');
+  }
+}
+function startFromLobby(){
+  const p=currentPlan(); if(!p) return;
+  pick=null; beginInterview(p.ids,p.dur,S.settings);
+}
+
+/* ==========================================================================
+   Interview: state, timer, editor, running code
+   ========================================================================== */
+const curQ=()=>qOf(S.active.ids[S.active.cur]);
+const isSolved=id=>{ const a=S.active; return !!a&&has(a.passedCode,id)&&a.passedCode[id]===a.code[id]; };
+let tickT=null, announced=new Set(), lastClock='', lastTState='', finishing=false;
+let RS=null;                   // run/result state of the current question
+const freshRS=()=>({tab:'console',logs:[],results:{},running:null,status:'',stop:null,fatal:null});
+
+function beginInterview(ids,dur,settings){
+  try{ if(location.hash) history.replaceState(null,'',location.pathname+location.search); }catch(e){}
+  const now=Date.now(), code={};
+  ids.forEach(id=>{ code[id]=qOf(id).starter; });
+  S.active={start:now,end:now+dur*60000,dur,ids:ids.slice(),code,passedCode:{},cur:0,status:'running',finishedAt:null,settings:sanitizeSettings(settings)};
+  S.last=null; S.view='lobby'; save();
+  enterInterview(false);
+}
+function enterInterview(resumed){
+  const a=S.active;
+  announced=initAnnounced(remainingMs(a,Date.now()));
+  lastClock=''; lastTState='';
+  showScreen('interview',!resumed);
+  RS=freshRS();
+  renderQnav(); renderProblem(); renderEditorHead(); renderEditor(); renderResultsPane();
+  startTicker();
+}
+function startTicker(){ stopTicker(); tick(); tickT=setInterval(tick,250); }
+function stopTicker(){ if(tickT){ clearInterval(tickT); tickT=null; } }
+function tick(){
+  const a=S.active; if(!a||a.status!=='running'){ stopTicker(); return; }
+  const ms=remainingMs(a,Date.now());
+  renderTimer(ms,a);
+  const m=dueMilestone(ms,announced);
+  if(m&&ms>0) announce(m===60?'1 minute left':(m/60)+' minutes left');
+  if(ms<=0){ stopTicker(); toast('Time is up. Submitting your answers.'); finishInterview('time'); }
+}
+function announce(text){ const el=$('#timer-live'); el.textContent=''; el.textContent=text; }
+function renderTimer(ms,a){
+  const text=fmtClock(ms), st=timerState(ms);
+  if(text!==lastClock){ $('#timer-text').textContent=text; lastClock=text; }
+  $('#tbar-fill').style.width=clamp(ms/(a.dur*60000)*100,0,100)+'%';
+  if(st===lastTState) return;
+  lastTState=st;
+  const cls=st==='warn'||st==='danger'?st:'';
+  $('#timer').className='timer'+(cls?' '+cls:'');
+  $('#tbar').className='tbar'+(cls?' '+cls:'');
+  $('#timer-ic').innerHTML=ic(st==='danger'?'bell':st==='warn'?'alert':'clock',22);
+  const ts=$('#tstate'); ts.className='tstate'+(cls?' '+cls:'');
+  ts.textContent=st==='over'?'Time is up':st==='danger'?'Final minute':st==='warn'?'Under 5 minutes':'';
+}
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) tick(); else flushCode(); });
+window.addEventListener('focus',()=>tick());
+window.addEventListener('pageshow',()=>tick());
+window.addEventListener('pagehide',()=>flushCode());
+window.addEventListener('beforeunload',e=>{
+  if(S.active&&S.active.status==='running'){ flushCode(); e.preventDefault(); e.returnValue=''; return ''; }
+});
+
+/* --- question navigation + problem --- */
+function renderQnav(){
+  const a=S.active;
+  $('#qnav').innerHTML=a.ids.map((id,i)=>{
+    const q=qOf(id), ok=isSolved(id);
+    return `<button type="button" class="qtab" data-i="${i}"${i===a.cur?' aria-current="true"':''} aria-label="Question ${i+1}: ${esc(q.title)}, ${esc(q.difficulty)}, ${ok?'all tests passed':'not solved yet'}"><span class="qdot${ok?' pass':''}" aria-hidden="true">${ic('check',11)}</span>Q${i+1}<span class="pill ${diffCls(q.difficulty)}">${esc(q.difficulty)}</span></button>`;
+  }).join('');
+  $('#finish-btn').innerHTML=`${ic('flag',14)}<span>Finish<span class="lbl-long"> interview</span></span>`;
+}
+function examplesHTML(q){
+  return '<h3>Examples</h3>'+q.examples.map((x,i)=>`<div class="ex"><div class="ex-h">Example ${i+1}</div><div class="ex-b"><div class="ex-row"><span>Input</span><code>${esc(x.input)}</code></div><div class="ex-row"><span>Output</span><code>${esc(x.output)}</code></div></div></div>`).join('');
+}
+function renderProblem(){
+  const q=curQ();
+  $('#problem').innerHTML=`<h2 tabindex="-1">${esc(q.title)}</h2>
+    <div class="tags"><span class="pill ${diffCls(q.difficulty)}">${esc(q.difficulty)}</span><span class="pill">JavaScript</span><span class="pill accent">Question ${S.active.cur+1} of ${S.active.ids.length}</span></div>
+    ${fmtDesc(q.description)}${examplesHTML(q)}
+    <h3>How it works</h3><div class="note">Declare <code>function ${esc(q.fn)}(...)</code>. Each test calls it with the input arguments and compares the result with the expected value. <b>Run</b> calls it once with the first test input and shows your <code>console.log</code> output.</div>`;
+}
+function renderEditorHead(){
+  const q=curQ();
+  $('#file-label').innerHTML=`${ic('code',16)}<span>${esc(q.fn)}.js</span>`;
+  $('#run-btn').innerHTML=`${ic('play',14)}<span>Run</span><span class="kbd lbl-long">Ctrl+Enter</span>`;
+  $('#test-btn').innerHTML=`${ic('flask',15)}<span>Run tests</span>`;
+  $('#reset-btn').innerHTML=`${ic('reset',14)}<span>Reset</span>`;
+}
+let gutterLines=0;
+function updateGutter(force){
+  const n=$('#code').value.split('\n').length;
+  if(!force&&n===gutterLines) return;
+  gutterLines=n; $('#gutter').textContent=Array.from({length:n},(_,i)=>i+1).join('\n');
+}
+function renderEditor(){
+  const ta=$('#code'); ta.value=S.active.code[curQ().id]; updateGutter(true); ta.scrollTop=0; ta.scrollLeft=0; $('#gutter').scrollTop=0;
+  $('#editor').style.setProperty('--fs',S.font+'px');
+}
+let saveT=null;
+function flushCode(){
+  clearTimeout(saveT); saveT=null;
+  const a=S.active;
+  if(a&&a.status==='running'&&currentScreen==='interview'){ a.code[curQ().id]=$('#code').value; save(); }
+}
+function onCodeInput(){
+  const a=S.active; if(!a||a.status!=='running') return;
+  const id=curQ().id, was=isSolved(id);
+  a.code[id]=$('#code').value.slice(0,CODE_MAX*2);
+  updateGutter();
+  if(was!==isSolved(id)) renderQnav();
+  clearTimeout(saveT); saveT=setTimeout(()=>{ saveT=null; save(); },250);
+}
+function switchQuestion(i){
+  const a=S.active; if(!a||i===a.cur||i<0||i>=a.ids.length) return;
+  flushCode(); cancelRun(); a.cur=i; save();
+  RS=freshRS(); renderQnav(); renderProblem(); renderEditorHead(); renderEditor(); renderResultsPane();
+}
+
+/* --- editor key handling (indent, auto-close, auto-indent) --- */
+const PAIRS={'(':')','[':']','{':'}','"':'"',"'":"'",'`':'`'};
+let tabEscape=false;
+function insertText(ta,text){
+  ta.focus();
+  if(!document.execCommand('insertText',false,text)){ ta.setRangeText(text,ta.selectionStart,ta.selectionEnd,'end'); ta.dispatchEvent(new Event('input',{bubbles:true})); }
+}
+function deleteSel(ta){
+  if(!document.execCommand('delete')){ ta.setRangeText('',ta.selectionStart,ta.selectionEnd,'end'); ta.dispatchEvent(new Event('input',{bubbles:true})); }
+}
+function lineStart(v,i){ return i===0?0:v.lastIndexOf('\n',i-1)+1; }
+function onEditorKey(e){
+  if(e.ctrlKey||e.metaKey||e.altKey||e.isComposing) return;
+  const ta=e.target, s=ta.selectionStart, en=ta.selectionEnd, v=ta.value, k=e.key;
+  if(k==='Escape'){ tabEscape=true; return; }
+  if(k==='Tab'&&tabEscape){ tabEscape=false; return; }
+  if(k!=='Shift') tabEscape=false;
+  if(k==='Tab'){
+    e.preventDefault();
+    if(s===en&&!e.shiftKey){ insertText(ta,'  '); return; }
+    const ls=lineStart(v,s); let le=v.indexOf('\n',en); if(le<0) le=v.length;
+    const block=v.slice(ls,le);
+    const out=e.shiftKey?block.replace(/^( {1,2}|\t)/gm,''):block.replace(/^/gm,'  ');
+    ta.setSelectionRange(ls,le); insertText(ta,out); ta.setSelectionRange(ls,ls+out.length);
+    return;
+  }
+  if(k==='Enter'&&!e.shiftKey){
+    e.preventDefault();
+    const indent=v.slice(lineStart(v,s),s).match(/^\s*/)[0], before=v[s-1], after=v[en];
+    const opener=before&&'{[('.includes(before);
+    if(opener&&after&&PAIRS[before]===after){ insertText(ta,'\n'+indent+'  \n'+indent); const p=s+1+indent.length+2; ta.setSelectionRange(p,p); }
+    else if(opener) insertText(ta,'\n'+indent+'  ');
+    else insertText(ta,'\n'+indent);
+    return;
+  }
+  if(k==='Backspace'&&s===en&&s>0&&has(PAIRS,v[s-1])&&PAIRS[v[s-1]]===v[s]){
+    e.preventDefault(); ta.setSelectionRange(s-1,s+1); deleteSel(ta); return;
+  }
+  if(k.length!==1) return;
+  const isCloser=')]}"\'`'.includes(k);
+  if(isCloser&&s===en&&v[s]===k){ e.preventDefault(); ta.setSelectionRange(s+1,s+1); return; }
+  if(has(PAIRS,k)){
+    const close=PAIRS[k];
+    if(s!==en){ e.preventDefault(); insertText(ta,k+v.slice(s,en)+close); ta.setSelectionRange(s+1,en+1); return; }
+    if(k===close&&s>0&&/[\w$]/.test(v[s-1])) return;
+    if(v[s]&&/[\w$]/.test(v[s])) return;
+    e.preventDefault(); insertText(ta,k+close); ta.setSelectionRange(s+1,s+1);
+  }
+}
+
+/* --- worker execution (candidate code only ever runs inside a Blob Worker) --- */
+function execJs(o,h){
+  let w,url,timer,cur=null,ended=false;
+  const timeout=o.timeout||TIMEOUT;
+  const dispose=()=>{ clearTimeout(timer); try{ w.terminate(); }catch(e){} try{ URL.revokeObjectURL(url); }catch(e){} };
+  const end=info=>{ if(ended) return; ended=true; dispose(); h.end(info); };
+  const arm=()=>{ clearTimeout(timer); timer=setTimeout(()=>end({timeout:true,index:cur}),timeout); };
+  try{ url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'})); w=new Worker(url); }
+  catch(err){ setTimeout(()=>end({fatal:'Could not start the sandbox worker: '+(err&&err.message)}),0); return ()=>{ ended=true; }; }
+  w.onmessage=e=>{
+    const m=e.data||{};
+    if(m.t==='log') h.log(m.level,m.text);
+    else if(m.t==='start'){ cur=m.i; h.start(m.i); arm(); }
+    else if(m.t==='result'){ h.result(m); arm(); }
+    else if(m.t==='fatal') end({fatal:m.message});
+    else if(m.t==='done') end({});
+  };
+  w.onerror=e=>{ if(e.preventDefault) e.preventDefault(); end({fatal:e.message||'The worker crashed.'}); };
+  arm();
+  w.postMessage({mode:o.mode,code:o.code,fn:o.fn,tests:o.tests});
+  return ()=>{ if(!ended){ ended=true; dispose(); } };
+}
+function runAllTests(q,code,timeout){
+  return new Promise(resolve=>{
+    const results={};
+    execJs({mode:'test',code,fn:q.fn,tests:q.tests,timeout},{log(){},start(){},result(r){ results[r.i]=r; },end(info){ resolve({results,info}); }});
+  });
+}
+const LIMIT_MSG='Time limit exceeded (5 s). Check for an infinite loop.';
+function collectRun(q,run){
+  const failed=[]; let passed=0;
+  q.tests.forEach((t,i)=>{
+    const r=run.results[i];
+    if(r&&r.pass){ passed++; return; }
+    let error=r&&r.error?r.error:null;
+    if(!r&&run.info.timeout&&run.info.index===i) error=LIMIT_MSG;
+    else if(!r&&run.info.fatal) error=run.info.fatal;
+    else if(!r&&run.info.timeout) error='Not run: an earlier test timed out.';
+    failed.push({i,actual:r&&!r.error?clip(r.actual,400):null,error:error?clip(error,400):null,notRun:!r});
+  });
+  return {passed,total:q.tests.length,failed,fatal:run.info.fatal?clip(run.info.fatal,300):null,timedOut:!!run.info.timeout};
+}
+function cancelRun(){
+  if(RS&&RS.stop){ try{ RS.stop(); }catch(e){} }
+  if(RS){ RS.stop=null; RS.running=null; }
+}
+function startRun(mode){
+  const a=S.active; if(!a||a.status!=='running'||currentScreen!=='interview'||RS.running) return;
+  const q=curQ(), code=$('#code').value; a.code[q.id]=code; save();
+  RS.logs=[]; RS.fatal=null; if(mode==='test') RS.results={};
+  RS.running=mode; RS.status='Running…'; RS.tab=mode==='test'?'tests':'console';
+  const my=RS, t0=performance.now();
+  const alive=()=>RS===my;
+  my.stop=execJs({mode,code,fn:q.fn,tests:mode==='test'?q.tests:q.tests.slice(0,1),timeout:TIMEOUT},{
+    log:(level,text)=>{ if(!alive()) return; if(my.logs.length<300) my.logs.push({level,text:clip(text,2000)}); renderConsole(); },
+    start:i=>{ if(!alive()) return; my.results[i]={running:true}; renderTests(); },
+    result:r=>{ if(!alive()) return; my.results[r.i]={pass:!!r.pass,actual:clip(r.actual===undefined?'':r.actual,600),error:r.error?clip(r.error,600):null,ms:r.ms||0}; renderTests(); },
+    end:info=>{
+      if(!alive()) return;
+      my.running=null; my.stop=null;
+      const ms=Math.round(performance.now()-t0);
+      if(info.fatal){ my.fatal=info.fatal; my.logs.push({level:'error',text:info.fatal}); }
+      if(info.timeout){
+        if(mode==='test'&&info.index!=null) my.results[info.index]={pass:false,timeout:true,error:LIMIT_MSG};
+        else my.logs.push({level:'error',text:LIMIT_MSG});
+      }
+      if(mode==='test'){
+        const ok=!info.fatal&&!info.timeout&&q.tests.every((t,i)=>my.results[i]&&my.results[i].pass);
+        my.status=info.fatal?'Could not run tests':ok?'All tests passed · '+ms+' ms':'Finished · '+ms+' ms';
+        if(ok){ a.passedCode[q.id]=code; save(); }
+        renderQnav();
+      }else{
+        if(!info.fatal&&!info.timeout) my.logs.push({level:'meta',text:my.logs.length?'Finished in '+ms+' ms':'Ran with no console output. Finished in '+ms+' ms'});
+        my.status=info.fatal?'Error':info.timeout?'Timed out':'Finished · '+ms+' ms';
+      }
+      renderResultsPane();
+    }
+  });
+  renderResultsPane();
+}
+
+/* --- results pane (console + tests) --- */
+function renderTabs(){
+  const q=curQ();
+  $('#tabs').innerHTML=[['console','Console',null],['tests','Test results',q.tests.length]].map(t=>`<button type="button" class="tab" role="tab" id="tab-${t[0]}" aria-controls="panel-${t[0]}" data-tab="${t[0]}" tabindex="${RS.tab===t[0]?0:-1}" aria-selected="${RS.tab===t[0]}">${t[1]}${t[2]!=null?`<span class="count">${t[2]}</span>`:''}</button>`).join('');
+  $('#status').innerHTML=(RS.running?'<span class="spinner"></span>':'')+esc(RS.status||'')+(RS.running?` <button type="button" class="btn sm" id="stop-btn">${ic('stop',12)} Stop</button>`:'');
+  $('#run-btn').disabled=$('#test-btn').disabled=!!RS.running;
+  $('#panel-console').hidden=RS.tab!=='console'; $('#panel-tests').hidden=RS.tab!=='tests';
+}
+function renderConsole(){
+  const el=$('#panel-console');
+  el.innerHTML=RS.logs.length?RS.logs.map(l=>`<div class="log log-${esc(l.level)}"><pre>${esc(l.text)}</pre></div>`).join('')
+    :`<div class="placeholder"><div><strong>Console output appears here</strong>Press <b>Run</b> to call your function with the first test input. Anything passed to <code>console.log</code> is shown here.</div></div>`;
+  el.scrollTop=el.scrollHeight;
+}
+function renderTests(){
+  const q=curQ(), el=$('#panel-tests'), top=el.scrollTop, tests=q.tests;
+  const done=Object.values(RS.results).filter(r=>!r.running), passed=done.filter(r=>r.pass).length;
+  let h='';
+  if(RS.fatal) h+=`<div class="note bad" role="alert" style="margin-bottom:12px">${esc(RS.fatal)}</div>`;
+  if(done.length||RS.running){
+    const all=!RS.running&&done.length===tests.length&&passed===tests.length, bad=!RS.running&&done.length>0&&passed<tests.length;
+    h+=`<div class="summary ${all?'ok':bad?'bad':''}"><strong>${RS.running?'Running…':all?'All tests passed':`${passed} of ${tests.length} passed`}</strong><div class="bar"><i style="width:${tests.length?done.length/tests.length*100:0}%"></i></div><span>${passed}/${tests.length}</span></div>`;
+  }else h+=`<div class="placeholder" style="height:auto;padding:24px 0"><div><strong>No test results yet</strong>Press <b>Run tests</b> to check your solution against all ${tests.length} cases.</div></div>`;
+  h+=tests.map((t,i)=>{
+    const r=RS.results[i], cls=r?(r.running?'running':r.pass?'pass':'fail'):'';
+    const badge=r?(r.running?'<span class="tbadge running">Running</span>':r.pass?`<span class="tbadge pass">${ic('check',11)} Passed · ${r.ms||0} ms</span>`:`<span class="tbadge fail">${ic('x',11)} ${r.timeout?'Timed out':'Failed'}</span>`):'';
+    let args=''; try{ args=q.fn+'('+JSON.parse(t.input).map(ser).join(', ')+')'; }catch(e){ args=t.input; }
+    let exp=t.expected; try{ exp=ser(JSON.parse(t.expected)); }catch(e){}
+    let res='';
+    if(r&&!r.running){
+      if(r.error) res=`<div class="kv err"><span>Error</span><code>${esc(r.error)}</code></div>`;
+      else res=`<div class="kv ${r.pass?'ok':'err'}"><span>Output</span><code>${esc(r.actual)}</code></div>`;
+    }
+    return `<div class="tcase ${cls}"><div class="tcase-h"><span class="tnum">Case ${i+1}</span>${badge}</div><div class="kv"><span>Call</span><code>${esc(clip(args,600))}</code></div><div class="kv"><span>Expected</span><code>${esc(clip(exp,600))}</code></div>${res}</div>`;
+  }).join('');
+  el.innerHTML=h; el.scrollTop=top;
+}
+function renderResultsPane(){ renderTabs(); renderConsole(); renderTests(); }
+function setTab(id){ RS.tab=id==='tests'?'tests':'console'; renderTabs(); }
+
+/* --- finishing --- */
+async function onFinishClick(){
+  const a=S.active; if(!a||a.status!=='running'||finishing) return;
+  flushCode();
+  const solved=a.ids.filter(isSolved).length, left=remainingMs(a,Date.now());
+  const ok=await confirmDialog('Finish the interview?',`You have ${solved} of ${a.ids.length} question${a.ids.length>1?'s':''} with all tests passing and ${fmtClock(left)} left. Your code is scored as it is now, and you cannot come back to the interview afterwards.`,'Finish and see results');
+  if(ok) finishInterview('manual');
+}
+async function finishInterview(reason){
+  const a=S.active; if(!a||finishing) return;
+  finishing=true;
+  try{
+    flushCode(); cancelRun(); stopTicker(); closeModals();
+    if(a.status!=='finishing'){ a.status='finishing'; a.finishedAt=Math.min(Date.now(),a.end); save(); }
+    await evaluateAndShow(a);
+  }finally{ finishing=false; }
+}
+function renderEvaluating(total,reason){
+  $('#screen-results').innerHTML=`<section class="card pad"><h1 id="res-h" tabindex="-1">Scoring your interview</h1><p class="lead">${reason==='time'?'Time is up. Your code is being submitted and tested against every case.':'Your code is being tested against every case.'}</p><div class="progress-line" role="status"><span class="spinner"></span><span id="eval-text">Preparing\u2026</span></div><div class="bar" style="margin-top:12px"><i id="eval-bar" style="width:0%"></i></div></section>`;
+}
+function updateEvaluating(done,total){
+  const t=$('#eval-text'), b=$('#eval-bar'); if(!t||!b) return;
+  t.textContent=done<total?`Running the tests for question ${done+1} of ${total}\u2026`:'Calculating your score\u2026';
+  b.style.width=(total?done/total*100:0)+'%';
+}
+async function evaluate(a,onProgress){
+  const budget=a.dur*60000, finishedAt=Math.min(isInt(a.finishedAt)?a.finishedAt:Date.now(),a.end);
+  const remainFrac=clamp((a.end-finishedAt)/budget,0,1);
+  const qs=[];
+  for(let k=0;k<a.ids.length;k++){
+    onProgress(k,a.ids.length);
+    const id=a.ids[k], q=qOf(id), code=a.code[id];
+    const run=collectRun(q,await runAllTests(q,code,TIMEOUT));
+    let est=null; try{ const an=analyzeCode(code,q); est={time:{label:an.time.label,rank:an.time.rank},space:{label:an.space.label,rank:an.space.rank}}; }catch(e){}
+    const ref={time:rankOf(q.time),space:rankOf(q.space)};
+    const sc=scoreQuestion({passed:run.passed,total:run.total,est:est&&{time:est.time.rank,space:est.space.rank},ref,remainFrac});
+    qs.push({id,code,passed:run.passed,total:run.total,failed:run.failed,fatal:run.fatal,timedOut:run.timedOut,est,ref:{time:q.time,space:q.space},sc});
+  }
+  onProgress(a.ids.length,a.ids.length);
+  const score=interviewScore(qs.map(x=>x.sc));
+  return {v:1,t:finishedAt,dur:a.dur,used:clamp(Math.round((finishedAt-a.start)/1000),0,a.dur*60),ids:a.ids.slice(),score,prevBest:S.best?S.best.score:null,settings:a.settings,qs};
+}
+async function evaluateAndShow(a){
+  showScreen('results',false);
+  renderEvaluating(a.ids.length,Date.now()>=a.end?'time':'manual');
+  const h1=$('#res-h'); if(h1) try{ h1.focus({preventScroll:true}); }catch(e){}
+  let res;
+  try{ res=await evaluate(a,updateEvaluating); }
+  catch(err){ S.active=null; save(); showLobby(true); toast('Could not score the interview: '+(err&&err.message),true); return; }
+  commitResult(res);
+  renderResultsScreen(res,true);
+}
+function commitResult(res){
+  S.history.unshift({t:res.t,score:res.score,dur:res.dur,used:Math.round(res.used),qs:res.qs.map(x=>({id:x.id,score:clamp(Math.round(x.sc.total),0,100),passed:x.passed,total:x.total}))});
+  S.history=S.history.slice(0,MAX_HISTORY);
+  if(!S.best||res.score>S.best.score) S.best={score:res.score,t:res.t};
+  S.active=null; S.last=res; S.view='results'; save();
+}
+
+/* ==========================================================================
+   Results screen
+   ========================================================================== */
+const VERDICT={better:['check','better than the reference'],same:['check','matches the reference'],worse:['alert','one level above the reference'],'much-worse':['alert','well above the reference'],unknown:['check','no reference to compare'],'n/a':['alert','not scored']};
+const r1=x=>Math.round(x*10)/10;
+function compareText(res){
+  if(res.prevBest===null||res.prevBest===undefined) return {v:'First result',s:'This is your first saved interview.',cls:''};
+  const d=res.score-res.prevBest;
+  if(d>0) return {v:'New best!',s:`${d} point${d>1?'s':''} above your previous best of ${res.prevBest}.`,cls:'good'};
+  if(d===0) return {v:'Equal to best',s:`Same as your personal best of ${res.prevBest}.`,cls:''};
+  return {v:`${-d} below best`,s:`Your personal best is ${res.prevBest}.`,cls:''};
+}
+function reviewHTML(res,q,idx){
+  const bq=qOf(q.id); if(!bq) return '';
+  const fails=q.failed.filter(f=>isObj(f)&&isInt(f.i)&&bq.tests[f.i]);
+  let h=`<h4>Your code</h4><pre class="codeblock">${esc(q.code)}</pre>`;
+  if(q.fatal) h+=`<div class="note bad" style="margin-top:10px">${esc(q.fatal)}</div>`;
+  h+=`<h4>${fails.length?`Failing tests (${fails.length} of ${q.total})`:'Tests'}</h4>`;
+  if(!fails.length) h+=`<div class="note good">${ic('check',13)} All ${q.total} tests passed.</div>`;
+  else h+=fails.map(f=>{
+    const t=bq.tests[f.i]; let call=t.input, exp=t.expected;
+    try{ call=bq.fn+'('+JSON.parse(t.input).map(ser).join(', ')+')'; exp=ser(JSON.parse(t.expected)); }catch(e){}
+    return `<div class="tcase fail"><div class="tcase-h"><span class="tnum">Case ${f.i+1}</span><span class="tbadge fail">${ic('x',11)} ${f.notRun?'Not run':'Failed'}</span></div><div class="kv"><span>Call</span><code>${esc(clip(call,600))}</code></div><div class="kv"><span>Expected</span><code>${esc(clip(exp,600))}</code></div><div class="kv err"><span>${f.error?'Error':'Yours'}</span><code>${esc(f.error||f.actual||'(nothing)')}</code></div></div>`;
+  }).join('');
+  h+=`<h4>Reference solution</h4><div class="row" style="margin-bottom:8px"><span class="pill">Time ${esc(bq.time)}</span><span class="pill">Space ${esc(bq.space)}</span></div><pre class="codeblock">${esc(bq.solution)}</pre><h4>How it works</h4><div class="expl">${fmtDesc(bq.explanation)}</div>`;
+  return h;
+}
+function renderResultsScreen(res,focus){
+  const g=gradeFor(res.score), cmp=compareText(res), n=res.qs.length;
+  const solved=res.qs.filter(q=>q.sc.allPass).length;
+  const vt=v=>{ const x=VERDICT[v]||VERDICT.unknown; return `<span class="small" style="display:inline-flex;gap:4px;align-items:center;color:var(--${x[0]==='alert'?'warn':'good'})">${ic(x[0],12)} ${esc(x[1])}</span>`; };
+  const rows=res.qs.map(q=>{
+    const bq=qOf(q.id), e=q.sc.eff;
+    const est=(k)=>q.est&&q.est[k]?esc(q.est[k].label):'n/a';
+    return `<tr><td class="qcell"><b>${esc(bq.title)}</b><br><span class="pill ${diffCls(bq.difficulty)}">${esc(bq.difficulty)}</span></td>
+      <td class="num">${q.passed}/${q.total}</td>
+      <td>${est('time')} <span class="muted">(ref ${esc(q.ref.time)})</span><br>${q.sc.allPass?vt(e.time.verdict):vt('n/a')}</td>
+      <td>${est('space')} <span class="muted">(ref ${esc(q.ref.space)})</span><br>${q.sc.allPass?vt(e.space.verdict):vt('n/a')}</td>
+      <td class="num">${r1(q.sc.correct)} / 60</td><td class="num">${r1(e.pts)} / 25</td><td class="num">${r1(q.sc.speed)} / 15</td><td class="num"><b>${Math.round(q.sc.total)}</b> / 100</td></tr>`;
+  }).join('');
+  $('#screen-results').innerHTML=`
+    <section class="card pad">
+      <div class="score-hero">
+        <div class="ring ${g.tone}" style="--p:${res.score}" role="img" aria-label="Score ${res.score} out of 100"><div><div><b>${res.score}</b><br><small>out of 100</small></div></div></div>
+        <div class="hero-copy">
+          <h1 id="res-h" tabindex="-1">Interview results</h1>
+          <span class="grade ${g.tone}">${ic(g.tone==='bad'?'alert':'trophy',14)} ${esc(g.label)}</span>
+          <p style="margin:0">${esc(summarize(res))}</p>
+          <p class="muted" style="margin:6px 0 0">${esc(fmtDate(res.t))}</p>
+        </div>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="tile-l">Time used</div><div class="tile-v">${esc(fmtUsed(res.used))}</div><div class="tile-s">of ${res.dur} minutes</div></div>
+        <div class="tile"><div class="tile-l">Solved</div><div class="tile-v">${solved} / ${n}</div><div class="tile-s">all tests passing</div></div>
+        <div class="tile"><div class="tile-l">Personal best</div><div class="tile-v">${esc(cmp.v)}</div><div class="tile-s">${esc(cmp.s)}</div></div>
+      </div>
+      <div class="actions no-print">
+        <button type="button" class="btn primary" data-act="again">${ic('reset',14)} Try again</button>
+        <button type="button" class="btn" data-act="new">New interview</button>
+        <button type="button" class="btn" data-act="share-res">${ic('share',14)} Share results</button>
+        <button type="button" class="btn" data-act="share-ch">${ic('link',14)} Share this challenge</button>
+        <button type="button" class="btn" data-act="json">${ic('download',14)} Download JSON</button>
+        <button type="button" class="btn" data-act="print">${ic('print',14)} Print</button>
+      </div>
+    </section>
+    <section class="card pad" style="margin-top:16px" aria-labelledby="bd-h">
+      <h2 id="bd-h">Breakdown</h2>
+      <div class="tbl-wrap" tabindex="0" role="region" aria-label="Per-question breakdown"><table class="tbl"><thead><tr><th scope="col">Question</th><th scope="col" class="num">Tests</th><th scope="col">Time (estimate)</th><th scope="col">Space (estimate)</th><th scope="col" class="num">Correctness</th><th scope="col" class="num">Efficiency</th><th scope="col" class="num">Speed</th><th scope="col" class="num">Total</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <p class="small muted" style="font-size:12px;margin:10px 0 0">Efficiency and speed only count when every test passes. Complexity is estimated by reading the structure of your code, so treat it as a guide. The final score is the average of the questions.</p>
+    </section>
+    <section style="margin-top:16px" aria-labelledby="rv-h"><h2 id="rv-h">Review</h2>
+      ${res.qs.map((q,i)=>`<details class="acc"${i===0&&!q.sc.allPass?' open':''}><summary><span class="grow">Q${i+1}. ${esc(qOf(q.id).title)}</span><span class="pill ${q.sc.allPass?'easy':'hard'}">${q.passed}/${q.total} tests</span><span class="pill accent">${Math.round(q.sc.total)} pts</span></summary><div class="acc-b">${reviewHTML(res,q,i)}</div></details>`).join('')}
+    </section>`;
+  S.view='results'; save();
+  showScreen('results',focus);
+}
+async function onResultsClick(e){
+  const b=e.target.closest('[data-act]'); if(!b) return;
+  const res=S.last; if(!res) return;
+  const act=b.dataset.act;
+  if(act==='new'){ pick=null; showLobby(true); }
+  else if(act==='again'){
+    const st=sanitizeSettings(res.settings);
+    if(st.source==='shared') beginInterview(res.ids,res.dur,st);
+    else{
+      const d=st.source==='shared'?res.dur:st.dur;
+      const mix=st.source==='shared'?'Mixed':st.mix, cnt=st.source==='shared'?res.ids.length:st.count;
+      beginInterview(pickQuestions(mix,cnt,res.ids),d,{dur:d,mix,count:cnt,source:'bank'});
+    }
+  }
+  else if(act==='share-res') openLinkDialog({title:'Share results',intro:'Anyone with this link sees a read-only card with your score. It contains no code. Links can be edited by hand, so shared results are not verified.',withName:true,build:name=>{ S.name=cleanName(name); save(); return encodePayload(resultPayload(res,S.name)).then(s=>linkBase()+'#r='+s); }});
+  else if(act==='share-ch') openLinkDialog({title:'Share this challenge',intro:`Anyone who opens this link gets the same ${res.ids.length} question${res.ids.length>1?'s':''} and ${res.dur} minutes.`,build:()=>encodePayload(challengePayload(res.ids,res.dur)).then(s=>linkBase()+'#c='+s)});
+  else if(act==='json') downloadJSON(res);
+  else if(act==='print') doPrint();
+}
+function doPrint(){ try{ window.print(); }catch(e){ toast('Printing is not available here.',true); } }
+window.addEventListener('beforeprint',()=>{ $$('#screen-results details').forEach(d=>{ d.dataset.was=d.open?'1':'0'; d.open=true; }); });
+window.addEventListener('afterprint',()=>{ $$('#screen-results details').forEach(d=>{ d.open=d.dataset.was==='1'; }); });
+function downloadJSON(res){
+  const data={app:'code-playground-mock-interview',version:1,finishedAt:new Date(res.t).toISOString(),score:res.score,durationMinutes:res.dur,secondsUsed:Math.round(res.used),
+    questions:res.qs.map(q=>{ const b=qOf(q.id); return {id:q.id,title:b.title,difficulty:b.difficulty,testsPassed:q.passed,testsTotal:q.total,
+      estimatedTime:q.est?q.est.time.label:null,estimatedSpace:q.est?q.est.space.label:null,referenceTime:b.time,referenceSpace:b.space,
+      points:{correctness:r1(q.sc.correct),efficiency:r1(q.sc.eff.pts),speed:r1(q.sc.speed),total:r1(q.sc.total)},code:q.code}; })};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='mock-interview-results.json';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  toast('Results downloaded');
+}
+
+/* --- link dialog (challenge + results) --- */
+function openLinkDialog({title,intro,withName,build}){
+  const m=modal(`<div class="dialog-h"><h2>${esc(title)}</h2><button type="button" class="icon-btn" data-close aria-label="Close">${ic('x',18)}</button></div>
+    <div class="dialog-b sharebox"><p class="lead" style="margin:0">${esc(intro)}</p>
+    ${withName?`<label class="field" style="margin:0"><span class="lbl">Display name (optional, up to ${MAX_NAME} characters)</span><input class="input" id="sh-name" maxlength="${MAX_NAME}" autocomplete="off" value="${esc(S.name)}"></label>`:''}
+    <label class="field" style="margin:0"><span class="lbl">Link</span><input class="input mono" id="sh-link" readonly value="Building link…"></label></div>
+    <div class="dialog-f"><button type="button" class="btn" data-close>Close</button><button type="button" class="btn primary" id="sh-copy" disabled>${ic('copy',14)} Copy link</button></div>`);
+  const link=$('#sh-link',m.el), copy=$('#sh-copy',m.el), name=$('#sh-name',m.el);
+  let seq=0;
+  const rebuild=async()=>{
+    const my=++seq; copy.disabled=true;
+    try{ const url=await build(name?name.value:''); if(my!==seq) return; link.value=url; copy.disabled=false; if(!name&&document.body.contains(copy)) copy.focus(); }
+    catch(err){ if(my===seq) link.value='Could not build the link: '+(err&&err.message); }
+  };
+  if(name) name.addEventListener('input',()=>{ clearTimeout(rebuild.t); rebuild.t=setTimeout(rebuild,200); });
+  copy.addEventListener('click',async()=>{
+    try{ await navigator.clipboard.writeText(link.value); toast('Link copied'); }
+    catch(e){ link.focus(); link.select(); let ok=false; try{ ok=document.execCommand('copy'); }catch(x){} toast(ok?'Link copied':'Press Ctrl/Cmd+C to copy the selected link',!ok); }
+  });
+  rebuild();
+}
+
+/* ==========================================================================
+   Shared views + link routing
+   ========================================================================== */
+function renderSharedResult(p){
+  const g=gradeFor(p.s);
+  const rows=p.q.map(x=>{ const b=qOf(x[0]); return `<tr><td class="qcell"><b>${esc(b.title)}</b> <span class="pill ${diffCls(b.difficulty)}">${esc(b.difficulty)}</span></td><td class="num">${x[2]}/${x[3]}</td><td class="num"><b>${x[1]}</b> / 100</td></tr>`; }).join('');
+  $('#screen-shared').innerHTML=`
+    <section class="card pad share-card">
+      <div class="note warn" role="note" style="margin-bottom:16px">${ic('alert',14)} <b>Shared result, not verified.</b> Anyone can create or edit a link like this, so treat the numbers as a claim.</div>
+      <div class="score-hero">
+        <div class="ring ${g.tone}" style="--p:${p.s}" role="img" aria-label="Score ${p.s} out of 100"><div><div><b>${p.s}</b><br><small>out of 100</small></div></div></div>
+        <div class="hero-copy">
+          <h1 id="shared-h" tabindex="-1">${p.nm?esc(p.nm)+'’s result':'Shared interview result'}</h1>
+          <span class="grade ${g.tone}">${esc(g.label)}</span>
+          <p class="muted" style="margin:0">${esc(fmtDate(p.t))} · ${esc(fmtUsed(p.u))} of ${p.d} minutes</p>
+        </div>
+      </div>
+      <div class="tbl-wrap" style="margin-top:16px" tabindex="0" role="region" aria-label="Per-question scores"><table class="tbl"><thead><tr><th scope="col">Question</th><th scope="col" class="num">Tests</th><th scope="col" class="num">Score</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="actions no-print">
+        <button type="button" class="btn primary" data-act="take">${ic('play',14)} Take this challenge</button>
+        <button type="button" class="btn" data-act="lobby">Back to the lobby</button>
+        <button type="button" class="btn" data-act="print">${ic('print',14)} Print</button>
+      </div>
+    </section>`;
+  $('#screen-shared').__payload=p;
+  showScreen('shared',true);
+}
+function onSharedClick(e){
+  const b=e.target.closest('[data-act]'); if(!b) return;
+  const p=$('#screen-shared').__payload;
+  if(b.dataset.act==='print') return doPrint();
+  try{ if(location.hash) history.replaceState(null,'',location.pathname+location.search); }catch(x){}
+  if(b.dataset.act==='take'&&p){
+    S.shared={ids:p.q.map(x=>x[0]),dur:p.d}; S.settings.source='shared'; pick=null;
+    lobbyMsg={tone:'good',text:'Challenge loaded from the shared result. Press Start when you are ready.'};
+  }else lobbyMsg=null;
+  showLobby(true);
+}
+async function applyLink(h,fromHash){
+  try{
+    const obj=await decodePayload(h.payload);
+    if(h.kind==='c'||fromHash===false){
+      // a challenge link (or a result link pasted into the loader): only the question IDs and the duration are used
+      let ids,dur;
+      if(h.kind==='c'){ const c=validateChallenge(obj); if(!c) throw new Error('This challenge link is not valid.'); ids=c.q; dur=c.d; }
+      else{ const r=validateResultPayload(obj); if(!r) throw new Error('This result link is not valid.'); ids=r.q.map(x=>x[0]); dur=r.d; }
+      S.shared={ids,dur}; S.settings.source='shared'; pick=null;
+      lobbyMsg={tone:'good',text:'Challenge loaded. Press Start when you are ready.'};
+      try{ if(location.hash) history.replaceState(null,'',location.pathname+location.search); }catch(e){}
+      showLobby(true);
+    }else{
+      const r=validateResultPayload(obj); if(!r) throw new Error('This result link is not valid.');
+      renderSharedResult(r);
+    }
+  }catch(err){
+    lobbyMsg={tone:'bad',text:'Could not open that link: '+(err&&err.message?err.message:'it is corrupted.')};
+    try{ if(location.hash) history.replaceState(null,'',location.pathname+location.search); }catch(e){}
+    showLobby(true); toast('That link could not be opened.',true);
+  }
+}
+
+/* ==========================================================================
+   Boot
+   ========================================================================== */
+function resumeOrFinish(){
+  const a=S.active, now=Date.now();
+  if(a.status==='finishing'||now>=a.end){
+    if(a.status!=='finishing'){ a.status='finishing'; a.finishedAt=a.end; save(); }
+    finishInterview('time'); return;
+  }
+  if(a.end-now>a.dur*60000) a.end=now+a.dur*60000;     // clock moved backwards: never more than the full budget
+  enterInterview(true);
+  toast('Interview resumed. '+fmtClock(remainingMs(a,now))+' left.');
+}
+function wire(){
+  $('#logo').innerHTML=ic('code',18);
+  $('#theme-btn').addEventListener('click',()=>{ writeTheme(isDark()?'light':'dark'); applyTheme(); });
+  $('#setup').addEventListener('click',onSetupClick);
+  $('#setup').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.id==='link-in'){ e.preventDefault(); loadFromInput(); } });
+  $('#history').addEventListener('click',e=>{ if(e.target.closest('#clear-hist')) onClearHistory(); });
+  $('#screen-results').addEventListener('click',onResultsClick);
+  $('#screen-shared').addEventListener('click',onSharedClick);
+  $('#finish-btn').addEventListener('click',onFinishClick);
+  $('#qnav').addEventListener('click',e=>{ const b=e.target.closest('[data-i]'); if(b) switchQuestion(+b.dataset.i); });
+  const ta=$('#code');
+  ta.addEventListener('keydown',onEditorKey);
+  ta.addEventListener('blur',()=>{ tabEscape=false; });
+  ta.addEventListener('input',onCodeInput);
+  ta.addEventListener('scroll',()=>{ $('#gutter').scrollTop=ta.scrollTop; });
+  $('#font-inc').addEventListener('click',()=>{ S.font=Math.min(22,S.font+1); $('#editor').style.setProperty('--fs',S.font+'px'); save(); });
+  $('#font-dec').addEventListener('click',()=>{ S.font=Math.max(10,S.font-1); $('#editor').style.setProperty('--fs',S.font+'px'); save(); });
+  $('#reset-btn').addEventListener('click',async()=>{
+    if(!S.active||S.active.status!=='running') return;
+    if(await confirmDialog('Reset code?','Your code for this question will be replaced with the starter template.','Reset')){
+      const id=curQ().id; S.active.code[id]=qOf(id).starter; save(); renderEditor(); renderQnav();
+    }
+  });
+  $('#run-btn').addEventListener('click',()=>startRun('run'));
+  $('#test-btn').addEventListener('click',()=>startRun('test'));
+  $('#tabs').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b) setTab(b.dataset.tab); });
+  $('#tabs').addEventListener('keydown',e=>{
+    if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight'&&e.key!=='Home'&&e.key!=='End') return;
+    e.preventDefault(); setTab(RS.tab==='console'?'tests':'console'); const t=$('#tab-'+RS.tab); if(t) t.focus();
+  });
+  $('#status').addEventListener('click',e=>{
+    if(!e.target.closest('#stop-btn')||!RS.running) return;
+    const my=RS; cancelRun(); RS.status='Stopped'; RS.logs.push({level:'warn',text:'Run stopped.'});
+    Object.keys(my.results).forEach(k=>{ if(my.results[k].running) delete my.results[k]; });
+    renderResultsPane();
+  });
+  document.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==='Enter'&&currentScreen==='interview'&&!modalOpen()){ e.preventDefault(); startRun(e.shiftKey?'test':'run'); }
+  });
+  const ws=$('#workspace'), sp=$('#splitter');
+  sp.addEventListener('pointerdown',e=>{
+    e.preventDefault(); sp.setPointerCapture&&sp.setPointerCapture(e.pointerId);
+    const rect=ws.getBoundingClientRect();
+    const move=ev=>{ ws.style.setProperty('--editor-h',Math.min(Math.max(ev.clientY-rect.top-5,150),rect.height-160)+'px'); };
+    const up=()=>{ sp.removeEventListener('pointermove',move); sp.removeEventListener('pointerup',up); sp.removeEventListener('pointercancel',up); };
+    sp.addEventListener('pointermove',move); sp.addEventListener('pointerup',up); sp.addEventListener('pointercancel',up);
+  });
+  sp.addEventListener('keydown',e=>{
+    if(e.key!=='ArrowUp'&&e.key!=='ArrowDown') return;
+    e.preventDefault();
+    const top=ws.firstElementChild.getBoundingClientRect().height+(e.key==='ArrowUp'?-24:24);
+    ws.style.setProperty('--editor-h',Math.min(Math.max(top,150),ws.getBoundingClientRect().height-160)+'px');
+  });
+  try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{ if(!readTheme()) applyTheme(); }); }catch(e){}
+  window.addEventListener('hashchange',()=>{ if(S.active||finishing) return; const h=parseHash(location.hash); if(h) applyLink(h,true); });
+}
+async function boot(){
+  wire(); applyTheme();
+  if(S.active){ renderLobby(); resumeOrFinish(); return; }
+  const h=parseHash(location.hash);
+  if(h){ renderLobby(); await applyLink(h,true); return; }
+  if(S.view==='results'&&S.last){
+    try{ renderResultsScreen(S.last,false); return; }catch(e){ S.last=null; S.view='lobby'; save(); }
+  }
+  showLobby(false);
+}
+boot();
+</script>
+<script src="levelup-nav.js"></script>
+</body>
+</html>

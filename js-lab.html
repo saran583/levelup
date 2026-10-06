@@ -1,0 +1,1917 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JS Lab - Levelup</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f5f8; --panel:#ffffff; --panel-2:#f1f3f7; --border:#e1e4ea; --text:#1a1e27; --muted:#667085;
+  --accent:#4f46e5; --accent-h:#4338ca; --accent-soft:#eceeff; --on-accent:#ffffff;
+  --good:#137a4b; --good-bg:#e5f6ed; --bad:#c0362c; --bad-bg:#fdecea; --warn:#9a5b06; --warn-bg:#fff3de;
+  --code-bg:#fbfbfd; --gutter:#f1f3f7; --shadow:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.06);
+  --mono: ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+    --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+    --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+    --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+  --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+  --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+  --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono)}
+code{font-family:var(--mono);font-size:.9em;background:var(--panel-2);border:1px solid var(--border);border-radius:5px;padding:1px 5px}
+
+.app{display:grid;grid-template-rows:56px minmax(0,1fr);height:100vh;height:100dvh}
+.topbar{display:flex;align-items:center;gap:10px;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--accent);color:var(--on-accent)}
+.brand-name{font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.brand-sub{color:var(--muted);font-size:12px;padding-left:10px;border-left:1px solid var(--border);white-space:nowrap}
+.nav{display:flex;gap:2px;min-width:0;overflow-x:auto;scrollbar-width:none;margin-left:8px}
+.nav a{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;color:var(--muted);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap}
+.nav a:hover{background:var(--panel-2);color:var(--text)}
+.nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.spacer{flex:1}
+
+.btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel);font-weight:600;font-size:13px;white-space:nowrap;transition:background .15s,border-color .15s,box-shadow .15s}
+.btn:hover:not(:disabled){background:var(--panel-2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover:not(:disabled){background:var(--accent-h);border-color:var(--accent-h)}
+.btn.success{background:var(--good);border-color:var(--good);color:#fff}
+.btn.success:hover:not(:disabled){filter:brightness(1.08);background:var(--good)}
+.btn.danger{color:var(--bad)}
+.btn.sm{height:28px;padding:0 10px;font-size:12px}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover:not(:disabled){background:var(--panel-2)}
+.icon-btn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--panel-2);color:var(--text)}
+.only-mobile{display:none}
+
+.body{display:grid;grid-template-columns:292px minmax(0,1fr);min-height:0}
+.sidebar{display:flex;flex-direction:column;min-height:0;background:var(--panel);border-right:1px solid var(--border)}
+.side-top{padding:14px 14px 10px;display:grid;gap:10px}
+.search{position:relative}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.input,.select,.textarea{width:100%;border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:7px 10px;min-height:34px;transition:border-color .15s,box-shadow .15s}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.search .input{padding-left:32px}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.select{padding-right:6px}
+.progress{padding:0 14px 10px}
+.progress-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.bar{height:6px;background:var(--panel-2);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--good);border-radius:99px;transition:width .3s}
+.qlist{flex:1;overflow:auto;padding:4px 8px 12px;display:grid;align-content:start;gap:2px}
+.qitem{position:relative;display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 10px;border:1px solid transparent;border-radius:9px;background:transparent;transition:background .12s}
+.qitem:hover{background:var(--panel-2)}
+.qitem.active{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)}
+.qstatus{flex:none;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);color:transparent}
+.qstatus.pass{background:var(--good);border-color:var(--good);color:#fff}
+.qstatus.fail{border-color:var(--bad);color:var(--bad)}
+.qmain{display:grid;gap:3px;min-width:0}
+.qtitle{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qmeta{display:flex;gap:6px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:99px;font-size:11px;font-weight:600;background:var(--panel-2);color:var(--muted)}
+.pill.easy{background:var(--good-bg);color:var(--good)}
+.pill.medium{background:var(--warn-bg);color:var(--warn)}
+.pill.hard{background:var(--bad-bg);color:var(--bad)}
+.pill.react{background:var(--accent-soft);color:var(--accent)}
+.pill.custom{border:1px dashed var(--border);background:transparent}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
+.empty strong{display:block;color:var(--text);margin-bottom:4px}
+
+.main{display:grid;grid-template-columns:minmax(300px,34%) minmax(0,1fr);gap:12px;padding:12px;min-height:0}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+.problem{overflow:auto;padding:20px 22px;min-height:0}
+.problem h1{font-size:20px;line-height:1.3;margin:0 0 10px;letter-spacing:-.01em}
+.problem .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.problem p{margin:0 0 12px}
+.problem ul{margin:0 0 12px;padding-left:20px}
+.problem li{margin:3px 0}
+.problem h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:20px 0 8px}
+.ex{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px;background:var(--panel)}
+.ex-h{padding:5px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--panel-2);border-bottom:1px solid var(--border)}
+.ex-b{padding:8px 12px;display:grid;gap:6px}
+.ex-row{display:grid;grid-template-columns:64px minmax(0,1fr);gap:8px;align-items:baseline;font-size:13px}
+.ex-row>span{color:var(--muted);font-weight:600;font-size:12px}
+.ex-row code{white-space:pre-wrap;word-break:break-word;background:none;border:0;padding:0;font-size:12.5px}
+.ex-note{margin:0;padding-top:6px;border-top:1px dashed var(--border);font-size:12.5px;color:var(--muted)}
+.tabs .dot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.an{display:grid;gap:12px}
+.an-verdict{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:10px;background:var(--panel-2)}
+.an-verdict.ok{background:var(--good-bg);color:var(--good)}
+.an-verdict.warn{background:var(--warn-bg);color:var(--warn)}
+.an-verdict.bad{background:var(--bad-bg);color:var(--bad)}
+.an-verdict strong{display:block;font-size:14px}
+.an-verdict span{color:var(--text);font-size:13px}
+.an-verdict>svg{flex:none;margin-top:2px}
+.an-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.tile{border:1px solid var(--border);border-radius:10px;padding:12px 14px;background:var(--panel)}
+.tile-l{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.tile-v{font-size:26px;font-weight:700;letter-spacing:-.02em;margin:2px 0 4px}
+.tile-s{font-size:12.5px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.an-sec h4{margin:0 0 8px;font-size:13px}
+.an-sec ul{margin:0;padding-left:18px;font-size:13px}
+.an-sec li{margin:3px 0}
+.an-sec .lead{font-size:12.5px;color:var(--muted);margin:0 0 8px}
+.mrow{display:grid;grid-template-columns:76px minmax(0,1fr) 84px;gap:10px;align-items:center;font-size:12.5px;margin:4px 0}
+.mrow .mbar{height:8px;border-radius:99px;background:var(--panel-2);overflow:hidden}
+.mrow .mbar i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.mrow code{background:none;border:0;padding:0}
+.mrow em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.kvgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.kvgrid div{border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:var(--panel)}
+.kvgrid b{display:block;font-size:16px}
+.kvgrid span{font-size:12px;color:var(--muted)}
+.hint-item{display:flex;gap:8px;padding:8px 10px;border-radius:8px;background:var(--panel-2);font-size:13px;margin-bottom:6px}
+.hint-item.warn{background:var(--warn-bg)}
+.small-note{font-size:12px;color:var(--muted)}
+.codeblock{margin:0;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--code-bg);font:12.5px/1.6 var(--mono);overflow:auto;white-space:pre;tab-size:2;max-height:320px}
+.ans-meta{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 6px}
+.ans-h{margin:16px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.hint-box{border:1px solid var(--border);background:var(--panel-2);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--muted)}
+.hint-box b{color:var(--text)}
+.problem-actions{margin-top:20px;display:flex;gap:8px}
+
+.workspace{display:grid;grid-template-rows:var(--editor-h,58%) 10px minmax(0,1fr);min-height:0;min-width:0}
+.pane{display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
+.pane-h{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 14px;border-bottom:1px solid var(--border);background:var(--panel);min-height:48px;flex-wrap:wrap}
+.file{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13px}
+.file svg{color:var(--muted)}
+.tools{display:flex;align-items:center;gap:6px;margin-left:auto;flex-wrap:wrap}
+.tools .sep{width:1px;height:20px;background:var(--border);margin:0 4px}
+.kbd{font-family:var(--mono);font-size:10px;opacity:.75;border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:2px}
+
+.editor{--fs:13px;flex:1;display:flex;min-height:0;background:var(--code-bg);overflow:hidden;font:var(--fs)/1.6 var(--mono)}
+.gutter{margin:0;flex:none;min-width:46px;padding:12px 10px 24px 8px;text-align:right;color:var(--muted);background:var(--gutter);border-right:1px solid var(--border);overflow:hidden;user-select:none;font:inherit;opacity:.85}
+.code{flex:1;min-width:0;border:0;outline:none;resize:none;background:transparent;color:var(--text);padding:12px 14px;white-space:pre;overflow:auto;tab-size:2;font:inherit}
+
+.splitter{cursor:row-resize;display:grid;place-items:center;touch-action:none}
+.splitter::after{content:"";width:44px;height:4px;border-radius:99px;background:var(--border);transition:background .15s}
+.splitter:hover::after,.splitter:focus-visible::after{background:var(--accent)}
+
+.tabs{display:flex;gap:2px}
+.tab{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-weight:600;font-size:13px}
+.tab:hover{background:var(--panel-2);color:var(--text)}
+.tab[aria-selected="true"]{background:var(--accent-soft);color:var(--accent)}
+.tab .count{font-size:11px;background:var(--panel-2);color:var(--muted);border-radius:99px;padding:0 6px}
+.tab[aria-selected="true"] .count{background:var(--panel);color:var(--accent)}
+.status{margin-left:auto;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.rbody{flex:1;min-height:0;position:relative;background:var(--panel)}
+.panel{position:absolute;inset:0;overflow:auto;padding:12px 14px}
+.panel[hidden]{display:none}
+.panel.flush{padding:0}
+
+.log{display:flex;gap:8px;padding:6px 10px;border-radius:8px;font:12.5px/1.5 var(--mono);border:1px solid transparent;margin-bottom:4px}
+.log pre{margin:0;white-space:pre-wrap;word-break:break-word;font:inherit}
+.log-log,.log-info,.log-debug{background:var(--panel-2)}
+.log-warn{background:var(--warn-bg);color:var(--warn)}
+.log-error{background:var(--bad-bg);color:var(--bad)}
+.log-result{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.log-meta{color:var(--muted);padding-left:2px}
+
+.summary{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;margin-bottom:12px;border:1px solid var(--border);background:var(--panel-2)}
+.summary.ok{background:var(--good-bg);border-color:transparent;color:var(--good)}
+.summary.bad{background:var(--bad-bg);border-color:transparent;color:var(--bad)}
+.summary strong{font-size:14px;white-space:nowrap}
+.summary .bar{flex:1;background:rgba(127,127,127,.2)}
+.summary.bad .bar>i{background:var(--bad)}
+.tcase{border:1px solid var(--border);border-radius:10px;padding:10px 12px 12px;margin-bottom:10px;background:var(--panel);transition:border-color .15s}
+.tcase.pass{border-left:4px solid var(--good)}
+.tcase.fail{border-left:4px solid var(--bad)}
+.tcase.running{border-left:4px solid var(--accent)}
+.tcase-h{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.tnum{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tbadge{font-size:12px;font-weight:600;padding:1px 8px;border-radius:99px}
+.tbadge.pass{background:var(--good-bg);color:var(--good)}
+.tbadge.fail{background:var(--bad-bg);color:var(--bad)}
+.tbadge.running{background:var(--accent-soft);color:var(--accent)}
+.tcase-h .icon-btn{margin-left:auto;width:28px;height:28px}
+.fld{display:grid;gap:4px;margin-bottom:8px}
+.fld>span{font-size:12px;font-weight:600;color:var(--muted)}
+.fld>span em{font-weight:400;font-style:normal}
+.fld .textarea{font-family:var(--mono);font-size:12.5px;resize:none;overflow:hidden;line-height:1.5;padding:6px 10px;min-height:34px}
+.fld [aria-invalid="true"]{border-color:var(--bad)}
+.ferr{color:var(--bad);font-size:12px}
+.ferr[hidden]{display:none}
+.kv{display:grid;grid-template-columns:70px 1fr;gap:8px;font-size:12.5px;padding:6px 0 0;align-items:start}
+.kv>span{color:var(--muted);font-weight:600}
+.kv code{background:none;border:0;padding:0;white-space:pre-wrap;word-break:break-word;font-size:12.5px}
+.kv.err code{color:var(--bad)}
+.kv.ok code{color:var(--good)}
+.tname{font-weight:600;border:1px solid transparent;background:transparent;border-radius:6px;padding:2px 6px;min-width:0;flex:1;max-width:280px}
+.tname:hover,.tname:focus{border-color:var(--border);background:var(--panel);outline:none}
+.tfoot{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px}
+.spinner{width:12px;height:12px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--accent);animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.placeholder{display:grid;place-items:center;height:100%;text-align:center;color:var(--muted);padding:24px}
+.placeholder strong{display:block;color:var(--text);margin-bottom:4px}
+#preview-host,#preview-host iframe{width:100%;height:100%;border:0;display:block;background:#fff}
+#preview-empty{position:absolute;inset:0;background:var(--panel)}
+
+.backdrop{display:none}
+.overlay{position:fixed;inset:0;background:rgba(10,12,18,.55);display:grid;place-items:center;padding:16px;z-index:50;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.dialog{width:min(720px,100%);max-height:calc(100dvh - 32px);display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden}
+.dialog.narrow{width:min(420px,100%)}
+.dialog-h{display:flex;align-items:center;padding:14px 16px 14px 20px;border-bottom:1px solid var(--border)}
+.dialog-h h2{margin:0;font-size:16px}
+.dialog-h .icon-btn{margin-left:auto}
+.dialog-b{padding:16px 20px;overflow:auto}
+.dialog-f{display:flex;gap:8px;justify-content:flex-end;align-items:center;padding:12px 20px;border-top:1px solid var(--border);background:var(--panel-2)}
+.dialog-f .form-error{margin-right:auto;color:var(--bad);font-size:12.5px;max-width:60%;white-space:pre-line}
+.seg{display:inline-flex;padding:3px;border-radius:9px;background:var(--panel-2);border:1px solid var(--border);gap:2px}
+.seg button{border:0;background:transparent;border-radius:7px;padding:5px 14px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--accent);box-shadow:var(--shadow)}
+.grid2{display:grid;grid-template-columns:1fr 160px;gap:12px}
+.dialog .fld{margin-bottom:12px}
+.dialog .fld .textarea.mono{font-size:12.5px}
+.dialog .textarea{resize:vertical}
+.rows-h{display:flex;align-items:center;justify-content:space-between;margin:4px 0 8px}
+.rows-h b{font-size:12px;font-weight:600;color:var(--muted)}
+.trow{display:grid;grid-template-columns:1fr 1fr 32px;gap:8px;margin-bottom:8px;align-items:start}
+.trow.react{grid-template-columns:150px 1fr 32px}
+.trow .textarea{font-family:var(--mono);font-size:12.5px;min-height:34px;resize:vertical}
+.small{font-size:12px;color:var(--muted)}
+#toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;z-index:60}
+.toast{background:var(--text);color:var(--bg);padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);font-weight:600;font-size:13px;animation:fade .2s;max-width:340px}
+.toast.bad{background:var(--bad);color:#fff}
+
+@media (max-width:960px){
+  .only-mobile{display:inline-grid}
+  .brand-sub{display:none}
+  .body{grid-template-columns:minmax(0,1fr)}
+  .sidebar{position:fixed;z-index:40;top:56px;bottom:0;left:0;width:min(320px,88vw);transform:translateX(-102%);transition:transform .2s;box-shadow:var(--shadow)}
+  body.nav-open .sidebar{transform:none}
+  body.nav-open .backdrop{display:block;position:fixed;inset:56px 0 0 0;background:rgba(10,12,18,.45);z-index:30}
+  .main{display:flex;flex-direction:column;overflow:auto}
+  .problem{flex:none;max-height:none;overflow:visible}
+  .workspace{flex:none;height:680px}
+  .grid2{grid-template-columns:1fr}
+  .trow,.trow.react{grid-template-columns:1fr 32px}
+  .trow>:nth-child(2){grid-column:1}
+}
+@media (max-width:700px){
+  .brand-name{display:none}
+}
+@media (max-width:560px){
+  .btn .lbl-long{display:none}
+  .topbar{padding:0 10px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button class="icon-btn only-mobile" id="menu-btn" aria-label="Toggle question list"></button>
+    <div class="brand">
+      <span class="logo" id="logo"></span>
+      <span class="brand-name">Levelup</span>
+      <span class="brand-sub">JavaScript &amp; React practice</span>
+    </div>
+    <nav class="nav" aria-label="Levelup pages" data-levelup-nav></nav>
+    <div class="spacer"></div>
+    <button class="btn ghost" id="export-btn" title="Download your added questions as JSON"></button>
+    <button class="icon-btn" id="theme-btn" aria-label="Toggle light/dark theme"></button>
+    <button class="btn primary" id="add-btn"></button>
+  </header>
+
+  <div class="body">
+    <aside class="sidebar" id="sidebar" aria-label="Questions">
+      <div class="side-top">
+        <div class="search"><span id="search-ic"></span><input class="input" id="search" type="search" placeholder="Search questions" aria-label="Search questions"></div>
+        <div class="filters">
+          <select class="select" id="f-type" aria-label="Filter by type"><option value="">All types</option><option value="js">JavaScript</option><option value="react">React</option></select>
+          <select class="select" id="f-diff" aria-label="Filter by difficulty"><option value="">All levels</option><option>Easy</option><option>Medium</option><option>Hard</option></select>
+        </div>
+      </div>
+      <div class="progress" id="progress"></div>
+      <div class="qlist" id="qlist"></div>
+    </aside>
+    <div class="backdrop" id="backdrop"></div>
+
+    <main class="main">
+      <section class="problem card" id="problem" aria-label="Problem"></section>
+
+      <section class="workspace" id="workspace">
+        <div class="pane card">
+          <div class="pane-h">
+            <span class="file" id="file-label"></span>
+            <div class="tools">
+              <button class="icon-btn" id="font-dec" aria-label="Smaller font" title="Smaller font"><span style="font-size:11px;font-weight:700">A</span></button>
+              <button class="icon-btn" id="font-inc" aria-label="Larger font" title="Larger font"><span style="font-size:15px;font-weight:700">A</span></button>
+              <button class="btn sm ghost" id="answer-btn"></button>
+              <button class="btn sm ghost" id="reset-btn" title="Reset to starter code"></button>
+              <span class="sep"></span>
+              <button class="btn" id="run-btn" title="Run (Ctrl/Cmd + Enter)"></button>
+              <button class="btn primary" id="test-btn" title="Run tests (Ctrl/Cmd + Shift + Enter)"></button>
+            </div>
+          </div>
+          <div class="editor" id="editor">
+            <pre class="gutter" id="gutter" aria-hidden="true">1</pre>
+            <textarea class="code" id="code" spellcheck="false" wrap="off" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Code editor"></textarea>
+          </div>
+        </div>
+
+        <div class="splitter" id="splitter" role="separator" aria-orientation="horizontal" aria-label="Resize editor and results" tabindex="0"></div>
+
+        <div class="pane card">
+          <div class="pane-h">
+            <div class="tabs" id="tabs" role="tablist"></div>
+            <div class="status" id="status"></div>
+          </div>
+          <div class="rbody">
+            <div class="panel" id="panel-console" role="tabpanel"></div>
+            <div class="panel" id="panel-tests" role="tabpanel" hidden></div>
+            <div class="panel" id="panel-analysis" role="tabpanel" hidden></div>
+            <div class="panel flush" id="panel-preview" role="tabpanel" hidden>
+              <div id="preview-host"></div>
+              <div id="preview-empty" class="placeholder"><div><strong>Live preview</strong>Press Run to render your component here.</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<div id="modal-root"></div>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ==========================================================================
+   Helpers shared by the JS worker and the React sandbox (injected via toString)
+   ========================================================================== */
+function ser(v){
+  if(v===undefined) return 'undefined';
+  if(typeof v==='function') return v.toString();
+  if(typeof v==='symbol') return v.toString();
+  if(typeof v==='bigint') return v+'n';
+  if(typeof v==='number') return Object.is(v,-0)?'-0':String(v);
+  try{
+    var s=JSON.stringify(v,function(k,x){
+      if(typeof x==='bigint') return x+'n';
+      if(typeof x==='function') return '[Function]';
+      if(typeof x==='symbol') return x.toString();
+      if(typeof x==='number' && !isFinite(x)) return String(x);
+      if(x instanceof Error) return x.name+': '+x.message;
+      if(x instanceof Map) return {'[Map]':Array.from(x)};
+      if(x instanceof Set) return {'[Set]':Array.from(x)};
+      return x;
+    });
+    return s===undefined?String(v):s;
+  }catch(e){ return /circular/i.test(String(e&&e.message))?'[Circular]':String(v); }
+}
+function fmt(v){ return typeof v==='string'?v:ser(v); }
+function emsg(e){ return e&&e.name&&e.message!==undefined ? e.name+': '+e.message : String(e); }
+function eq(a,b){
+  if(a===b||Object.is(a,b)) return true;
+  if(typeof a!=='object'||typeof b!=='object'||!a||!b) return false;
+  if(Array.isArray(a)!==Array.isArray(b)) return false;
+  var ka=Object.keys(a), kb=Object.keys(b);
+  if(ka.length!==kb.length) return false;
+  return ka.every(function(k){ return Object.prototype.hasOwnProperty.call(b,k)&&eq(a[k],b[k]); });
+}
+const SHARED_SRC=[ser,fmt,emsg,eq].map(String).join('\n');
+
+/* ==========================================================================
+   Web Worker: runs plain JavaScript questions
+   ========================================================================== */
+function workerMain(){
+  ['log','info','warn','error','debug'].forEach(function(level){
+    console[level]=function(){ postMessage({t:'log',level:level,text:Array.prototype.map.call(arguments,fmt).join(' ')}); };
+  });
+  self.onmessage=async function(e){
+    var d=e.data, fn=d.fn, tests=d.tests, f;
+    try{
+      f=new Function(d.code+'\n;return typeof '+fn+'==="function" ? '+fn+' : undefined;')();
+    }catch(err){ postMessage({t:'fatal',message:emsg(err)}); return; }
+    try{
+      if(d.mode==='profile'){
+        if(!f){ postMessage({t:'fatal',message:'Function "'+fn+'" is not defined.'}); return; }
+        var gen=new Function('return ('+d.gen+')')();
+        var clone=function(a){ return typeof structuredClone==='function'?structuredClone(a):JSON.parse(JSON.stringify(a)); };
+        var pts=[];
+        for(var si=0;si<d.sizes.length;si++){
+          var n=d.sizes[si], base=gen(n);
+          var c0=performance.now(), r0=f.apply(null,clone(base)), isAsync=!!(r0&&typeof r0.then==='function');
+          if(isAsync) await r0;
+          var t1=performance.now()-c0, ms;
+          if(t1>=5||isAsync){
+            var reps=t1>=100?1:3, c1=performance.now();
+            for(var k=0;k<reps;k++){ var rr=f.apply(null,clone(base)); if(rr&&typeof rr.then==='function') await rr; }
+            ms=(performance.now()-c1)/reps;
+          }else{
+            var kk=Math.max(3,Math.min(Math.ceil(30/Math.max(t1,0.005)),Math.floor(3e6/n),3000)), pre=[];
+            for(var j=0;j<kk;j++) pre.push(clone(base));
+            var c2=performance.now();
+            for(var j2=0;j2<kk;j2++) f.apply(null,pre[j2]);
+            ms=(performance.now()-c2)/kk;
+          }
+          pts.push({n:n,ms:ms});
+          if(Math.max(t1,ms)>350) break;
+        }
+        postMessage({t:'profile',points:pts}); postMessage({t:'done'}); return;
+      }
+      if(d.mode==='run'){
+        if(!f){ postMessage({t:'log',level:'warn',text:'Function "'+fn+'" is not defined yet, so nothing was called.'}); }
+        else if(tests[0]){
+          try{
+            var args=JSON.parse(tests[0].input);
+            if(Array.isArray(args)){
+              var out=f.apply(null,args); if(out&&typeof out.then==='function') out=await out;
+              postMessage({t:'log',level:'result',text:fn+'('+args.map(ser).join(', ')+')  →  '+ser(out)});
+            }
+          }catch(err){ postMessage({t:'log',level:'error',text:'Sample call threw: '+emsg(err)}); }
+        }
+        postMessage({t:'done'}); return;
+      }
+      if(!f){ postMessage({t:'fatal',message:'Function "'+fn+'" is not defined. Declare it like: function '+fn+'(...) { ... }'}); return; }
+      for(var i=0;i<tests.length;i++){
+        postMessage({t:'start',i:i});
+        var t0=performance.now(), res;
+        try{
+          var a=JSON.parse(tests[i].input), exp=JSON.parse(tests[i].expected);
+          var actual=f.apply(null,a); if(actual&&typeof actual.then==='function') actual=await actual;
+          res={i:i,pass:eq(actual,exp),actual:ser(actual)};
+        }catch(err){ res={i:i,pass:false,error:emsg(err)}; }
+        res.t='result'; res.ms=Math.round(performance.now()-t0);
+        postMessage(res);
+      }
+      postMessage({t:'done'});
+    }catch(err){ postMessage({t:'fatal',message:emsg(err)}); }
+  };
+}
+const WORKER_SRC=SHARED_SRC+'\n('+workerMain+')();';
+
+/* ==========================================================================
+   React sandbox (runs inside a sandboxed iframe, talks via postMessage)
+   ========================================================================== */
+function frameMain(){
+  var post=function(m){ parent.postMessage(m,'*'); };
+  if(typeof React==='undefined'||typeof ReactDOM==='undefined'||typeof Babel==='undefined'){ post({t:'loadfail'}); return; }
+  ['log','info','warn','error','debug'].forEach(function(level){
+    console[level]=function(){ post({t:'log',level:level,text:Array.prototype.map.call(arguments,fmt).join(' ')}); };
+  });
+  window.addEventListener('error',function(e){ post({t:'log',level:'error',text:String(e.message)}); });
+  window.addEventListener('unhandledrejection',function(e){ post({t:'log',level:'error',text:'Unhandled promise rejection: '+(e.reason&&e.reason.message||e.reason)}); });
+  Object.assign(window,{useState:React.useState,useEffect:React.useEffect,useRef:React.useRef,useMemo:React.useMemo,useCallback:React.useCallback,useReducer:React.useReducer,useContext:React.useContext,useLayoutEffect:React.useLayoutEffect,useId:React.useId,createContext:React.createContext,Fragment:React.Fragment,memo:React.memo,forwardRef:React.forwardRef});
+  var h=React.createElement;
+  var AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
+
+  class Boundary extends React.Component{
+    constructor(p){ super(p); this.state={err:null}; }
+    static getDerivedStateFromError(err){ return {err:err}; }
+    componentDidCatch(err){ post({t:'log',level:'error',text:'Render error: '+err.message}); }
+    render(){ return this.state.err ? h('pre',{className:'__err'},'Render error: '+this.state.err.message) : this.props.children; }
+  }
+
+  function compile(code,name){
+    code=code.replace(/^\s*import\s[^;]*?from\s*['"][^'"]+['"];?/gm,'')
+             .replace(/export\s+default\s+(?=(?:async\s+)?(?:function|class)\s+[A-Za-z_$])/g,'')
+             .replace(/export\s+default\s+/g,'const __default = ')
+             .replace(/^\s*export\s+(?=(?:const|let|var|function|class|async)\b)/gm,'');
+    var out=Babel.transform(code,{presets:['react']}).code;
+    var fn=new Function(out+'\n;return (typeof '+name+'!=="undefined" ? '+name+' : (typeof __default!=="undefined" ? __default : undefined));');
+    var Comp=fn();
+    if(!Comp) throw new Error('Component "'+name+'" was not found. Define it like: function '+name+'() { return <div/>; }');
+    return Comp;
+  }
+  function mount(Comp,el){
+    var root=ReactDOM.createRoot(el);
+    ReactDOM.flushSync(function(){ root.render(h(Boundary,null,h(Comp))); });
+    return root;
+  }
+
+  function makeApi(container){
+    var norm=function(s){ return String(s).replace(/\s+/g,' ').trim(); };
+    var own=function(el){ return norm(Array.prototype.filter.call(el.childNodes,function(n){ return n.nodeType===3; }).map(function(n){ return n.textContent; }).join('')); };
+    var all=function(){ return Array.prototype.slice.call(container.querySelectorAll('*')); };
+    var match=function(val,pat,exact){
+      if(pat instanceof RegExp){ pat.lastIndex=0; return pat.test(val); }
+      return exact===false ? val.toLowerCase().indexOf(String(pat).toLowerCase())>=0 : val===String(pat);
+    };
+    var labelText=function(el){
+      var l=el.id?container.querySelector('label[for="'+el.id+'"]'):null;
+      if(!l) l=el.closest('label');
+      return l?norm(l.textContent):'';
+    };
+    var roleOf=function(el){
+      var r=el.getAttribute('role'); if(r) return r;
+      var t=el.tagName.toLowerCase();
+      if(t==='a') return el.hasAttribute('href')?'link':null;
+      if(t==='button') return 'button';
+      if(/^h[1-6]$/.test(t)) return 'heading';
+      var map={ul:'list',ol:'list',li:'listitem',select:'combobox',textarea:'textbox',img:'img',form:'form',nav:'navigation',table:'table',tr:'row',main:'main',header:'banner',footer:'contentinfo'};
+      if(map[t]) return map[t];
+      if(t==='input'){ var ty=(el.type||'text').toLowerCase();
+        if(ty==='checkbox'||ty==='radio') return ty;
+        if(ty==='button'||ty==='submit'||ty==='reset') return 'button';
+        return 'textbox'; }
+      return null;
+    };
+    var nameOf=function(el){
+      var ty=(el.type||'').toLowerCase();
+      return norm(el.getAttribute('aria-label')||labelText(el)||(el.tagName==='INPUT'&&(ty==='button'||ty==='submit'||ty==='reset')?el.value:'')||el.textContent||el.getAttribute('placeholder')||'');
+    };
+    var finders={
+      Text:function(p,o){ return all().filter(function(el){ return match(own(el),p,o&&o.exact); }); },
+      Role:function(p,o){ return all().filter(function(el){ return roleOf(el)===p&&(!o||o.name===undefined||match(nameOf(el),o.name,o.exact)); }); },
+      TestId:function(p){ return all().filter(function(el){ return el.hasAttribute('data-testid')&&match(el.getAttribute('data-testid'),p); }); },
+      PlaceholderText:function(p,o){ return all().filter(function(el){ return el.hasAttribute('placeholder')&&match(el.getAttribute('placeholder'),p,o&&o.exact); }); },
+      LabelText:function(p,o){ return all().filter(function(el){ return /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)&&labelText(el)&&match(labelText(el),p,o&&o.exact); }); },
+      DisplayValue:function(p){ return all().filter(function(el){ return /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)&&match(String(el.value),p); }); }
+    };
+    var desc=function(kind,p,o){ return kind+' '+(p instanceof RegExp?String(p):JSON.stringify(p))+(o&&o.name!==undefined?' with name '+(o.name instanceof RegExp?String(o.name):JSON.stringify(o.name)):''); };
+    var dom=function(){ var s=container.innerHTML; return '\n\nCurrent DOM:\n'+(s.length>400?s.slice(0,400)+'...':s||'(empty)'); };
+    var waitFor=async function(fn,o){
+      o=o||{}; var end=Date.now()+(o.timeout||1500), iv=o.interval||25, last;
+      for(;;){
+        try{ return await fn(); }catch(e){ last=e; if(Date.now()>end) throw last; await new Promise(function(r){ setTimeout(r,iv); }); }
+      }
+    };
+    var screen={};
+    Object.keys(finders).forEach(function(k){
+      var find=finders[k];
+      screen['queryAllBy'+k]=find;
+      screen['getAllBy'+k]=function(p,o){ var r=find(p,o); if(!r.length) throw new Error('Unable to find an element by '+desc(k,p,o)+dom()); return r; };
+      screen['queryBy'+k]=function(p,o){ var r=find(p,o); if(r.length>1) throw new Error('Found multiple elements by '+desc(k,p,o)+' ('+r.length+'). Use getAllBy'+k+' instead.'); return r[0]||null; };
+      screen['getBy'+k]=function(p,o){ var r=find(p,o); if(!r.length) throw new Error('Unable to find an element by '+desc(k,p,o)+dom()); if(r.length>1) throw new Error('Found multiple elements by '+desc(k,p,o)+' ('+r.length+'). Use getAllBy'+k+' instead.'); return r[0]; };
+      screen['findBy'+k]=function(p,o){ return waitFor(function(){ return screen['getBy'+k](p,o); }); };
+      screen['findAllBy'+k]=function(p,o){ return waitFor(function(){ return screen['getAllBy'+k](p,o); }); };
+    });
+
+    var fire=function(el,ev){ if(!el||!el.dispatchEvent) throw new Error('fireEvent target is '+el); ReactDOM.flushSync(function(){ el.dispatchEvent(ev); }); };
+    var setValue=function(el,v){
+      var proto=el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:el.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype;
+      Object.getOwnPropertyDescriptor(proto,'value').set.call(el,v);
+    };
+    var mouse=function(type){ return function(el,init){ fire(el,new MouseEvent(type,Object.assign({bubbles:true,cancelable:true},init))); }; };
+    var key=function(type){ return function(el,init){ fire(el,new KeyboardEvent(type,Object.assign({bubbles:true,cancelable:true},init))); }; };
+    var change=function(el,init){
+      var t=(init&&init.target)||{};
+      if('checked' in t){ if(el.checked!==t.checked) mouse('click')(el); return; }
+      if('value' in t) setValue(el,t.value);
+      fire(el,new Event(el.tagName==='SELECT'?'change':'input',{bubbles:true}));
+    };
+    var fireEvent={
+      click:mouse('click'), dblClick:mouse('dblclick'), mouseOver:mouse('mouseover'), mouseEnter:mouse('mouseover'), mouseDown:mouse('mousedown'), mouseUp:mouse('mouseup'),
+      change:change, input:change, keyDown:key('keydown'), keyUp:key('keyup'),
+      submit:function(el){ fire(el,new Event('submit',{bubbles:true,cancelable:true})); },
+      focus:function(el){ el.focus(); }, blur:function(el){ el.blur(); }
+    };
+    var userType=function(el,text){
+      if(!el) throw new Error('userType target is '+el);
+      String(text).split('').forEach(function(ch){ setValue(el,el.value+ch); fire(el,new Event('input',{bubbles:true})); });
+    };
+
+    var show=function(v){
+      if(v instanceof Element){ var t=norm(v.textContent); return '<'+v.tagName.toLowerCase()+'>'+(t?' "'+(t.length>40?t.slice(0,40)+'...':t)+'"':''); }
+      return ser(v);
+    };
+    var matchers={
+      toBe:function(a,e){ return [Object.is(a,e),'to be '+show(e)]; },
+      toEqual:function(a,e){ return [eq(a,e),'to equal '+show(e)]; },
+      toStrictEqual:function(a,e){ return [eq(a,e),'to strictly equal '+show(e)]; },
+      toBeTruthy:function(a){ return [!!a,'to be truthy']; },
+      toBeFalsy:function(a){ return [!a,'to be falsy']; },
+      toBeNull:function(a){ return [a===null,'to be null']; },
+      toBeUndefined:function(a){ return [a===undefined,'to be undefined']; },
+      toBeDefined:function(a){ return [a!==undefined,'to be defined']; },
+      toBeGreaterThan:function(a,n){ return [a>n,'to be greater than '+n]; },
+      toBeGreaterThanOrEqual:function(a,n){ return [a>=n,'to be at least '+n]; },
+      toBeLessThan:function(a,n){ return [a<n,'to be less than '+n]; },
+      toBeLessThanOrEqual:function(a,n){ return [a<=n,'to be at most '+n]; },
+      toContain:function(a,x){ return [typeof a==='string'?a.indexOf(x)>=0:Array.from(a).indexOf(x)>=0,'to contain '+show(x)]; },
+      toHaveLength:function(a,n){ return [a!=null&&a.length===n,'to have length '+n+' (received '+(a&&a.length)+')']; },
+      toMatch:function(a,re){ re.lastIndex=0; return [typeof re==='string'?String(a).indexOf(re)>=0:re.test(a),'to match '+String(re)]; },
+      toInclude:function(a,x){ return [String(a).indexOf(x)>=0,'to include '+show(x)]; },
+      toBeInTheDocument:function(a){ return [a instanceof Element&&document.body.contains(a),'to be in the document']; },
+      toHaveTextContent:function(a,t){ var c=a?norm(a.textContent):''; return [t instanceof RegExp?t.test(c):c.indexOf(String(t))>=0,'to have text content '+show(t)+' (received '+show(c)+')']; },
+      toHaveValue:function(a,v){ return [a&&(typeof v==='number'?Number(a.value)===v:a.value===v),'to have value '+show(v)+' (received '+show(a&&a.value)+')']; },
+      toBeDisabled:function(a){ return [!!(a&&a.disabled),'to be disabled']; },
+      toBeEnabled:function(a){ return [!!(a&&!a.disabled),'to be enabled']; },
+      toBeChecked:function(a){ return [!!(a&&a.checked),'to be checked']; },
+      toHaveAttribute:function(a,n,v){ return [!!a&&a.hasAttribute(n)&&(v===undefined||a.getAttribute(n)===String(v)),'to have attribute '+n+(v===undefined?'':'='+show(v))]; },
+      toHaveClass:function(a){ var names=Array.prototype.slice.call(arguments,1); return [!!a&&names.every(function(c){ return a.classList.contains(c); }),'to have class '+names.join(' ')]; },
+      toThrow:function(a){ var threw=false; try{ a(); }catch(e){ threw=true; } return [threw,'to throw']; }
+    };
+    var expect=function(actual){
+      var build=function(neg){
+        var o={};
+        Object.keys(matchers).forEach(function(k){
+          o[k]=function(){
+            var r=matchers[k].apply(null,[actual].concat(Array.prototype.slice.call(arguments)));
+            if(neg?r[0]:!r[0]) throw new Error('Expected '+show(actual)+(neg?' not ':' ')+r[1]);
+          };
+        });
+        return o;
+      };
+      var r=build(false); r.not=build(true); return r;
+    };
+    return {screen:screen,fireEvent:fireEvent,userType:userType,waitFor:waitFor,expect:expect};
+  }
+
+  var root=null;
+  function showErr(err){
+    var el=document.getElementById('root'); el.textContent='';
+    var pre=document.createElement('pre'); pre.className='__err'; pre.textContent=emsg(err); el.appendChild(pre);
+  }
+  window.addEventListener('message',async function(e){
+    var m=e.data; if(!m||!m.t) return;
+    if(m.t==='run'){
+      try{
+        if(root){ try{ root.unmount(); }catch(x){} root=null; }
+        var el=document.getElementById('root'); el.textContent='';
+        root=mount(compile(m.code,m.name),el);
+        var bad=el.querySelector('.__err');
+        if(bad) post({t:'error',message:bad.textContent}); else post({t:'rendered'});
+      }catch(err){ showErr(err); post({t:'error',message:emsg(err)}); }
+    }else if(m.t==='test'){
+      var Comp;
+      try{ Comp=compile(m.code,m.name); }catch(err){ post({t:'fatal',message:emsg(err)}); return; }
+      for(var i=0;i<m.tests.length;i++){
+        post({t:'start',i:i});
+        var t0=performance.now(), r=null, res;
+        var c=document.createElement('div'); c.className='__t'; document.body.appendChild(c);
+        try{
+          r=mount(Comp,c);
+          var b=c.querySelector('.__err'); if(b) throw new Error(b.textContent);
+          var api=makeApi(c);
+          await new AsyncFunction('screen','fireEvent','userType','waitFor','expect','container','React',m.tests[i].script)(api.screen,api.fireEvent,api.userType,api.waitFor,api.expect,c,React);
+          res={i:i,pass:true};
+        }catch(err){ res={i:i,pass:false,error:emsg(err)}; }
+        try{ if(r) ReactDOM.flushSync(function(){ r.unmount(); }); }catch(x){}
+        c.remove();
+        res.t='result'; res.ms=Math.round(performance.now()-t0);
+        post(res);
+      }
+      post({t:'done'});
+    }
+  });
+  post({t:'ready'});
+}
+const CDN={
+  react:'https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js',
+  dom:'https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js',
+  babel:'https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js'
+};
+const FRAME_SRC='<!doctype html><html><head><meta charset="utf-8"><style>'
+  +'body{margin:0;padding:16px;font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#111;background:#fff}'
+  +'.__err{margin:0;padding:12px 14px;border-radius:8px;background:#fdecea;color:#b42318;white-space:pre-wrap;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace}'
+  +'.__t{position:fixed;left:-99999px;top:0;width:800px}'
+  +'</style></head><body><div id="root"></div>'
+  +['react','dom','babel'].map(function(k){ return '<script src="'+CDN[k]+'"><\/script>'; }).join('')
+  +'<script>'+SHARED_SRC+'\n('+frameMain+')();<\/script></body></html>';
+
+/* ==========================================================================
+   Built-in questions
+   ========================================================================== */
+const BUILTIN=[
+  {id:'two-sum',type:'js',title:'Two Sum',difficulty:'Easy',fn:'twoSum',
+   time:"O(n)",
+   space:"O(n)",
+   gen:"(n)=>[Array.from({length:n},(_,i)=>2*i),-1]",
+   sizes:[500, 1000, 2000, 4000, 8000],
+   tip:"Checking every pair with two nested loops costs O(n\u00b2). Store the numbers you have already seen in a Map, so each look-up is O(1) and one pass is enough.",
+   explanation:"Checking every pair works, but it is slow: O(n\u00b2). Instead, remember each number you have seen in a Map (value \u2192 index).\n\nFor every number, the partner you need is `target - number`. If it is already in the Map, you are done. If not, store the current number and move on.\n\nYou only walk the array once, so the time is O(n). The Map holds at most n numbers, so the extra space is O(n).",
+   solution:"function twoSum(nums, target) {\n  const seen = new Map(); // number -> index\n  for (let i = 0; i < nums.length; i++) {\n    const need = target - nums[i];\n    if (seen.has(need)) return [seen.get(need), i];\n    seen.set(nums[i], i);\n  }\n}\n",
+   examples:[{input:"nums = [2, 7, 11, 15], target = 9",output:"[0, 1]",note:"nums[0] + nums[1] = 2 + 7 = 9, so we return the indices 0 and 1."},{input:"nums = [3, 2, 4], target = 6",output:"[1, 2]",note:"2 + 4 = 6. We cannot use index 0 twice (3 + 3), so the answer is [1, 2]."}],
+   description:'Given an array of integers `nums` and an integer `target`, return the indices of the two numbers that add up to `target`.\n\nRules:\n- Exactly one solution exists for each input.\n- You may not use the same element twice.\n- Return the indices in ascending order, e.g. `[0, 1]`.',
+   starter:'function twoSum(nums, target) {\n  // your code here\n}\n',
+   tests:[{input:'[[2,7,11,15], 9]',expected:'[0,1]'},{input:'[[3,2,4], 6]',expected:'[1,2]'},{input:'[[3,3], 6]',expected:'[0,1]'}]},
+  {id:'reverse-string',type:'js',title:'Reverse String',difficulty:'Easy',fn:'reverseString',
+   time:"O(n)",
+   space:"O(n)",
+   gen:"(n)=>['ab'.repeat(n/2)]",
+   sizes:[2000, 4000, 8000, 16000, 32000],
+   tip:"Reversing needs one pass over the characters. Avoid calling indexOf/slice inside a loop, because each of those is another O(n) step.",
+   explanation:"Walk the string from the last character to the first, adding each character to a new string.\n\nEvery character is visited once, so the time is O(n). The new string has the same length as the input, so the space is O(n).\n\nShortcut: `s.split('').reverse().join('')` does the same thing in one line.",
+   solution:"function reverseString(s) {\n  let result = '';\n  for (let i = s.length - 1; i >= 0; i--) {\n    result += s[i];\n  }\n  return result;\n}\n",
+   examples:[{input:"s = \"hello\"",output:"\"olleh\"",note:"The characters are read from the last one back to the first."},{input:"s = \"Ab c\"",output:"\"c bA\"",note:"Spaces and letter case are kept, only the order changes."}],
+   description:'Write `reverseString(s)` that returns the string `s` reversed.\n\nExample: `"hello"` becomes `"olleh"`.',
+   starter:'function reverseString(s) {\n  // your code here\n}\n',
+   tests:[{input:'["hello"]',expected:'"olleh"'},{input:'[""]',expected:'""'},{input:'["Ab c"]',expected:'"c bA"'}]},
+  {id:'fizzbuzz',type:'js',title:'FizzBuzz',difficulty:'Easy',fn:'fizzBuzz',
+   time:"O(n)",
+   space:"O(n)",
+   gen:"(n)=>[n]",
+   sizes:[2000, 4000, 8000, 16000, 32000],
+   tip:"One pass from 1 to n is enough. Check the multiple-of-15 case first, otherwise you would print Fizz or Buzz for it.",
+   explanation:"Loop from 1 to n. Check the most specific rule first (multiple of both 3 and 5, which means a multiple of 15), then 3, then 5, and otherwise use the number itself.\n\nThe loop runs n times, so the time is O(n). The result array holds n items, so the space is O(n).",
+   solution:"function fizzBuzz(n) {\n  const result = [];\n  for (let i = 1; i <= n; i++) {\n    if (i % 15 === 0) result.push('FizzBuzz');\n    else if (i % 3 === 0) result.push('Fizz');\n    else if (i % 5 === 0) result.push('Buzz');\n    else result.push(String(i));\n  }\n  return result;\n}\n",
+   examples:[{input:"n = 5",output:"[\"1\", \"2\", \"Fizz\", \"4\", \"Buzz\"]",note:"3 is a multiple of 3 so it becomes Fizz; 5 is a multiple of 5 so it becomes Buzz."},{input:"n = 15",output:"[..., \"14\", \"FizzBuzz\"]",note:"15 is a multiple of both 3 and 5, so the last item is FizzBuzz."}],
+   description:'Write `fizzBuzz(n)` that returns an array of strings for the numbers 1 to `n`:\n- multiples of 3 become `"Fizz"`\n- multiples of 5 become `"Buzz"`\n- multiples of both become `"FizzBuzz"`\n- every other number is its own value as a string',
+   starter:'function fizzBuzz(n) {\n  // your code here\n}\n',
+   tests:[{input:'[3]',expected:'["1","2","Fizz"]'},{input:'[5]',expected:'["1","2","Fizz","4","Buzz"]'},{input:'[15]',expected:'["1","2","Fizz","4","Buzz","Fizz","7","8","Fizz","Buzz","11","Fizz","13","14","FizzBuzz"]'}]},
+  {id:'palindrome',type:'js',title:'Valid Palindrome',difficulty:'Easy',fn:'isPalindrome',
+   time:"O(n)",
+   space:"O(n)",
+   gen:"(n)=>['a'.repeat(n)]",
+   sizes:[2000, 4000, 8000, 16000, 32000],
+   tip:"Clean the string once, then compare characters from both ends moving inwards. That is a single O(n) pass.",
+   explanation:"First clean the string: lowercase it and drop everything that is not a letter or a digit.\n\nThen use two pointers, one at the start and one at the end. If the characters differ, it is not a palindrome. Otherwise move both pointers inwards until they meet.\n\nCleaning and comparing each take one pass, so the time is O(n). The cleaned copy needs O(n) space.",
+   solution:"function isPalindrome(s) {\n  const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');\n  let left = 0;\n  let right = clean.length - 1;\n  while (left < right) {\n    if (clean[left] !== clean[right]) return false;\n    left++;\n    right--;\n  }\n  return true;\n}\n",
+   examples:[{input:"s = \"A man, a plan, a canal: Panama\"",output:"true",note:"After removing spaces and punctuation and lowercasing, it becomes \"amanaplanacanalpanama\", which reads the same backwards."},{input:"s = \"race a car\"",output:"false",note:"It becomes \"raceacar\", which backwards is \"racaecar\", so it is not a palindrome."}],
+   description:'Write `isPalindrome(s)` that returns `true` if `s` reads the same forwards and backwards.\n\nIgnore case and skip every character that is not a letter or a digit. An empty string counts as a palindrome.',
+   starter:'function isPalindrome(s) {\n  // your code here\n}\n',
+   tests:[{input:'["A man, a plan, a canal: Panama"]',expected:'true'},{input:'["race a car"]',expected:'false'},{input:'[""]',expected:'true'}]},
+  {id:'valid-parentheses',type:'js',title:'Valid Parentheses',difficulty:'Medium',fn:'isValid',
+   time:"O(n)",
+   space:"O(n)",
+   gen:"(n)=>['()'.repeat(n/2)]",
+   sizes:[2000, 4000, 8000, 16000, 32000],
+   tip:"Use a stack: push every opening bracket, and when you see a closing bracket check that it matches the top of the stack. Repeatedly removing '()' from the string is O(n\u00b2).",
+   explanation:"Use a stack. Push every opening bracket. When you meet a closing bracket, pop the stack and check that it is the matching opening bracket.\n\nIf it is not, or the stack is empty, the string is invalid. At the end the stack must be empty, otherwise some bracket was never closed.\n\nEach character is handled once, so the time is O(n). In the worst case the stack holds every character, so the space is O(n).",
+   solution:"function isValid(s) {\n  const pairs = { ')': '(', ']': '[', '}': '{' };\n  const stack = [];\n  for (const ch of s) {\n    if (pairs[ch]) {\n      if (stack.pop() !== pairs[ch]) return false;\n    } else {\n      stack.push(ch);\n    }\n  }\n  return stack.length === 0;\n}\n",
+   examples:[{input:"s = \"()[]{}\"",output:"true",note:"Each bracket is closed by the same type, one after another."},{input:"s = \"(]\"",output:"false",note:"The ( is closed by ], which is the wrong type."},{input:"s = \"([{}])\"",output:"true",note:"Brackets are nested and closed in the reverse order they were opened."}],
+   description:'Given a string `s` made only of the characters `()[]{}`, return `true` if the brackets are valid.\n\nA string is valid when:\n- every opening bracket is closed by the same type of bracket\n- brackets are closed in the correct order',
+   starter:'function isValid(s) {\n  // your code here\n}\n',
+   tests:[{input:'["()[]{}"]',expected:'true'},{input:'["(]"]',expected:'false'},{input:'["([{}])"]',expected:'true'},{input:'["(("]',expected:'false'}]},
+  {id:'react-counter',type:'react',title:'Counter',difficulty:'Easy',fn:'Counter',
+   explanation:"`useState(0)` keeps the number between renders. Each button calls `setCount` with the new value, and React re-renders the component so the `span` shows the updated count.\n\nRender the count straight from state. Never store it in a normal variable, because a normal variable resets on every render.",
+   solution:"function Counter() {\n  const [count, setCount] = useState(0);\n  return (\n    <div>\n      <h2>Count: <span data-testid=\"count\">{count}</span></h2>\n      <button onClick={() => setCount(count + 1)}>+</button>\n      <button onClick={() => setCount(count - 1)}>-</button>\n      <button onClick={() => setCount(0)}>Reset</button>\n    </div>\n  );\n}\n",
+   examples:[{input:"Nothing yet",output:"Count: 0",note:"The count starts at 0."},{input:"Click + twice, then -",output:"Count: 1",note:"+1, +1, -1 gives 1."},{input:"Click + three times, then Reset",output:"Count: 0",note:"Reset always returns the count to 0."}],
+   description:'Build a `Counter` component.\n\nRequirements:\n- Show the current count inside an element with `data-testid="count"`. It starts at `0`.\n- A button labelled `+` increases the count by 1.\n- A button labelled `-` decreases the count by 1.\n- A button labelled `Reset` sets the count back to 0.',
+   starter:'function Counter() {\n  // TODO: add state and the three buttons\n  return (\n    <div>\n      <h2>Count: <span data-testid="count">0</span></h2>\n    </div>\n  );\n}\n',
+   tests:[
+    {name:'starts at 0',script:"expect(screen.getByTestId('count')).toHaveTextContent('0');"},
+    {name:'+ increments',script:"fireEvent.click(screen.getByText('+'));\nfireEvent.click(screen.getByText('+'));\nexpect(screen.getByTestId('count')).toHaveTextContent('2');"},
+    {name:'- decrements',script:"fireEvent.click(screen.getByText('-'));\nexpect(screen.getByTestId('count')).toHaveTextContent('-1');"},
+    {name:'Reset returns to 0',script:"fireEvent.click(screen.getByText('+'));\nfireEvent.click(screen.getByText('+'));\nfireEvent.click(screen.getByText('Reset'));\nexpect(screen.getByTestId('count')).toHaveTextContent('0');"}]},
+  {id:'react-char-counter',type:'react',title:'Character Counter',difficulty:'Easy',fn:'CharCounter',
+   explanation:"This is a controlled input: its `value` comes from state and `onChange` updates that state.\n\nThe limit is applied where the state is set (`slice(0, 50)`), so the state can never hold more than 50 characters.\n\nThe counter text is calculated from `text.length` while rendering. You do not need a second piece of state for it.",
+   solution:"function CharCounter() {\n  const [text, setText] = useState('');\n  return (\n    <div>\n      <input\n        placeholder=\"Type here\"\n        value={text}\n        onChange={(e) => setText(e.target.value.slice(0, 50))}\n      />\n      <p data-testid=\"count\">{text.length} / 50</p>\n    </div>\n  );\n}\n",
+   examples:[{input:"Nothing typed yet",output:"0 / 50",note:"The counter starts at zero."},{input:"Type \"hello\"",output:"5 / 50",note:"Five characters have been typed."},{input:"Paste 60 characters",output:"50 / 50",note:"Extra input is cut off at 50 characters."}],
+   description:'Build a `CharCounter` component with a controlled text input.\n\nRequirements:\n- An input with placeholder `Type here`.\n- A paragraph with `data-testid="count"` that shows `N / 50`, where N is the current length. It starts as `0 / 50`.\n- Input longer than 50 characters is cut off at 50.',
+   starter:'function CharCounter() {\n  return (\n    <div>\n      <input placeholder="Type here" />\n      <p data-testid="count">0 / 50</p>\n    </div>\n  );\n}\n',
+   tests:[
+    {name:'starts empty',script:"expect(screen.getByTestId('count')).toHaveTextContent('0 / 50');"},
+    {name:'counts typed characters',script:"userType(screen.getByPlaceholderText('Type here'), 'hello');\nexpect(screen.getByTestId('count')).toHaveTextContent('5 / 50');"},
+    {name:'cuts off at 50',script:"const input = screen.getByPlaceholderText('Type here');\nfireEvent.change(input, { target: { value: 'x'.repeat(60) } });\nexpect(screen.getByTestId('count')).toHaveTextContent('50 / 50');\nexpect(input.value.length).toBe(50);"}]},
+  {id:'react-todo',type:'react',title:'Todo List',difficulty:'Medium',fn:'TodoList',
+   explanation:"Two pieces of state: the text in the input and the list of items.\n\n`add` ignores empty text, appends a new item with `[...items, newItem]` (never `push` on state) and clears the input.\n\nEach item gets a unique `id` from a `useRef` counter. React uses it as the `key`, so it can tell items apart when one is deleted. `filter` builds a new list without the deleted item.",
+   solution:"function TodoList() {\n  const [text, setText] = useState('');\n  const [items, setItems] = useState([]);\n  const nextId = useRef(0);\n\n  const add = () => {\n    if (!text.trim()) return;\n    setItems([...items, { id: nextId.current++, text }]);\n    setText('');\n  };\n\n  return (\n    <div>\n      <input\n        placeholder=\"Add a todo\"\n        value={text}\n        onChange={(e) => setText(e.target.value)}\n      />\n      <button onClick={add}>Add</button>\n      <ul>\n        {items.map((item) => (\n          <li key={item.id}>\n            <span>{item.text}</span>{' '}\n            <button onClick={() => setItems(items.filter((it) => it.id !== item.id))}>Delete</button>\n          </li>\n        ))}\n      </ul>\n    </div>\n  );\n}\n",
+   examples:[{input:"Type \"Buy milk\", click Add",output:"Buy milk appears in the list; the input is empty",note:"The text becomes a list item and the input is cleared for the next todo."},{input:"Click Add with an empty input",output:"Nothing is added",note:"Empty or whitespace-only text is ignored."},{input:"Click Delete next to an item",output:"That item disappears",note:"Only the clicked item is removed; others stay."}],
+   description:'Build a `TodoList` component.\n\nRequirements:\n- An input with placeholder `Add a todo` and a button labelled `Add`.\n- Clicking `Add` appends the text as `<li><span>{text}</span> <button>Delete</button></li>` inside a `<ul>`.\n- The input is cleared after adding.\n- Empty (or whitespace-only) text is ignored.\n- Clicking `Delete` removes that item.',
+   starter:'function TodoList() {\n  return (\n    <div>\n      <input placeholder="Add a todo" />\n      <button>Add</button>\n      <ul></ul>\n    </div>\n  );\n}\n',
+   tests:[
+    {name:'adds a todo',script:"userType(screen.getByPlaceholderText('Add a todo'), 'Buy milk');\nfireEvent.click(screen.getByText('Add'));\nexpect(screen.getByText('Buy milk')).toBeInTheDocument();"},
+    {name:'clears the input after adding',script:"const input = screen.getByPlaceholderText('Add a todo');\nuserType(input, 'Walk dog');\nfireEvent.click(screen.getByText('Add'));\nexpect(input).toHaveValue('');"},
+    {name:'ignores empty text',script:"fireEvent.click(screen.getByText('Add'));\nuserType(screen.getByPlaceholderText('Add a todo'), '   ');\nfireEvent.click(screen.getByText('Add'));\nexpect(screen.queryAllByRole('listitem')).toHaveLength(0);"},
+    {name:'deletes a todo',script:"const input = screen.getByPlaceholderText('Add a todo');\nuserType(input, 'A');\nfireEvent.click(screen.getByText('Add'));\nuserType(input, 'B');\nfireEvent.click(screen.getByText('Add'));\nexpect(screen.getAllByRole('listitem')).toHaveLength(2);\nfireEvent.click(screen.getAllByText('Delete')[0]);\nexpect(screen.queryByText('A')).toBeNull();\nexpect(screen.getByText('B')).toBeInTheDocument();"}]}
+];
+
+/* ==========================================================================
+   State + storage
+   ========================================================================== */
+const KEY='code-playground:v1';
+const TIMEOUT=5000;
+const defaults=()=>({custom:[],code:{},tests:{},status:{},theme:null,font:13,current:'two-sum'});
+function load(){
+  try{ const o=JSON.parse(localStorage.getItem(KEY)); if(o&&typeof o==='object') return Object.assign(defaults(),o); }catch(e){}
+  return defaults();
+}
+let S=load();
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+const clone=o=>JSON.parse(JSON.stringify(o));
+const allQuestions=()=>BUILTIN.concat(S.custom);
+const getQ=id=>allQuestions().find(q=>q.id===id);
+const cur=()=>getQ(S.current)||allQuestions()[0];
+const getTests=q=>S.tests[q.id]||q.tests;
+const ownTests=q=>S.tests[q.id]||(S.tests[q.id]=clone(q.tests));
+const getCode=q=>typeof S.code[q.id]==='string'?S.code[q.id]:q.starter;
+
+/* run/result state (not persisted) */
+let R={tab:'console',logs:[],results:{},running:null,status:'',stop:null,analysis:null,analysisNew:false};
+let filters={q:'',type:'',diff:''};
+
+/* ==========================================================================
+   DOM utils + icons
+   ========================================================================== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const P={
+  play:'<path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/>',
+  stop:'<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  trash:'<path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M20.5 14A8.5 8.5 0 1110 3.5a7 7 0 0010.5 10.5z"/>',
+  menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+  download:'<path d="M12 4v11m-5-4.5l5 5 5-5M5 20h14"/>',
+  reset:'<path d="M3.5 12a8.5 8.5 0 108.5-8.5A8.5 8.5 0 006 6L3.5 8.5M3.5 3.5v5h5"/>',
+  code:'<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
+  flask:'<path d="M9 3h6M10 3v6L4.6 18.6A1.6 1.6 0 006 21h12a1.6 1.6 0 001.4-2.4L14 9V3"/>',
+  eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'
+};
+const ic=(n,s=16)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+
+function toast(msg,bad){
+  const t=document.createElement('div'); t.className='toast'+(bad?' bad':''); t.textContent=msg;
+  $('#toasts').appendChild(t); setTimeout(()=>t.remove(),3200);
+}
+function fmtDesc(t){
+  const inline=s=>esc(s).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  const out=[]; let list=null, para=[];
+  const fp=()=>{ if(para.length){ out.push('<p>'+para.join('<br>')+'</p>'); para=[]; } };
+  const fl=()=>{ if(list){ out.push('<ul>'+list.map(x=>'<li>'+x+'</li>').join('')+'</ul>'); list=null; } };
+  for(const line of String(t||'').split('\n')){
+    if(/^\s*[-*]\s+/.test(line)){ fp(); (list=list||[]).push(inline(line.replace(/^\s*[-*]\s+/,''))); }
+    else if(!line.trim()){ fp(); fl(); }
+    else { fl(); para.push(inline(line)); }
+  }
+  fp(); fl();
+  return out.join('')||'<p class="muted">No description.</p>';
+}
+const diffCls=d=>String(d).toLowerCase();
+const isReact=q=>q.type==='react';
+
+/* ==========================================================================
+   Theme
+   ========================================================================== */
+const isDark=()=>S.theme?S.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+function applyTheme(){
+  if(S.theme) document.documentElement.dataset.theme=S.theme; else delete document.documentElement.dataset.theme;
+  $('#theme-btn').innerHTML=ic(isDark()?'sun':'moon',18);
+  $('#theme-btn').title=isDark()?'Switch to light theme':'Switch to dark theme';
+}
+
+/* ==========================================================================
+   Sidebar
+   ========================================================================== */
+function renderSidebar(){
+  const qs=allQuestions();
+  const solved=qs.filter(q=>S.status[q.id]==='pass').length;
+  $('#progress').innerHTML=`<div class="progress-row"><span>Progress</span><span>${solved} of ${qs.length} solved</span></div><div class="bar"><i style="width:${qs.length?solved/qs.length*100:0}%"></i></div>`;
+  const term=filters.q.trim().toLowerCase();
+  const list=qs.filter(q=>(!filters.type||q.type===filters.type)&&(!filters.diff||q.difficulty===filters.diff)&&(!term||q.title.toLowerCase().includes(term)));
+  $('#qlist').innerHTML=list.length?list.map(q=>{
+    const st=S.status[q.id];
+    return `<button class="qitem${q.id===S.current?' active':''}" data-id="${esc(q.id)}" ${q.id===S.current?'aria-current="true"':''}>
+      <span class="qstatus ${st||''}" title="${st==='pass'?'Solved':st==='fail'?'Last run failed':'Not attempted'}">${st==='fail'?ic('x',12):ic('check',12)}</span>
+      <span class="qmain"><span class="qtitle">${esc(q.title)}</span>
+      <span class="qmeta"><span class="pill ${diffCls(q.difficulty)}">${esc(q.difficulty)}</span>${isReact(q)?'<span class="pill react">React</span>':''}${q.custom?'<span class="pill custom">Yours</span>':''}</span></span></button>`;
+  }).join(''):`<div class="empty"><strong>No questions found</strong>Try a different search or filter.</div>`;
+}
+
+/* ==========================================================================
+   Problem + editor
+   ========================================================================== */
+function examplesFor(q){
+  if(Array.isArray(q.examples)&&q.examples.length) return q.examples;
+  if(isReact(q)) return [];
+  return getTests(q).slice(0,2).map(t=>{
+    try{ const a=JSON.parse(t.input); if(!Array.isArray(a)) return null; return {input:a.map(x=>JSON.stringify(x)).join(', '),output:JSON.stringify(JSON.parse(t.expected)),call:q.fn}; }
+    catch(e){ return null; }
+  }).filter(Boolean);
+}
+function examplesHTML(q){
+  const list=examplesFor(q); if(!list.length) return '';
+  const react=isReact(q);
+  return '<h3>Examples</h3>'+list.map((x,i)=>`<div class="ex"><div class="ex-h">Example ${i+1}</div><div class="ex-b">
+    <div class="ex-row"><span>${react?'You do':'Input'}</span><code>${esc(x.call?x.call+'('+x.input+')':x.input)}</code></div>
+    <div class="ex-row"><span>${react?'You see':'Output'}</span><code>${esc(x.output)}</code></div>
+    ${x.note?`<p class="ex-note">${esc(x.note)}</p>`:''}</div></div>`).join('');
+}
+function renderProblem(){
+  const q=cur();
+  const hint=isReact(q)
+    ?`Write JSX in the editor. Tests can use <b>screen</b>, <b>fireEvent</b>, <b>userType</b>, <b>waitFor</b> and <b>expect</b>, in the style of React Testing Library. React runs in a sandboxed frame and is loaded from a CDN, so it needs an internet connection.`
+    :`Your code runs in an isolated Web Worker. Declare <code>function ${esc(q.fn)}(...)</code>; each test calls it with the arguments in <b>Input</b> and compares the result with <b>Expected</b>. Use <code>console.log</code> to debug.`;
+  $('#problem').innerHTML=`<h1>${esc(q.title)}</h1>
+    <div class="tags"><span class="pill ${diffCls(q.difficulty)}">${esc(q.difficulty)}</span><span class="pill ${isReact(q)?'react':''}">${isReact(q)?'React':'JavaScript'}</span>${q.custom?'<span class="pill custom">Yours</span>':''}</div>
+    ${fmtDesc(q.description)}
+    ${examplesHTML(q)}
+    <h3>How it works</h3><div class="hint-box">${hint}</div>
+    ${q.custom?`<div class="problem-actions"><button class="btn sm danger" id="del-q">${ic('trash',14)} Delete question</button></div>`:''}`;
+}
+function renderEditorHead(){
+  const q=cur();
+  $('#file-label').innerHTML=`${ic('code',16)}<span>${isReact(q)?esc(q.fn)+'.jsx':esc(q.fn)+'.js'}</span>`;
+  $('#run-btn').innerHTML=`${ic('play',14)}<span>Run</span><span class="kbd lbl-long">Ctrl+Enter</span>`;
+  $('#test-btn').innerHTML=`${ic('flask',15)}<span>Run tests</span>`;
+  $('#reset-btn').innerHTML=`${ic('reset',14)}<span>Reset</span>`;
+  const ab=$('#answer-btn'); ab.innerHTML=`${ic('eye',14)}<span>Show answer</span>`;
+  ab.disabled=!q.solution; ab.title=q.solution?'Reveal the reference solution':'No answer was provided for this question';
+}
+function renderEditor(){
+  const ta=$('#code'); ta.value=getCode(cur()); updateGutter(true); ta.scrollTop=0; ta.scrollLeft=0; $('#gutter').scrollTop=0;
+  $('#editor').style.setProperty('--fs',S.font+'px');
+}
+let gutterLines=0;
+function updateGutter(force){
+  const n=$('#code').value.split('\n').length;
+  if(!force&&n===gutterLines) return;
+  gutterLines=n;
+  $('#gutter').textContent=Array.from({length:n},(_,i)=>i+1).join('\n');
+}
+
+/* --- editor key handling (indent, auto-close, auto-indent) --- */
+const PAIRS={'(':')','[':']','{':'}','"':'"',"'":"'",'`':'`'};
+const has=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+function insertText(ta,text){
+  ta.focus();
+  if(!document.execCommand('insertText',false,text)){ ta.setRangeText(text,ta.selectionStart,ta.selectionEnd,'end'); ta.dispatchEvent(new Event('input',{bubbles:true})); }
+}
+function deleteSel(ta){
+  if(!document.execCommand('delete')){ ta.setRangeText('',ta.selectionStart,ta.selectionEnd,'end'); ta.dispatchEvent(new Event('input',{bubbles:true})); }
+}
+function lineStart(v,i){ return i===0?0:v.lastIndexOf('\n',i-1)+1; }
+function onEditorKey(e){
+  if(e.ctrlKey||e.metaKey||e.altKey||e.isComposing) return;
+  const ta=e.target, s=ta.selectionStart, en=ta.selectionEnd, v=ta.value, k=e.key;
+  if(k==='Tab'){
+    e.preventDefault();
+    if(s===en&&!e.shiftKey){ insertText(ta,'  '); return; }
+    const ls=lineStart(v,s); let le=v.indexOf('\n',en); if(le<0) le=v.length;
+    const block=v.slice(ls,le);
+    const out=e.shiftKey?block.replace(/^( {1,2}|\t)/gm,''):block.replace(/^/gm,'  ');
+    ta.setSelectionRange(ls,le); insertText(ta,out); ta.setSelectionRange(ls,ls+out.length);
+    return;
+  }
+  if(k==='Enter'&&!e.shiftKey){
+    e.preventDefault();
+    const indent=v.slice(lineStart(v,s),s).match(/^\s*/)[0], before=v[s-1], after=v[en];
+    const opener=before&&'{[('.includes(before);
+    if(opener&&after&&PAIRS[before]===after){ insertText(ta,'\n'+indent+'  \n'+indent); const p=s+1+indent.length+2; ta.setSelectionRange(p,p); }
+    else if(opener) insertText(ta,'\n'+indent+'  ');
+    else insertText(ta,'\n'+indent);
+    return;
+  }
+  if(k==='Backspace'&&s===en&&s>0&&has(PAIRS,v[s-1])&&PAIRS[v[s-1]]===v[s]){
+    e.preventDefault(); ta.setSelectionRange(s-1,s+1); deleteSel(ta); return;
+  }
+  if(k.length!==1) return;
+  const isCloser=')]}"\'`'.includes(k);
+  if(isCloser&&s===en&&v[s]===k){ e.preventDefault(); ta.setSelectionRange(s+1,s+1); return; }
+  if(has(PAIRS,k)){
+    const close=PAIRS[k];
+    if(s!==en){ e.preventDefault(); insertText(ta,k+v.slice(s,en)+close); ta.setSelectionRange(s+1,en+1); return; }
+    if(k===close&&s>0&&/[\w$]/.test(v[s-1])) return;
+    if(v[s]&&/[\w$]/.test(v[s])) return;
+    e.preventDefault(); insertText(ta,k+close); ta.setSelectionRange(s+1,s+1);
+  }
+}
+
+/* ==========================================================================
+   Results pane
+   ========================================================================== */
+function tabList(q){
+  const t=[{id:'console',label:'Console'}];
+  if(isReact(q)) t.unshift({id:'preview',label:'Preview'});
+  t.push({id:'tests',label:'Test cases',count:getTests(q).length});
+  t.push({id:'analysis',label:'Analysis',dot:!!R.analysisNew});
+  return t;
+}
+function setTab(id){
+  const q=cur();
+  if(!tabList(q).some(t=>t.id===id)) id='console';
+  R.tab=id; if(id==='analysis') R.analysisNew=false;
+  renderTabs();
+  ['console','tests','preview','analysis'].forEach(p=>{ $('#panel-'+p).hidden=p!==id; });
+}
+function renderTabs(){
+  const q=cur();
+  $('#tabs').innerHTML=tabList(q).map(t=>`<button class="tab" role="tab" data-tab="${t.id}" aria-selected="${R.tab===t.id}">${t.label}${t.count!=null?`<span class="count">${t.count}</span>`:''}${t.dot?'<i class="dot" title="New analysis"></i>':''}</button>`).join('');
+  $('#status').innerHTML=(R.running?'<span class="spinner"></span>':'')+esc(R.status||'')+(R.running?` <button class="btn sm" id="stop-btn">${ic('stop',12)} Stop</button>`:'');
+  $('#run-btn').disabled=$('#test-btn').disabled=!!R.running;
+}
+function renderConsole(){
+  const el=$('#panel-console');
+  el.innerHTML=R.logs.length?R.logs.map(l=>`<div class="log log-${l.level}"><pre>${esc(l.text)}</pre></div>`).join('')
+    :`<div class="placeholder"><div><strong>Console output appears here</strong>Press <b>Run</b> to execute your code. Anything passed to <code>console.log</code> is shown here.</div></div>`;
+  el.scrollTop=el.scrollHeight;
+}
+function testsHTML(){
+  const q=cur(), tests=getTests(q), react=isReact(q);
+  const done=Object.values(R.results).filter(r=>!r.running);
+  const passed=done.filter(r=>r.pass).length;
+  let html='';
+  if(done.length||R.running){
+    const all=!R.running&&done.length===tests.length&&passed===tests.length&&tests.length>0;
+    const bad=!R.running&&done.length>0&&passed<tests.length;
+    html+=`<div class="summary ${all?'ok':bad?'bad':''}"><strong>${R.running?'Running…':all?'All tests passed':`${passed} of ${tests.length} passed`}</strong><div class="bar"><i style="width:${tests.length?done.length/tests.length*100:0}%"></i></div><span>${passed}/${tests.length}</span>${R.analysis&&!R.running?'<button class="btn sm" data-act="view-analysis">Analysis →</button>':''}</div>`;
+  }
+  if(!tests.length) html+=`<div class="empty"><strong>No test cases yet</strong>Add one below to check your solution.</div>`;
+  html+=tests.map((t,i)=>{
+    const r=R.results[i];
+    const cls=r?(r.running?'running':r.pass?'pass':'fail'):'';
+    const badge=r?(r.running?'<span class="tbadge running">Running</span>':r.pass?`<span class="tbadge pass">Passed · ${r.ms||0} ms</span>`:`<span class="tbadge fail">${r.timeout?'Timed out':'Failed'}${r.ms?` · ${r.ms} ms`:''}</span>`):'';
+    let res='';
+    if(r&&!r.running){
+      if(r.error) res=`<div class="kv err"><span>Error</span><code>${esc(r.error)}</code></div>`;
+      else if(!react) res=`<div class="kv ${r.pass?'ok':'err'}"><span>Output</span><code>${esc(r.actual)}</code></div>`;
+    }
+    const head=`<div class="tcase-h">${react?`<input class="tname" data-k="name" value="${esc(t.name||'')}" aria-label="Test name ${i+1}" placeholder="Test name">`:`<span class="tnum">Case ${i+1}</span>`}${badge}<button class="icon-btn" data-act="del-test" aria-label="Delete test ${i+1}" title="Delete test">${ic('trash',15)}</button></div>`;
+    const body=react
+      ?`<label class="fld"><span>Test script <em>(async; has screen, fireEvent, userType, waitFor, expect)</em></span><textarea class="textarea autosize" data-k="script" rows="3" spellcheck="false">${esc(t.script||'')}</textarea></label>`
+      :`<label class="fld"><span>Input <em>(arguments as a JSON array)</em></span><textarea class="textarea autosize" data-k="input" rows="1" spellcheck="false" placeholder='[[2,7,11,15], 9]'>${esc(t.input)}</textarea><small class="ferr" hidden></small></label>
+        <label class="fld"><span>Expected output <em>(JSON)</em></span><textarea class="textarea autosize" data-k="expected" rows="1" spellcheck="false" placeholder='[0,1]'>${esc(t.expected)}</textarea><small class="ferr" hidden></small></label>`;
+    return `<div class="tcase ${cls}" data-i="${i}">${head}${body}<div class="tres">${res}</div></div>`;
+  }).join('');
+  html+=`<div class="tfoot"><button class="btn sm" data-act="add-test">${ic('plus',14)} Add test case</button>${S.tests[q.id]?`<button class="btn sm ghost" data-act="reset-tests">${ic('reset',13)} Restore original tests</button>`:''}</div>`;
+  return html;
+}
+function renderTests(){
+  const el=$('#panel-tests'), top=el.scrollTop;
+  el.innerHTML=testsHTML();
+  $$('.autosize',el).forEach(autosize);
+  $$('.tcase',el).forEach(c=>{ if(!isReact(cur())) $$('textarea[data-k]',c).forEach(t=>{ if(t.value.trim()) checkField(t); }); });
+  el.scrollTop=top;
+  const cnt=$('.tab[data-tab="tests"] .count'); if(cnt) cnt.textContent=getTests(cur()).length;
+}
+function autosize(t){ t.style.height='auto'; t.style.height=(t.scrollHeight+2)+'px'; }
+function checkField(t){
+  const err=t.parentElement.querySelector('.ferr'); if(!err) return true;
+  let msg='';
+  try{ const v=JSON.parse(t.value); if(t.dataset.k==='input'&&!Array.isArray(v)) msg='Input must be a JSON array of arguments, e.g. [1, 2]'; }
+  catch(e){ msg='Not valid JSON. Strings need double quotes, e.g. "abc".'; }
+  t.setAttribute('aria-invalid',msg?'true':'false'); err.hidden=!msg; err.textContent=msg;
+  return !msg;
+}
+function renderResults(){ renderTabs(); renderConsole(); renderTests(); renderAnalysis(); }
+
+/* ==========================================================================
+   Execution
+   ========================================================================== */
+const FR={el:null,ready:null,resolve:null,reject:null,timer:null,on:null};
+function killFrame(){
+  clearTimeout(FR.timer);
+  if(FR.el){ FR.el.remove(); }
+  FR.el=FR.ready=FR.resolve=FR.reject=FR.on=null;
+  $('#preview-empty').hidden=false;
+}
+function ensureFrame(){
+  if(FR.el&&FR.ready) return FR.ready;
+  const f=document.createElement('iframe');
+  f.setAttribute('sandbox','allow-scripts'); f.title='Component preview'; f.srcdoc=FRAME_SRC;
+  FR.el=f;
+  FR.ready=new Promise((res,rej)=>{ FR.resolve=res; FR.reject=rej; });
+  FR.ready.catch(()=>{});
+  FR.timer=setTimeout(()=>{ const rej=FR.reject; killFrame(); rej&&rej(new Error('Timed out loading React from the CDN. Check your internet connection.')); },20000);
+  $('#preview-host').appendChild(f);
+  return FR.ready;
+}
+window.addEventListener('message',e=>{
+  if(!FR.el||e.source!==FR.el.contentWindow) return;
+  const m=e.data||{};
+  if(m.t==='ready'){ clearTimeout(FR.timer); FR.resolve&&FR.resolve(); return; }
+  if(m.t==='loadfail'){ const rej=FR.reject; killFrame(); rej&&rej(new Error('Could not load React/Babel from cdnjs.cloudflare.com. React questions need an internet connection.')); return; }
+  if(FR.on) FR.on(m);
+});
+
+function checkJsTest(t){
+  let a;
+  try{ a=JSON.parse(t.input); }catch(e){ return 'Input is not valid JSON.'; }
+  if(!Array.isArray(a)) return 'Input must be a JSON array of arguments, e.g. [1, 2].';
+  try{ JSON.parse(t.expected); }catch(e){ return 'Expected output is not valid JSON.'; }
+  return null;
+}
+function execJs(q,mode,h){
+  const tests=getTests(q);
+  let map=[], sendable=[];
+  if(mode==='test'){
+    tests.forEach((t,i)=>{ const err=checkJsTest(t); if(err) h.result({i,pass:false,error:err,ms:0}); else { map.push(i); sendable.push(t); } });
+    if(!sendable.length){ h.end({}); return ()=>{}; }
+  }
+  let w,url,timer,cur=null,ended=false;
+  const dispose=()=>{ clearTimeout(timer); try{ w.terminate(); }catch(e){} try{ URL.revokeObjectURL(url); }catch(e){} };
+  const end=info=>{ if(ended) return; ended=true; dispose(); h.end(info); };
+  const arm=()=>{ clearTimeout(timer); timer=setTimeout(()=>end({timeout:true,index:cur}),TIMEOUT); };
+  try{ url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'})); w=new Worker(url); }
+  catch(err){ h.end({fatal:'Could not start the sandbox worker: '+err.message}); return ()=>{}; }
+  w.onmessage=e=>{
+    const m=e.data;
+    if(m.t==='log') h.log(m.level,m.text);
+    else if(m.t==='start'){ cur=map[m.i]; h.start(cur); arm(); }
+    else if(m.t==='result'){ h.result(Object.assign({},m,{i:map[m.i]})); arm(); }
+    else if(m.t==='fatal') end({fatal:m.message});
+    else if(m.t==='done') end({});
+  };
+  w.onerror=e=>{ e.preventDefault(); end({fatal:e.message||'The worker crashed.'}); };
+  arm();
+  w.postMessage({mode,code:getCode(q),fn:q.fn,tests:mode==='test'?sendable:tests.slice(0,1)});
+  return ()=>{ if(!ended){ ended=true; dispose(); } };
+}
+function execReact(q,mode,h){
+  let ended=false,timer,cur=null;
+  const end=info=>{ if(ended) return; ended=true; clearTimeout(timer); FR.on=null; h.end(info); };
+  const arm=()=>{ clearTimeout(timer); timer=setTimeout(()=>{ killFrame(); end({timeout:true,index:cur}); },TIMEOUT); };
+  ensureFrame().then(()=>{
+    if(ended) return;
+    FR.on=m=>{
+      if(m.t==='log') h.log(m.level,m.text);
+      else if(m.t==='start'){ cur=m.i; h.start(m.i); arm(); }
+      else if(m.t==='result'){ h.result(m); arm(); }
+      else if(m.t==='rendered'||m.t==='done') end({});
+      else if(m.t==='error'||m.t==='fatal') end({fatal:m.message});
+    };
+    arm();
+    $('#preview-empty').hidden=true;
+    FR.el.contentWindow.postMessage(mode==='run'?{t:'run',code:getCode(q),name:q.fn}:{t:'test',code:getCode(q),name:q.fn,tests:getTests(q)},'*');
+  }).catch(err=>end({fatal:err.message}));
+  return ()=>{ if(!ended){ ended=true; clearTimeout(timer); killFrame(); } };
+}
+function cancelRun(){
+  if(R.stop){ try{ R.stop(); }catch(e){} }
+  R.stop=null; R.running=null;
+}
+function startRun(mode){
+  const q=cur();
+  if(R.running) return;
+  cancelRun();
+  R.running=mode; R.logs=[]; R.status='Running…'; R.analysis=null;
+  if(mode==='test') R.results={};
+  const t0=performance.now();
+  const h={
+    log:(level,text)=>{ R.logs.push({level,text}); renderConsole(); },
+    start:i=>{ R.results[i]={running:true}; renderTests(); },
+    result:r=>{ R.results[r.i]=r; renderTests(); },
+    end:info=>{
+      R.running=null; R.stop=null;
+      const ms=Math.round(performance.now()-t0);
+      const limit='Time limit exceeded (5 s). Check for an infinite loop.';
+      if(info.fatal) R.logs.push({level:'error',text:info.fatal});
+      if(info.timeout){
+        if(info.index!=null&&mode==='test') R.results[info.index]={pass:false,timeout:true,error:limit};
+        else R.logs.push({level:'error',text:limit});
+      }
+      if(mode==='test'){
+        const total=getTests(q).length, rs=Object.values(R.results);
+        const ok=!info.fatal&&!info.timeout&&total>0&&rs.length===total&&rs.every(r=>r.pass);
+        S.status[q.id]=ok?'pass':(rs.length||info.fatal||info.timeout)?'fail':S.status[q.id];
+        if(!S.status[q.id]) delete S.status[q.id];
+        save(); renderSidebar();
+        R.status=info.fatal?'Could not run tests':ok?`All tests passed · ${ms} ms`:`Finished · ${ms} ms`;
+      }else{
+        if(!info.fatal&&!info.timeout&&!R.logs.length) R.logs.push({level:'meta',text:isReact(q)?'Rendered with no console output.':'Ran with no console output.'});
+        else if(!info.fatal&&!info.timeout) R.logs.push({level:'meta',text:`Finished in ${ms} ms`});
+        R.status=info.fatal?'Error':info.timeout?'Timed out':`Finished · ${ms} ms`;
+      }
+      R.analysis=makeAnalysis(q,mode,ms);
+      R.analysisNew=true;
+      renderResults();
+      maybeProfile(q,mode);
+    }
+  };
+  setTab(mode==='test'?'tests':isReact(q)?'preview':'console');
+  renderResults();
+  R.stop=(isReact(q)?execReact:execJs)(q,mode,h);
+}
+function stopRun(){
+  if(!R.running) return;
+  cancelRun(); R.status='Stopped';
+  R.logs.push({level:'warn',text:'Run stopped.'});
+  Object.keys(R.results).forEach(k=>{ if(R.results[k].running) delete R.results[k]; });
+  renderResults();
+}
+
+/* ==========================================================================
+   Code analysis (static complexity estimate, measured scaling, quality hints)
+   ========================================================================== */
+const RANKS={'o(1)':0,'o(logn)':1,'o(n)':2,'o(nlogn)':3,'o(n²)':4,'o(n^2)':4,'o(n²logn)':5,'o(n³)':6,'o(n^3)':6,'o(2ⁿ)':100,'o(2^n)':100};
+const rankOf=t=>{ const k=String(t||'').toLowerCase().replace(/\s+/g,''); return has(RANKS,k)?RANKS[k]:null; };
+const SUP=['','','²','³','⁴','⁵','⁶'];
+function cLabel(deg,l){
+  const lg=l>1?'log'+(SUP[l]||'^'+l)+' n':l===1?'log n':'';
+  if(deg===0) return 'O('+(lg||'1')+')';
+  const nn=deg===1?'n':'n'+(SUP[deg]||'^'+deg);
+  return 'O('+nn+(lg?' '+lg:'')+')';
+}
+const cRank=(deg,l)=>deg*2+(l?1:0);
+
+/* blank out comments, strings and regex literals but keep positions */
+function stripCode(src){
+  let out='', i=0, prev='';
+  const n=src.length;
+  const blank=(a,b)=>src.slice(a,b).replace(/[^\n]/g,' ');
+  while(i<n){
+    const c=src[i], d=src[i+1];
+    if(c==='/'&&d==='/'){ let j=src.indexOf('\n',i); if(j<0) j=n; out+=blank(i,j); i=j; continue; }
+    if(c==='/'&&d==='*'){ let j=src.indexOf('*/',i+2); j=j<0?n:j+2; out+=blank(i,j); i=j; continue; }
+    if(c==='"'||c==="'"||c==='`'){
+      let j=i+1; while(j<n&&src[j]!==c){ if(src[j]==='\\') j++; j++; }
+      out+=c+blank(i+1,j)+(src[j]||''); i=j+1; prev=c; continue;
+    }
+    if(c==='/'&&(prev===''||/[(,=:\[!&|?{};+\-*%<>~^]/.test(prev)||/(return|typeof)\s*$/.test(out.slice(-8)))){
+      let j=i+1, cls=false;
+      while(j<n&&src[j]!=='\n'&&(cls||src[j]!=='/')){ if(src[j]==='\\') j++; else if(src[j]==='[') cls=true; else if(src[j]===']') cls=false; j++; }
+      if(src[j]==='/'){ j++; while(/[a-z]/i.test(src[j]||'')) j++; out+=blank(i,j); i=j; prev='x'; continue; }
+    }
+    out+=c; if(!/\s/.test(c)) prev=c; i++;
+  }
+  return out;
+}
+function matchClose(t,open){
+  const o=t[open], c={'(':')','{':'}','[':']'}[o]; let d=0;
+  for(let i=open;i<t.length;i++){ if(t[i]===o) d++; else if(t[i]===c){ d--; if(!d) return i; } }
+  return t.length-1;
+}
+function stmtEnd(t,i){
+  let d=0;
+  for(;i<t.length;i++){
+    const c=t[i];
+    if('([{'.includes(c)) d++;
+    else if(')]}'.includes(c)){ if(d===0) return i; d--; }
+    else if((c===';'||c==='\n')&&d===0){ if(c===';') return i; const rest=t.slice(i).match(/^\s*(\S)/); if(!rest||!/[.+\-*/?:&|,]/.test(rest[1])) return i; }
+  }
+  return t.length;
+}
+const LINEAR_CALLS=['indexOf','lastIndexOf','includes','slice','splice','concat','join','reverse','split','shift','unshift','substring','substr','padStart','padEnd','repeat','trim','toLowerCase','toUpperCase','replace','replaceAll','flat','fill','copyWithin','startsWith','endsWith'];
+const ITER_CALLS=['forEach','map','filter','reduce','reduceRight','some','every','find','findIndex','findLast','flatMap'];
+const LOG_LOOP=/\/=\s*2|>>=\s*1|\*=\s*2|<<=\s*1|Math\.floor\([^)]*\/\s*2\)|>>\s*1|\bmid\b/;
+
+function analyzeCode(code,q){
+  const t=stripCode(code);
+  const loops=[], events=[], reasons=[], spaceReasons=[];
+  /* loops */
+  const re=/\b(for|while|do)\b(?:\s+await)?\s*(\(|\{)?/g; let m;
+  while((m=re.exec(t))){
+    const kw=m[1]; let bodyStart, bodyEnd, header='';
+    const at=m.index+m[0].length;
+    if(kw==='do'){ const b=t.indexOf('{',m.index); if(b<0||t.slice(m.index+2,b).trim()) continue; bodyStart=b+1; bodyEnd=matchClose(t,b); }
+    else{
+      const po=t.indexOf('(',m.index+kw.length); if(po<0||t.slice(m.index+kw.length,po).replace(/await/,'').trim()) continue;
+      const pc=matchClose(t,po); header=t.slice(po+1,pc);
+      let k=pc+1; while(/\s/.test(t[k]||'')) k++;
+      if(t[k]===';'){ continue; }
+      if(t[k]==='{'){ bodyStart=k+1; bodyEnd=matchClose(t,k); }
+      else{ bodyStart=k; bodyEnd=stmtEnd(t,k); }
+    }
+    const body=t.slice(bodyStart,bodyEnd);
+    let constant=false;
+    if(kw==='for'&&!/\b(of|in)\b/.test(header)){ const ids=header.replace(/\b(let|var|const)\b/g,'').match(/[A-Za-z_$][\w$]*/g)||[]; constant=new Set(ids).size<=1&&/\d/.test(header); }
+    const log=!constant&&(LOG_LOOP.test(kw==='for'?header+' '+body:body+' '+header));
+    loops.push({kw,start:bodyStart,end:bodyEnd,log,constant,line:t.slice(0,m.index).split('\n').length});
+  }
+  /* iteration callbacks: .map( ... ) etc */
+  const ire=new RegExp('\\.\\s*('+ITER_CALLS.join('|')+')\\s*\\(','g');
+  while((m=ire.exec(t))){
+    const po=m.index+m[0].length-1, pc=matchClose(t,po);
+    loops.push({kw:'.'+m[1]+'()',start:po+1,end:pc,log:false,constant:false,line:t.slice(0,m.index).split('\n').length,method:true});
+  }
+  const real=loops.filter(l=>!l.constant);
+  const chainAt=pos=>real.filter(l=>pos>=l.start&&pos<l.end);
+  const degOf=ch=>({deg:ch.filter(l=>!l.log).length,l:ch.filter(l=>l.log).length});
+  /* loop events (each loop's own chain) */
+  real.forEach(l=>{
+    const ch=real.filter(o=>l.start>=o.start&&l.end<=o.end);
+    const c=degOf(ch); events.push({deg:c.deg,l:c.l,why:null,loop:l,depth:ch.length});
+  });
+  /* hidden linear/sort work */
+  const lre=new RegExp('\\.\\s*('+LINEAR_CALLS.join('|')+'|sort)\\s*\\(','g'), spread=/\[\s*\.\.\.|\(\s*\.\.\./g;
+  const extras=[];
+  while((m=lre.exec(t))){ extras.push({pos:m.index,name:m[1],sort:m[1]==='sort'}); }
+  while((m=spread.exec(t))){ extras.push({pos:m.index,name:'spread (...)',sort:false}); }
+  const extraRe=/\b(Array\.from|Object\.(keys|values|entries)|JSON\.stringify|JSON\.parse)\b/g;
+  while((m=extraRe.exec(t))){ extras.push({pos:m.index,name:m[0],sort:false}); }
+  extras.forEach(x=>{
+    const c=degOf(chainAt(x.pos));
+    if(x.name==='reverse'||x.name==='trim'||x.name==='toLowerCase'||x.name==='toUpperCase'||x.name==='replace'||x.name==='join'||x.name==='split'||x.name==='repeat'||x.name==='startsWith'||x.name==='endsWith'||x.name==='padStart'||x.name==='padEnd'||true){
+      events.push({deg:c.deg+1,l:c.l+(x.sort?1:0),why:null,extra:x,inLoop:chainAt(x.pos).length});
+    }
+  });
+  /* recursion */
+  const fnName=q&&q.fn;
+  let recursive=false, branching=false;
+  const defs=[...t.matchAll(/function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(x=>x[1]).concat([...t.matchAll(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:function|\([^)]*\)\s*=>|[\w$]+\s*=>)/g)].map(x=>x[1]));
+  defs.forEach(name=>{
+    const dm=new RegExp('(?:function\\s+'+name.replace(/\$/g,'\\$')+'\\s*\\(|(?:const|let|var)\\s+'+name.replace(/\$/g,'\\$')+'\\s*=)').exec(t);
+    if(!dm) return;
+    let bodyTxt='';
+    const po=t.indexOf('(',dm.index), isFn=/^function/.test(dm[0]);
+    if(isFn&&po>=0){ const b=t.indexOf('{',matchClose(t,po)); if(b>=0) bodyTxt=t.slice(b,matchClose(t,b)+1); }
+    else{ const ar=t.indexOf('=>',dm.index); if(ar>=0){ let k=ar+2; while(/\s/.test(t[k]||'')) k++; bodyTxt=t[k]==='{'?t.slice(k,matchClose(t,k)+1):t.slice(k,stmtEnd(t,k)); } }
+    const calls=(bodyTxt.match(new RegExp('(?<![\\w$.])'+name.replace(/\$/g,'\\$')+'\\s*\\(','g'))||[]).length;
+    if(calls>0){ recursive=true; if(calls>=2&&!/\.(has|get)\s*\(|\b\w+\s*\[[^\]]+\]\s*=[^=]|\b(memo|cache|dp)\b/i.test(bodyTxt)) branching=true; }
+  });
+  /* time result */
+  let best={deg:0,l:0};
+  const better=(a,b)=>cRank(a.deg,a.l)>cRank(b.deg,b.l);
+  events.forEach(e=>{ if(better(e,best)) best={deg:e.deg,l:e.l}; });
+  if(recursive&&!branching&&best.deg<1) best={deg:1,l:0};
+  let timeLabel=cLabel(best.deg,best.l), timeRank=cRank(best.deg,best.l);
+  if(branching){ timeLabel='O(2ⁿ)'; timeRank=100; }
+  const maxDepth=real.reduce((mx,l)=>Math.max(mx,real.filter(o=>l.start>=o.start&&l.end<=o.end).length),0);
+  /* reasons */
+  const nloops=real.filter(l=>!l.method).length, ncb=real.filter(l=>l.method).length;
+  if(branching) reasons.push('A recursive function calls itself more than once per call without caching results, which usually grows exponentially.');
+  else if(recursive) reasons.push('The code is recursive. Each call adds work, so the cost grows with the recursion depth.');
+  if(maxDepth>=2) reasons.push('Loops are nested '+maxDepth+' levels deep (including array callbacks like map/filter), so the work multiplies.');
+  else if(maxDepth===1) reasons.push('There is one loop that goes over the input once.');
+  if(real.some(l=>l.log)) reasons.push('A loop halves the search range each step (binary-search style), which is O(log n).');
+  const seenMsg=new Set();
+  extras.forEach(x=>{
+    const nest=chainAt(x.pos).length;
+    if(x.sort&&!seenMsg.has('sort')){ seenMsg.add('sort'); reasons.push('`sort` takes O(n log n)'+(nest?' and it is called inside a loop, which multiplies the cost':'')+'.'); }
+    else if(!x.sort&&nest>0&&!seenMsg.has(x.name)&&['indexOf','lastIndexOf','includes','slice','splice','concat','shift','unshift','join','reverse','split','spread (...)'].includes(x.name)){
+      seenMsg.add(x.name); reasons.push('`'+x.name+'` inside a loop scans or copies the data each time, so it adds another O(n) level.');
+    }
+  });
+  if(!reasons.length&&!events.length) reasons.push('No loops, recursion or whole-input operations were found, so the work does not grow with the input.');
+  /* space */
+  let sp=0; const setSp=(r,why)=>{ if(r>sp) sp=r; spaceReasons.push(why); };
+  const strVars=[...t.matchAll(/(?:let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:''|""|``)/g)].map(x=>x[1]);
+  const growth=/\.\s*(push|unshift|add|set)\s*\(|\]\s*=[^=]/;
+  const alloc=/\bnew\s+(Map|Set|Array|WeakMap)\b|\bArray\s*\(|\bArray\.from\b|\.\s*(slice|concat|split|map|filter|flatMap|flat|substring|substr|repeat|padStart|padEnd|replace|replaceAll|toLowerCase|toUpperCase|trim|join)\s*\(|\[\s*\.\.\./;
+  if(recursive) setSp(2,'Recursion keeps one stack frame per call, so memory grows with the recursion depth.');
+  if(/\bnew\s+(Map|Set)\b/.test(t)&&growth.test(t)) setSp(2,'A Map/Set is filled from the input, so it can hold up to n items.');
+  else if(growth.test(t)&&/(?:let|const|var)\s+[\w$]+\s*=\s*(\[\s*\]|\{\s*\})/.test(t)&&real.length) setSp(2,'An array/object is filled while looping, so it can grow with the input.');
+  if(strVars.some(v=>new RegExp('\\b'+v+'\\s*\\+=').test(t))&&real.length) setSp(2,'A string is built up character by character, so its size grows with the input.');
+  const allocOnce=t.match(alloc);
+  if(allocOnce&&!spaceReasons.length) setSp(2,'A new array/string/collection is created from the input (`'+allocOnce[0].replace(/\s+/g,'')+'`), so it takes O(n) space.');
+  else if(allocOnce&&sp<2) setSp(2,'A new array/string/collection is created from the input.');
+  if(/\bArray\b[^;]*?(?:fill|from|map)[^;]*?(?:new\s+Array|Array\s*\(|\[\s*\])/.test(t)&&/\[[^\]]+\]\s*\[[^\]]+\]/.test(t)){ setSp(4,'A 2-dimensional table is created (an array of arrays), which takes O(n²) space.'); }
+  if(!spaceReasons.length) spaceReasons.push('Only a fixed number of variables are used, so extra memory does not grow with the input.');
+  const spaceRank=sp;
+  const spaceLabel={0:'O(1)',2:'O(n)',4:'O(n²)'}[sp]||'O(n)';
+  /* metrics */
+  const codeLines=code.split('\n').filter(l=>l.trim()&&!/^\s*(\/\/|\/\*|\*)/.test(l)).length;
+  const structs=[]; ['Map','Set','Array','Object'].forEach(k=>{ if(new RegExp('\\bnew\\s+'+k+'\\b|\\b'+k+'\\.').test(t)) structs.push(k); });
+  if(/(?:const|let|var)\s+[\w$]+\s*=\s*\[/.test(t)&&!structs.includes('Array')) structs.push('Array');
+  if(/(?:const|let|var)\s+[\w$]+\s*=\s*\{/.test(t)&&!structs.includes('Object')) structs.push('Object');
+  /* quality hints */
+  const hints=[];
+  if(/\bvar\b/.test(t)) hints.push({w:1,text:'Use `let` or `const` instead of `var`. They are safer because they stay inside their block.'});
+  if(/[^=!<>]==[^=]|!=[^=]/.test(t)) hints.push({w:1,text:'Prefer `===` and `!==` over `==` and `!=`. They avoid surprising type conversions.'});
+  if(/console\.(log|debug)\s*\(/.test(t)) hints.push({w:0,text:'There is a `console.log` left in the code. Remove debug output once it works.'});
+  if(codeLines>40) hints.push({w:0,text:'This solution is long ('+codeLines+' lines). Consider splitting it into small helper functions.'});
+  return {time:{label:timeLabel,rank:timeRank,reasons},space:{label:spaceLabel,rank:spaceRank,reasons:[...new Set(spaceReasons)]},
+    metrics:{lines:codeLines,loops:nloops,callbacks:ncb,maxDepth,recursive,structs},hints};
+}
+function analyzeReact(code){
+  const t=stripCode(code), hints=[];
+  const hooks=[...new Set([...t.matchAll(/\b(use[A-Z]\w*)\s*\(/g)].map(x=>x[1]))];
+  const comps=[...t.matchAll(/(?:function\s+|(?:const|let)\s+)([A-Z][\w$]*)/g)].map(x=>x[1]);
+  const jsx=(t.match(/<[A-Za-z][\w.]*(?=[\s/>])/g)||[]).length;
+  const raw=code;
+  if(/\.map\s*\(/.test(t)&&/<[A-Za-z]/.test(t)&&!/\bkey\s*=/.test(raw)) hints.push({w:1,text:'A list is rendered with `.map()` but no `key` prop was found. Give each item a stable, unique `key`.'});
+  if(/\bkey\s*=\s*\{\s*(i|idx|index|j)\s*\}/.test(raw)) hints.push({w:1,text:'The array index is used as a `key`. That breaks when items are added, removed or reordered. Prefer a unique id.'});
+  [...t.matchAll(/useEffect\s*\(/g)].forEach(m=>{
+    const po=m.index+m[0].length-1, pc=matchClose(t,po), inner=t.slice(po+1,pc).trim();
+    if(!/\[[^\]]*\]\s*$/.test(inner)) hints.push({w:1,text:'A `useEffect` has no dependency array, so it runs after every render. Add `[]` or the values it depends on.'});
+  });
+  [...t.matchAll(/const\s*\[\s*([\w$]+)\s*,\s*set\w+\s*\]\s*=\s*useState/g)].forEach(m=>{
+    if(new RegExp('\\b'+m[1]+'\\s*\\.\\s*(push|pop|splice|shift|unshift|sort|reverse)\\s*\\(|\\b'+m[1]+'\\s*\\[[^\\]]+\\]\\s*=[^=]').test(t)) hints.push({w:1,text:'State variable `'+m[1]+'` is changed directly. Create a new array/object and pass it to the setter instead.'});
+  });
+  if(/\bdocument\s*\./.test(t)) hints.push({w:1,text:'Avoid reading or changing the DOM directly with `document`. Let React render from state.'});
+  if(/console\.(log|debug)\s*\(/.test(t)) hints.push({w:0,text:'There is a `console.log` left in the code. Remove debug output once it works.'});
+  const lines=code.split('\n').filter(l=>l.trim()&&!/^\s*(\/\/|\/\*|\*)/.test(l)).length;
+  return {metrics:{lines,hooks,components:comps.length,jsx},hints};
+}
+
+function makeAnalysis(q,mode,ms){
+  let stat=null;
+  try{ stat=isReact(q)?analyzeReact(getCode(q)):analyzeCode(getCode(q),q); }catch(e){ stat=null; }
+  const tests=getTests(q), rs=Object.values(R.results).filter(r=>!r.running);
+  const times=rs.map(r=>r.ms||0);
+  return {mode,ms,stat,react:isReact(q),
+    tests:mode==='test'?{total:tests.length,ran:rs.length,passed:rs.filter(r=>r.pass).length,avg:times.length?times.reduce((a,b)=>a+b,0)/times.length:0,max:times.length?Math.max(...times):0,slowest:times.length?times.indexOf(Math.max(...times))+1:0}:null,
+    measured:null};
+}
+function slopeOf(pts){
+  const xs=pts.map(p=>Math.log(p.n)), ys=pts.map(p=>Math.log(Math.max(p.ms,1e-4)));
+  const mx=xs.reduce((a,b)=>a+b,0)/xs.length, my=ys.reduce((a,b)=>a+b,0)/ys.length;
+  let num=0,den=0; xs.forEach((x,i)=>{ num+=(x-mx)*(ys[i]-my); den+=(x-mx)*(x-mx); });
+  return den?num/den:0;
+}
+function trendLabel(sl){
+  if(sl<0.15) return {label:'O(1)',rank:0};
+  if(sl<0.45) return {label:'O(log n)',rank:1};
+  if(sl<1.2) return {label:'O(n)',rank:2};
+  if(sl<1.5) return {label:'O(n log n)',rank:3};
+  if(sl<2.5) return {label:'O(n²)',rank:4};
+  if(sl<3.5) return {label:'O(n³)',rank:6};
+  return {label:'exponential or worse',rank:100};
+}
+function maybeProfile(q,mode){
+  const a=R.analysis;
+  if(!a||mode!=='test'||isReact(q)||!q.gen||!Array.isArray(q.sizes)) return;
+  const allPass=a.tests&&a.tests.total>0&&a.tests.passed===a.tests.total;
+  if(!allPass){ a.measured={skipped:true}; renderAnalysis(); return; }
+  a.measured={pending:true}; R.running='profile'; R.status='Measuring how the speed scales…';
+  renderResults();
+  let w,url,timer,ended=false;
+  const finish=res=>{
+    if(ended) return; ended=true; clearTimeout(timer);
+    try{ w.terminate(); }catch(e){} try{ URL.revokeObjectURL(url); }catch(e){}
+    if(R.analysis!==a) return;
+    a.measured=res; R.running=null; R.stop=null;
+    R.status=R.status.startsWith('Measuring')?`All tests passed`:R.status;
+    renderResults();
+  };
+  try{ url=URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'})); w=new Worker(url); }
+  catch(e){ a.measured={error:'Could not start the measurement worker.'}; R.running=null; renderResults(); return; }
+  timer=setTimeout(()=>finish({error:'Measuring took too long (over 12 s), so it was stopped. The code is probably slow for large inputs.'}),12000);
+  w.onmessage=e=>{
+    const m=e.data;
+    if(m.t==='profile'){
+      const pts=m.points;
+      if(pts.length<2) return finish({error:'The code was too slow to measure at larger sizes.'});
+      const sl=slopeOf(pts); const tr=trendLabel(sl);
+      finish({points:pts,slope:sl,label:tr.label,rank:tr.rank,cut:pts.length<q.sizes.length});
+    }else if(m.t==='fatal') finish({error:'Could not measure: '+m.message});
+  };
+  w.onerror=e=>{ e.preventDefault&&e.preventDefault(); finish({error:'The measurement crashed: '+(e.message||'unknown error')}); };
+  w.postMessage({mode:'profile',code:getCode(q),fn:q.fn,gen:q.gen,sizes:q.sizes,tests:[]});
+  R.stop=()=>finish({error:'Stopped.'});
+}
+
+function fmtMs(x){ return x<0.01?'<0.01 ms':x<1?x.toFixed(2)+' ms':x<100?x.toFixed(1)+' ms':Math.round(x)+' ms'; }
+function verdictOf(rank,ref){
+  if(ref==null||rank==null) return null;
+  return rank<ref?'better':rank===ref?'same':'worse';
+}
+function renderAnalysis(){
+  const el=$('#panel-analysis'), q=cur(), a=R.analysis;
+  if(!a){
+    el.innerHTML=`<div class="placeholder"><div><strong>Analysis appears here</strong>Press <b>Run</b> or <b>Run tests</b> to see ${isReact(q)?'code checks and how your tests performed':'the time and space complexity of your code, how it scales, and tips'}.</div></div>`;
+    return;
+  }
+  const st=a.stat, t=a.tests;
+  let html='<div class="an">';
+  /* verdict */
+  if(a.mode==='test'&&t){
+    const all=t.total>0&&t.passed===t.total;
+    html+=`<div class="an-verdict ${all?'ok':'bad'}">${ic(all?'check':'x',18)}<div><strong>${all?'Correct: all '+t.total+' tests passed':`${t.passed} of ${t.total} tests passed`}</strong><span>${all?'Now let\'s look at how efficient your solution is.':'Fix the failing tests first, then come back for the efficiency analysis. The complexity below is already an estimate of your current code.'}</span></div></div>`;
+  }else{
+    html+=`<div class="an-verdict">${ic('flask',18)}<div><strong>Quick analysis</strong><span>Press <b>Run tests</b> to also check correctness and measure how your code scales.</span></div></div>`;
+  }
+  if(!st){ html+='<p class="small-note">The code could not be analyzed.</p></div>'; el.innerHTML=html; return; }
+
+  if(!a.react){
+    const tr=rankOf(q.time), sr=rankOf(q.space);
+    const tv=verdictOf(st.time.rank,tr), sv=verdictOf(st.space.rank,sr);
+    const badge=(v,ref)=>v==='worse'?`<span class="pill hard">Above the reference</span>`:v==='better'?`<span class="pill easy">Better than the reference</span>`:v==='same'?`<span class="pill easy">Matches the reference</span>`:'';
+    html+=`<div class="an-tiles">
+      <div class="tile"><div class="tile-l">Time complexity</div><div class="tile-v">${esc(st.time.label)}</div><div class="tile-s">estimated from your code ${badge(tv)}${q.time?`<span>Reference: ${esc(q.time)}</span>`:''}</div></div>
+      <div class="tile"><div class="tile-l">Space complexity</div><div class="tile-v">${esc(st.space.label)}</div><div class="tile-s">estimated from your code ${badge(sv)}${q.space?`<span>Reference: ${esc(q.space)}</span>`:''}</div></div></div>`;
+    html+=`<div class="an-sec"><h4>Why we estimate this</h4><ul>${st.time.reasons.map(r=>`<li><b>Time:</b> ${escCode(r)}</li>`).join('')}${st.space.reasons.map(r=>`<li><b>Space:</b> ${escCode(r)}</li>`).join('')}</ul>
+      <p class="small-note" style="margin-top:8px">n means the size of the input. Space counts the extra memory your code allocates, including the value it returns.</p></div>`;
+    if(tv==='worse'&&q.tip) html+=`<div class="an-sec"><div class="hint-item warn">${ic('flask',15)}<span><b>How to improve:</b> ${escCode(q.tip)}</span></div></div>`;
+    /* measured */
+    const ms=a.measured;
+    if(q.gen){
+      html+=`<div class="an-sec"><h4>Measured scaling</h4>`;
+      if(!ms) html+=`<p class="lead">Run the tests and pass them all to unlock this. We call your function with bigger and bigger inputs and time it.</p>`;
+      else if(ms.pending) html+=`<p class="lead"><span class="spinner"></span> Timing your function with inputs of growing size…</p>`;
+      else if(ms.skipped) html+=`<p class="lead">Pass all the tests to unlock this. Timing only makes sense for correct code.</p>`;
+      else if(ms.error) html+=`<p class="lead" style="color:var(--bad)">${esc(ms.error)}</p>`;
+      else{
+        const mx=Math.max(...ms.points.map(p=>p.ms));
+        const agree=ms.rank===st.time.rank?'This agrees with the estimate above.':ms.rank>st.time.rank?'The measurement grows faster than the code estimate. Look for hidden work, such as a built-in call inside a loop.':'The measurement grows slower than the code estimate. That is fine, the estimate assumes the worst case.';
+        html+=`<p class="lead">Time for one call as the input size n doubles. Measured trend: <b>${esc(ms.label)}</b> (growth exponent ${ms.slope.toFixed(2)}). ${agree}</p>`
+          +ms.points.map(p=>`<div class="mrow"><code>n = ${p.n.toLocaleString()}</code><div class="mbar"><i style="width:${Math.max(2,p.ms/mx*100)}%"></i></div><em>${fmtMs(p.ms)}</em></div>`).join('')
+          +`<p class="small-note" style="margin-top:6px">${ms.cut?'Stopped early because the code got slow. ':''}Timings vary a little between runs. Look at the trend, not exact numbers.</p>`;
+      }
+      html+='</div>';
+    }
+  }
+  /* test performance */
+  if(t&&t.ran){
+    html+=`<div class="an-sec"><h4>Test performance</h4><div class="kvgrid"><div><b>${fmtMs(t.avg)}</b><span>average per test</span></div><div><b>${fmtMs(t.max)}</b><span>slowest test${t.slowest?' (case '+t.slowest+')':''}</span></div><div><b>${fmtMs(a.ms)}</b><span>total run time</span></div></div></div>`;
+  }else if(a.mode==='run'){
+    html+=`<div class="an-sec"><h4>Run time</h4><div class="kvgrid"><div><b>${fmtMs(a.ms)}</b><span>${a.react?'to render':'for this run'}</span></div></div></div>`;
+  }
+  /* code metrics */
+  const m=st.metrics;
+  html+=`<div class="an-sec"><h4>About your code</h4><div class="kvgrid">
+    <div><b>${m.lines}</b><span>lines of code</span></div>`
+    +(a.react?`<div><b>${m.components}</b><span>component${m.components===1?'':'s'}</span></div><div><b>${m.jsx}</b><span>JSX elements</span></div><div><b>${m.hooks.length?esc(m.hooks.join(', ')):'none'}</b><span>hooks used</span></div>`
+      :`<div><b>${m.loops}</b><span>loop${m.loops===1?'':'s'}</span></div><div><b>${m.callbacks}</b><span>array callback${m.callbacks===1?'':'s'} (map, filter…)</span></div><div><b>${m.maxDepth}</b><span>deepest loop nesting</span></div><div><b>${m.recursive?'yes':'no'}</b><span>uses recursion</span></div><div><b>${m.structs.length?esc(m.structs.join(', ')):'none'}</b><span>data structures</span></div>`)
+    +`</div></div>`;
+  /* hints */
+  html+=`<div class="an-sec"><h4>Tips</h4>`+(st.hints.length?st.hints.map(h=>`<div class="hint-item ${h.w?'warn':''}">${ic('flask',15)}<span>${escCode(h.text)}</span></div>`).join(''):`<div class="hint-item">${ic('check',15)}<span>No common issues found. Nice and clean.</span></div>`)+'</div>';
+  html+=`<p class="small-note">Complexity is estimated by reading the structure of your code (loops, recursion, built-in calls), so treat it as a guide, not a proof.</p></div>`;
+  el.innerHTML=html;
+}
+const escCode=s=>esc(s).replace(/`([^`]+)`/g,'<code>$1</code>');
+
+/* ==========================================================================
+   Show answer
+   ========================================================================== */
+async function showAnswer(){
+  const q=cur(); if(!q.solution) return;
+  if(S.status[q.id]!=='pass'){
+    const ok=await confirmDialog('Show the answer?','Try a little longer first. Getting stuck is how you learn. If you are ready, open the reference solution and compare it with yours.','Show answer');
+    if(!ok) return;
+  }
+  const meta=[q.time&&`<span class="pill">Time ${esc(q.time)}</span>`,q.space&&`<span class="pill">Space ${esc(q.space)}</span>`].filter(Boolean).join('');
+  const m=modal(`<div class="dialog-h"><h2>Reference solution: ${esc(q.title)}</h2><button class="icon-btn" data-close aria-label="Close">${ic('x',18)}</button></div>
+    <div class="dialog-b">
+      ${meta?`<div class="ans-meta" style="margin-top:0">${meta}</div>`:''}
+      <pre class="codeblock" id="ans-code"></pre>
+      ${q.explanation?`<div class="ans-h">How it works</div><div>${fmtDesc(q.explanation)}</div>`:''}
+    </div>
+    <div class="dialog-f"><span class="form-error" style="color:var(--muted)">"Use in editor" replaces the code you have now.</span><button class="btn" id="ans-copy">Copy</button><button class="btn primary" id="ans-use">Use in editor</button></div>`);
+  $('#ans-code',m.el).textContent=q.solution;
+  $('#ans-copy',m.el).addEventListener('click',async()=>{
+    try{ await navigator.clipboard.writeText(q.solution); toast('Solution copied'); }
+    catch(e){ const r=document.createRange(); r.selectNodeContents($('#ans-code',m.el)); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); toast('Press Ctrl/Cmd+C to copy',true); }
+  });
+  $('#ans-use',m.el).addEventListener('click',()=>{
+    S.code[q.id]=q.solution; save(); renderEditor(); m.close(); toast('Solution loaded into the editor');
+  });
+}
+
+/* ==========================================================================
+   Selecting questions
+   ========================================================================== */
+function selectQuestion(id){
+  if(!getQ(id)) id=BUILTIN[0].id;
+  cancelRun();
+  S.current=id; save();
+  R={tab:'console',logs:[],results:{},running:null,status:'',stop:null,analysis:null,analysisNew:false};
+  $('body').classList.remove('nav-open');
+  renderSidebar(); renderProblem(); renderEditorHead(); renderEditor();
+  $('#preview-empty').hidden=false;
+  setTab(isReact(cur())?'preview':'console');
+  renderResults();
+}
+
+/* ==========================================================================
+   Modals
+   ========================================================================== */
+function modal(html,{narrow=false}={}){
+  const ov=document.createElement('div'); ov.className='overlay';
+  ov.innerHTML=`<div class="dialog${narrow?' narrow':''}" role="dialog" aria-modal="true">${html}</div>`;
+  const prev=document.activeElement;
+  const close=()=>{ ov.remove(); document.removeEventListener('keydown',onKey,true); if(prev&&prev.focus) prev.focus(); };
+  const onKey=e=>{ if(e.key==='Escape'){ e.stopPropagation(); close(); } };
+  document.addEventListener('keydown',onKey,true);
+  ov.addEventListener('mousedown',e=>{ if(e.target===ov) close(); });
+  ov.addEventListener('click',e=>{ if(e.target.closest('[data-close]')) close(); });
+  $('#modal-root').appendChild(ov);
+  const first=$('input,textarea,select,button.btn.primary',ov); if(first) first.focus();
+  return {el:ov,close};
+}
+const modalOpen=()=>!!$('#modal-root .overlay');
+function confirmDialog(title,message,okLabel='Delete'){
+  return new Promise(res=>{
+    const m=modal(`<div class="dialog-h"><h2>${esc(title)}</h2></div><div class="dialog-b"><p style="margin:0">${esc(message)}</p></div>
+      <div class="dialog-f"><button class="btn" data-close>Cancel</button><button class="btn primary" id="ok-btn">${esc(okLabel)}</button></div>`,{narrow:true});
+    let done=false;
+    $('#ok-btn',m.el).addEventListener('click',()=>{ done=true; m.close(); res(true); });
+    const obs=new MutationObserver(()=>{ if(!document.body.contains(m.el)){ obs.disconnect(); if(!done) res(false); } });
+    obs.observe($('#modal-root'),{childList:true});
+  });
+}
+
+/* --- question validation (shared by the form and JSON import) --- */
+const IDENT=/^[A-Za-z_$][\w$]*$/;
+function defaultStarter(type,name){
+  return type==='react'
+    ?`function ${name}() {\n  return (\n    <div>\n      {/* your component */}\n    </div>\n  );\n}\n`
+    :`function ${name}(/* args */) {\n  // your code here\n}\n`;
+}
+function normalizeQuestion(o){
+  const errs=[];
+  if(!o||typeof o!=='object'||Array.isArray(o)) return {errs:['Each question must be a JSON object.']};
+  const type=o.type==='react'?'react':'js';
+  const title=String(o.title||'').trim();
+  if(!title) errs.push('Title is required.');
+  else if(title.length>80) errs.push('Title must be 80 characters or fewer.');
+  const dm={easy:'Easy',medium:'Medium',hard:'Hard'};
+  const difficulty=dm[String(o.difficulty||'easy').toLowerCase()];
+  if(!difficulty) errs.push('Difficulty must be Easy, Medium or Hard.');
+  const name=String((type==='react'?(o.componentName||o.fn||o.functionName):(o.functionName||o.fn||o.componentName))||'').trim();
+  const label=type==='react'?'Component name':'Function name';
+  if(!name) errs.push(label+' is required.');
+  else if(!IDENT.test(name)) errs.push(label+' must be a valid identifier (letters, digits, _ or $).');
+  else if(type==='react'&&!/^[A-Z]/.test(name)) errs.push('Component name must start with a capital letter.');
+  const tests=[];
+  const list=Array.isArray(o.tests)?o.tests:[];
+  if(o.tests!==undefined&&!Array.isArray(o.tests)) errs.push('"tests" must be an array.');
+  list.forEach((t,i)=>{
+    const n='Test '+(i+1)+': ';
+    if(!t||typeof t!=='object'){ errs.push(n+'must be an object.'); return; }
+    if(type==='react'){
+      const script=String(t.script||'').trim();
+      if(!script){ errs.push(n+'script is required.'); return; }
+      try{ new Function('return async function(screen,fireEvent,userType,waitFor,expect,container,React){'+script+'\n}'); }
+      catch(e){ errs.push(n+'script has a syntax error ('+e.message+').'); return; }
+      tests.push({name:String(t.name||'Test '+(i+1)).trim(),script:t.script});
+    }else{
+      if(!Array.isArray(t.input)){ errs.push(n+'input must be an array of arguments, e.g. [[1,2], 3].'); return; }
+      if(!('expected' in t)){ errs.push(n+'expected is required.'); return; }
+      tests.push({input:JSON.stringify(t.input),expected:JSON.stringify(t.expected)});
+    }
+  });
+  const solution=o.solution===undefined?'':String(o.solution);
+  if(solution.trim()&&type==='js'){ try{ new Function(solution); }catch(e){ errs.push('Solution has a syntax error ('+e.message+').'); } }
+  const examples=[];
+  if(o.examples!==undefined&&!Array.isArray(o.examples)) errs.push('"examples" must be an array.');
+  (Array.isArray(o.examples)?o.examples:[]).forEach((x,i)=>{
+    if(!x||typeof x!=='object'||x.input===undefined||x.output===undefined){ errs.push('Example '+(i+1)+': needs "input" and "output".'); return; }
+    const str=v=>typeof v==='string'?v:JSON.stringify(v);
+    examples.push({input:str(x.input),output:str(x.output),note:String(x.note||x.explanation||'')});
+  });
+  if(errs.length) return {errs};
+  return {errs,q:{
+    id:'custom-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+    custom:true,type,title,difficulty,fn:name,
+    description:String(o.description||''),
+    examples,
+    solution:solution.trim()?solution:'',
+    explanation:String(o.explanation||''),
+    time:String(o.timeComplexity||o.time||'').trim(),
+    space:String(o.spaceComplexity||o.space||'').trim(),
+    starter:String(o.starterCode||o.starter||'').trim()?String(o.starterCode||o.starter):defaultStarter(type,name),
+    tests
+  }};
+}
+function addQuestions(objs){
+  const errs=[], made=[];
+  objs.forEach((o,i)=>{
+    const r=normalizeQuestion(o);
+    r.errs.forEach(e=>errs.push(objs.length>1?`Question ${i+1}: ${e}`:e));
+    if(r.q) made.push(r.q);
+  });
+  if(errs.length) return {errs};
+  S.custom.push(...made); save();
+  filters={q:'',type:'',diff:''}; $('#search').value=''; $('#f-type').value=''; $('#f-diff').value='';
+  selectQuestion(made[made.length-1].id);
+  return {errs:[],count:made.length};
+}
+const EXAMPLE_JSON=JSON.stringify({questions:[
+  {type:'js',title:'Add Two Numbers',difficulty:'Easy',description:'Return the sum of `a` and `b`.',examples:[{input:'a = 1, b = 2',output:'3',note:'1 + 2 = 3.'}],solution:'function add(a, b) {\n  return a + b;\n}\n',explanation:'Add the two numbers and return the result.',timeComplexity:'O(1)',spaceComplexity:'O(1)',functionName:'add',starterCode:'function add(a, b) {\n  \n}\n',tests:[{input:[1,2],expected:3},{input:[-1,1],expected:0}]},
+  {type:'react',title:'Hello Greeting',difficulty:'Easy',description:'Render `Hello, World!` in an h1.',componentName:'Hello',tests:[{name:'shows greeting',script:"expect(screen.getByRole('heading')).toHaveTextContent('Hello, World!');"}]}
+]},null,2);
+
+function openAddModal(){
+  let type='js';
+  const m=modal(`
+    <div class="dialog-h"><h2>Add question</h2><button class="icon-btn" data-close aria-label="Close">${ic('x',18)}</button></div>
+    <div class="dialog-b">
+      <div class="seg" role="group" aria-label="Source" style="margin-bottom:16px">
+        <button type="button" data-mode="form" aria-pressed="true">Form</button>
+        <button type="button" data-mode="import" aria-pressed="false">Import JSON</button>
+      </div>
+      <div id="m-form">
+        <div class="seg" role="group" aria-label="Question type" style="margin-bottom:14px">
+          <button type="button" data-type="js" aria-pressed="true">JavaScript</button>
+          <button type="button" data-type="react" aria-pressed="false">React</button>
+        </div>
+        <div class="grid2">
+          <label class="fld"><span>Title</span><input class="input" id="m-title" maxlength="80" placeholder="e.g. Find the Maximum"></label>
+          <label class="fld"><span>Difficulty</span><select class="select" id="m-diff"><option>Easy</option><option>Medium</option><option>Hard</option></select></label>
+        </div>
+        <label class="fld"><span>Description <em>(use \`backticks\` for code, "- " for bullet points)</em></span><textarea class="textarea" id="m-desc" rows="4" placeholder="Explain the problem, the rules and an example."></textarea></label>
+        <label class="fld"><span id="m-name-l">Function name</span><input class="input mono" id="m-name" placeholder="e.g. findMax" autocomplete="off" spellcheck="false"></label>
+        <label class="fld"><span>Starter code <em>(optional, a template is generated if empty)</em></span><textarea class="textarea mono" id="m-starter" rows="5" spellcheck="false"></textarea></label>
+        <details style="margin-bottom:14px"><summary class="small" style="cursor:pointer;font-weight:600">Answer (optional): enables the "Show answer" button and the complexity comparison</summary>
+          <div style="padding-top:10px">
+            <label class="fld"><span>Reference solution</span><textarea class="textarea mono" id="m-sol" rows="6" spellcheck="false"></textarea></label>
+            <label class="fld"><span>Explanation</span><textarea class="textarea" id="m-expl" rows="3" placeholder="How does the solution work and why?"></textarea></label>
+            <div class="grid2" style="grid-template-columns:1fr 1fr"><label class="fld"><span>Time complexity</span><input class="input" id="m-time" placeholder="O(n)"></label><label class="fld"><span>Space complexity</span><input class="input" id="m-space" placeholder="O(1)"></label></div>
+          </div>
+        </details>
+        <div class="rows-h"><b id="m-tests-l">Test cases</b><button type="button" class="btn sm" id="m-add-row">${ic('plus',14)} Add test</button></div>
+        <div id="m-rows"></div>
+        <p class="small" id="m-hint" style="margin:0"></p>
+      </div>
+      <div id="m-import" hidden>
+        <label class="fld"><span>Paste JSON <em>(one question, an array of questions, or {"questions": [...]})</em></span>
+          <textarea class="textarea mono" id="m-json" rows="14" spellcheck="false" placeholder="Paste JSON here"></textarea></label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn sm" id="m-example">Insert example</button><button type="button" class="btn sm" id="m-file">Load from file…</button><input type="file" id="m-file-in" accept=".json,application/json" hidden></div>
+        <p class="small">Optional: <code>"examples": [{"input": "...", "output": "...", "note": "why"}]</code>. If omitted, JavaScript questions show their first two test cases as examples.</p>
+        <p class="small">JavaScript tests: <code>{"input": [args...], "expected": value}</code>. React tests: <code>{"name": "...", "script": "..."}</code>.</p>
+      </div>
+    </div>
+    <div class="dialog-f"><span class="form-error" id="m-err" role="alert"></span><button class="btn" data-close>Cancel</button><button class="btn primary" id="m-save">Add question</button></div>`);
+  const el=m.el, $m=s=>$(s,el);
+  let mode='form';
+  const rowHTML=()=>type==='react'
+    ?`<div class="trow react"><input class="input r-name" placeholder="Test name" aria-label="Test name"><textarea class="textarea r-script" rows="3" spellcheck="false" placeholder="fireEvent.click(screen.getByText('Add'));\nexpect(screen.getByTestId('n')).toHaveTextContent('1');" aria-label="Test script"></textarea><button type="button" class="icon-btn r-del" aria-label="Remove test">${ic('trash',15)}</button></div>`
+    :`<div class="trow"><textarea class="textarea r-in" rows="1" spellcheck="false" placeholder='Input, e.g. [[2,7,11,15], 9]' aria-label="Input arguments as JSON array"></textarea><textarea class="textarea r-exp" rows="1" spellcheck="false" placeholder='Expected, e.g. [0,1]' aria-label="Expected output as JSON"></textarea><button type="button" class="icon-btn r-del" aria-label="Remove test">${ic('trash',15)}</button></div>`;
+  const applyType=()=>{
+    $$('[data-type]',el).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.type===type)));
+    $m('#m-name-l').textContent=type==='react'?'Component name':'Function name';
+    $m('#m-name').placeholder=type==='react'?'e.g. Greeting':'e.g. findMax';
+    $m('#m-starter').placeholder=type==='react'?'function Greeting() {\n  return <h1>Hello</h1>;\n}':'function findMax(nums) {\n  // your code here\n}';
+    $m('#m-hint').innerHTML=type==='react'
+      ?'Each test is a script that runs against a freshly rendered component. Available: <code>screen</code>, <code>fireEvent</code>, <code>userType</code>, <code>waitFor</code>, <code>expect</code>.'
+      :'<b>Input</b> is a JSON array of the arguments, e.g. <code>[[2,7,11,15], 9]</code>. <b>Expected</b> is any JSON value, e.g. <code>[0,1]</code> or <code>"abc"</code>.';
+    $m('#m-rows').innerHTML=rowHTML();
+  };
+  applyType();
+  el.addEventListener('click',e=>{
+    const t=e.target.closest('button'); if(!t) return;
+    if(t.dataset.type&&t.dataset.type!==type){ type=t.dataset.type; applyType(); }
+    if(t.dataset.mode){
+      mode=t.dataset.mode;
+      $$('[data-mode]',el).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
+      $m('#m-form').hidden=mode!=='form'; $m('#m-import').hidden=mode!=='import';
+      $m('#m-save').textContent=mode==='form'?'Add question':'Import'; $m('#m-err').textContent='';
+    }
+    if(t.id==='m-add-row'){ $m('#m-rows').insertAdjacentHTML('beforeend',rowHTML()); const rs=$$('.trow',el); const l=rs[rs.length-1]; const f=$('textarea,input',l); if(f) f.focus(); }
+    if(t.classList.contains('r-del')){ const r=t.closest('.trow'); if($$('.trow',el).length>1) r.remove(); else $$('textarea,input',r).forEach(x=>{ x.value=''; }); }
+    if(t.id==='m-example') $m('#m-json').value=EXAMPLE_JSON;
+    if(t.id==='m-file') $m('#m-file-in').click();
+  });
+  $m('#m-file-in').addEventListener('change',e=>{
+    const f=e.target.files[0]; if(!f) return;
+    const rd=new FileReader(); rd.onload=()=>{ $m('#m-json').value=String(rd.result); }; rd.readAsText(f);
+  });
+  const fail=list=>{ $m('#m-err').textContent=list.slice(0,4).join('\n')+(list.length>4?`\n…and ${list.length-4} more`:''); };
+  $m('#m-save').addEventListener('click',()=>{
+    let objs;
+    if(mode==='import'){
+      const txt=$m('#m-json').value.trim();
+      if(!txt) return fail(['Paste some JSON or load a file first.']);
+      let data; try{ data=JSON.parse(txt); }catch(e){ return fail(['Invalid JSON: '+e.message]); }
+      objs=Array.isArray(data)?data:(data&&Array.isArray(data.questions)?data.questions:[data]);
+      if(!objs.length) return fail(['There are no questions in that JSON.']);
+    }else{
+      const errs=[], tests=[];
+      $$('.trow',el).forEach((r,i)=>{
+        if(type==='react'){
+          const name=$('.r-name',r).value.trim(), script=$('.r-script',r).value;
+          if(!name&&!script.trim()) return;
+          tests.push({name:name||'Test '+(i+1),script});
+        }else{
+          const a=$('.r-in',r).value.trim(), b=$('.r-exp',r).value.trim();
+          if(!a&&!b) return;
+          let ia,ib;
+          try{ ia=JSON.parse(a); }catch(e){ errs.push(`Test ${i+1}: input is not valid JSON.`); return; }
+          try{ ib=JSON.parse(b); }catch(e){ errs.push(`Test ${i+1}: expected is not valid JSON.`); return; }
+          tests.push({input:ia,expected:ib});
+        }
+      });
+      objs=[{type,title:$m('#m-title').value,difficulty:$m('#m-diff').value,description:$m('#m-desc').value,functionName:$m('#m-name').value,componentName:$m('#m-name').value,starterCode:$m('#m-starter').value,solution:$m('#m-sol').value,explanation:$m('#m-expl').value,timeComplexity:$m('#m-time').value,spaceComplexity:$m('#m-space').value,tests}];
+      const r=normalizeQuestion(objs[0]);
+      const all=errs.concat(r.errs.filter(x=>!errs.some(e=>e.slice(0,7)===x.slice(0,7))));
+      if(all.length) return fail(all);
+    }
+    const res=addQuestions(objs);
+    if(res.errs.length) return fail(res.errs);
+    m.close(); toast(res.count>1?`Added ${res.count} questions`:'Question added');
+  });
+}
+
+/* ==========================================================================
+   Test-case editing (delegated)
+   ========================================================================== */
+function onTestInput(e){
+  const t=e.target, card=t.closest('.tcase'); if(!card||!t.dataset.k) return;
+  const q=cur(), i=+card.dataset.i, tests=ownTests(q);
+  tests[i][t.dataset.k]=t.value; save();
+  if(t.classList.contains('autosize')) autosize(t);
+  if(t.dataset.k==='input'||t.dataset.k==='expected') checkField(t);
+  if(R.results[i]&&!R.running){
+    delete R.results[i];
+    card.classList.remove('pass','fail','running');
+    $('.tbadge',card)&&$('.tbadge',card).remove();
+    $('.tres',card).innerHTML='';
+  }
+}
+async function onTestsClick(e){
+  const b=e.target.closest('[data-act]'); if(!b) return;
+  const q=cur(), act=b.dataset.act;
+  if(act==='view-analysis') return setTab('analysis');
+  if(R.running) return toast('Wait for the current run to finish (or press Stop).',true);
+  if(act==='add-test'){
+    ownTests(q).push(isReact(q)?{name:'New test',script:"// screen, fireEvent, userType, waitFor and expect are available\n"}:{input:'',expected:''});
+    save(); renderTests();
+    const cards=$$('.tcase',$('#panel-tests')); const last=cards[cards.length-1];
+    if(last){ last.scrollIntoView({block:'nearest'}); const f=$('textarea',last); if(f) f.focus(); }
+  }else if(act==='del-test'){
+    const i=+b.closest('.tcase').dataset.i;
+    ownTests(q).splice(i,1); R.results={}; save(); renderTests();
+  }else if(act==='reset-tests'){
+    if(await confirmDialog('Restore original tests?','Your edits to this question\'s test cases will be discarded.','Restore')){
+      delete S.tests[q.id]; R.results={}; save(); renderTests();
+    }
+  }
+}
+
+/* ==========================================================================
+   Export
+   ========================================================================== */
+function exportQuestions(){
+  if(!S.custom.length) return toast('You have not added any questions yet.',true);
+  const questions=S.custom.map(q=>{
+    const tests=getTests(q).map(t=>{
+      if(isReact(q)) return {name:t.name,script:t.script};
+      try{ return {input:JSON.parse(t.input),expected:JSON.parse(t.expected)}; }catch(e){ return null; }
+    }).filter(Boolean);
+    return {type:q.type,title:q.title,difficulty:q.difficulty,description:q.description,examples:q.examples||[],solution:q.solution||'',explanation:q.explanation||'',timeComplexity:q.time||'',spaceComplexity:q.space||'',[isReact(q)?'componentName':'functionName']:q.fn,starterCode:q.starter,tests};
+  });
+  const blob=new Blob([JSON.stringify({version:1,questions},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='code-playground-questions.json';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  toast(`Exported ${questions.length} question${questions.length>1?'s':''}`);
+}
+
+/* ==========================================================================
+   Wire up
+   ========================================================================== */
+function init(){
+  $('#logo').innerHTML=ic('code',18);
+  $('#menu-btn').innerHTML=ic('menu',18);
+  $('#search-ic').innerHTML=ic('search',15);
+  $('#export-btn').innerHTML=`${ic('download',15)}<span class="lbl-long">Export</span>`;
+  $('#add-btn').innerHTML=`${ic('plus',15)}<span>Add question</span>`;
+  applyTheme();
+
+  $('#menu-btn').addEventListener('click',()=>document.body.classList.toggle('nav-open'));
+  $('#backdrop').addEventListener('click',()=>document.body.classList.remove('nav-open'));
+  $('#theme-btn').addEventListener('click',()=>{ S.theme=isDark()?'light':'dark'; save(); applyTheme(); });
+  $('#add-btn').addEventListener('click',openAddModal);
+  $('#export-btn').addEventListener('click',exportQuestions);
+
+  $('#search').addEventListener('input',e=>{ filters.q=e.target.value; renderSidebar(); });
+  $('#f-type').addEventListener('change',e=>{ filters.type=e.target.value; renderSidebar(); });
+  $('#f-diff').addEventListener('change',e=>{ filters.diff=e.target.value; renderSidebar(); });
+  $('#qlist').addEventListener('click',e=>{ const b=e.target.closest('.qitem'); if(b) selectQuestion(b.dataset.id); });
+
+  $('#problem').addEventListener('click',async e=>{
+    if(!e.target.closest('#del-q')) return;
+    const q=cur();
+    if(await confirmDialog('Delete this question?',`"${q.title}" and your saved code for it will be removed from this browser.`)){
+      S.custom=S.custom.filter(x=>x.id!==q.id); delete S.code[q.id]; delete S.tests[q.id]; delete S.status[q.id];
+      save(); selectQuestion(BUILTIN[0].id); toast('Question deleted');
+    }
+  });
+
+  const ta=$('#code');
+  ta.addEventListener('keydown',onEditorKey);
+  let saveT;
+  ta.addEventListener('input',()=>{
+    updateGutter();
+    clearTimeout(saveT);
+    saveT=setTimeout(()=>{ S.code[cur().id]=ta.value; save(); },250);
+  });
+  ta.addEventListener('scroll',()=>{ $('#gutter').scrollTop=ta.scrollTop; });
+  $('#font-inc').addEventListener('click',()=>{ S.font=Math.min(22,S.font+1); $('#editor').style.setProperty('--fs',S.font+'px'); save(); });
+  $('#font-dec').addEventListener('click',()=>{ S.font=Math.max(10,S.font-1); $('#editor').style.setProperty('--fs',S.font+'px'); save(); });
+  $('#answer-btn').addEventListener('click',showAnswer);
+  $('#reset-btn').addEventListener('click',async()=>{
+    if(await confirmDialog('Reset code?','Your code for this question will be replaced with the starter template.','Reset')){
+      delete S.code[cur().id]; save(); renderEditor(); toast('Code reset');
+    }
+  });
+  $('#run-btn').addEventListener('click',()=>startRun('run'));
+  $('#test-btn').addEventListener('click',()=>startRun('test'));
+
+  $('#tabs').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b) setTab(b.dataset.tab); });
+  $('#status').addEventListener('click',e=>{ if(e.target.closest('#stop-btn')) stopRun(); });
+  const pt=$('#panel-tests');
+  pt.addEventListener('input',onTestInput);
+  pt.addEventListener('click',onTestsClick);
+
+  document.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==='Enter'&&!modalOpen()){ e.preventDefault(); startRun(e.shiftKey?'test':'run'); }
+  });
+
+  const ws=$('#workspace'), sp=$('#splitter');
+  sp.addEventListener('pointerdown',e=>{
+    e.preventDefault(); sp.setPointerCapture(e.pointerId);
+    const rect=ws.getBoundingClientRect();
+    const move=ev=>{ ws.style.setProperty('--editor-h',Math.min(Math.max(ev.clientY-rect.top-5,150),rect.height-160)+'px'); };
+    const up=()=>{ sp.removeEventListener('pointermove',move); sp.removeEventListener('pointerup',up); sp.removeEventListener('pointercancel',up); };
+    sp.addEventListener('pointermove',move); sp.addEventListener('pointerup',up); sp.addEventListener('pointercancel',up);
+  });
+  sp.addEventListener('keydown',e=>{
+    if(e.key!=='ArrowUp'&&e.key!=='ArrowDown') return;
+    e.preventDefault();
+    const top=ws.firstElementChild.getBoundingClientRect().height+(e.key==='ArrowUp'?-24:24);
+    ws.style.setProperty('--editor-h',Math.min(Math.max(top,150),ws.getBoundingClientRect().height-160)+'px');
+  });
+
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{ if(!S.theme) applyTheme(); });
+  window.addEventListener('resize',()=>$$('#panel-tests .autosize').forEach(autosize));
+  selectQuestion(S.current);
+}
+init();
+</script>
+<script src="levelup-nav.js"></script>
+</body>
+</html>

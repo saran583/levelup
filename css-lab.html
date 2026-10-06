@@ -1,0 +1,2206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSS Lab - Levelup</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f5f8; --panel:#ffffff; --panel-2:#f1f3f7; --border:#e1e4ea; --text:#1a1e27; --muted:#667085;
+  --accent:#4f46e5; --accent-h:#4338ca; --accent-soft:#eceeff; --on-accent:#ffffff;
+  --good:#137a4b; --good-bg:#e5f6ed; --bad:#c0362c; --bad-bg:#fdecea; --warn:#9a5b06; --warn-bg:#fff3de;
+  --code-bg:#fbfbfd; --gutter:#f1f3f7; --shadow:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.06);
+  --mono: ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+    --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+    --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+    --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+  --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+  --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+  --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{min-height:100vh;background:var(--bg);color:var(--text);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono)}
+code{font-family:var(--mono);font-size:.9em;background:var(--panel-2);border:1px solid var(--border);border-radius:5px;padding:1px 5px}
+.sr-only{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---- header (same as the other Levelup pages) ---- */
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:8px 16px;min-height:56px;background:var(--panel);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--accent);color:var(--on-accent)}
+.brand-name{font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.spacer{flex:1}
+.nav{display:flex;gap:2px;min-width:0;overflow-x:auto;scrollbar-width:thin;margin-left:8px}
+.nav a{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;color:var(--muted);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap}
+.nav a:hover{background:var(--panel-2);color:var(--text)}
+.nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+
+/* ---- shared controls (same as index.html) ---- */
+.btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel);font-weight:600;font-size:13px;white-space:nowrap;transition:background .15s,border-color .15s,box-shadow .15s}
+.btn:hover:not(:disabled){background:var(--panel-2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover:not(:disabled){background:var(--accent-h);border-color:var(--accent-h)}
+.btn.success{background:var(--good);border-color:var(--good);color:var(--on-accent)}
+.btn.danger{color:var(--bad)}
+.btn.sm{height:28px;padding:0 10px;font-size:12px}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover:not(:disabled){background:var(--panel-2)}
+.icon-btn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--panel-2);color:var(--text)}
+.input,.select,.textarea{width:100%;border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:7px 10px;min-height:34px;transition:border-color .15s,box-shadow .15s}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.input:focus-visible,.select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+.pill{display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:99px;font-size:11px;font-weight:600;background:var(--panel-2);color:var(--muted)}
+.pill.easy{background:var(--good-bg);color:var(--good)}
+.pill.medium{background:var(--warn-bg);color:var(--warn)}
+.pill.hard{background:var(--bad-bg);color:var(--bad)}
+.tabs{display:flex;gap:2px;flex-wrap:wrap}
+.tab{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-weight:600;font-size:13px}
+.tab:hover{background:var(--panel-2);color:var(--text)}
+.tab[aria-selected="true"],.tab[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.tab .count{font-size:11px;background:var(--panel-2);color:var(--muted);border-radius:99px;padding:0 6px}
+.tab[aria-selected="true"] .count{background:var(--panel);color:var(--accent)}
+.seg{display:inline-flex;padding:3px;border-radius:9px;background:var(--panel-2);border:1px solid var(--border);gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;border-radius:7px;padding:4px 10px;font-weight:600;font-size:12.5px;color:var(--muted)}
+.seg button:hover{color:var(--text)}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--accent);box-shadow:var(--shadow)}
+.kbd{font-family:var(--mono);font-size:10px;opacity:.75;border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:2px}
+.bar{height:6px;background:var(--panel-2);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--good);border-radius:99px;transition:width .3s}
+
+/* ---- overall layout ---- */
+.lab{display:grid;gap:12px;padding:12px 16px 32px;max-width:1760px;margin:0 auto;align-items:start;
+  grid-template-columns:300px minmax(0,1fr) minmax(0,1fr);
+  grid-template-areas:"side edit prev" "side res prev" "side help prev"}
+.side{grid-area:side;position:sticky;top:68px;max-height:calc(100vh - 80px);max-height:calc(100dvh - 80px);overflow:auto;min-width:0}
+.edit{grid-area:edit;min-width:0}
+.prev{grid-area:prev;position:sticky;top:68px;max-height:calc(100vh - 80px);max-height:calc(100dvh - 80px);overflow:auto;min-width:0}
+.res{grid-area:res;min-width:0}
+.help{grid-area:help;min-width:0}
+
+/* ---- challenge browser ---- */
+.side-h{padding:12px 12px 8px;display:grid;gap:10px;border-bottom:1px solid var(--border)}
+.side-h .tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.side-h .tab{justify-content:center;border:1px solid var(--border)}
+.side-h .tab[aria-pressed="true"]{border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+.progress-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.levels{list-style:none;margin:0;padding:8px;display:grid;gap:2px;border-bottom:1px solid var(--border)}
+.lvl{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:7px 10px;border:1px solid transparent;border-radius:9px;background:transparent}
+.lvl:hover{background:var(--panel-2)}
+.lvl[aria-current="true"]{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)}
+.lvl-n{flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--panel-2);font-size:12px;font-weight:700;color:var(--text)}
+.lvl-t{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stars{flex:none;font-size:14px;letter-spacing:1px;color:var(--warn);white-space:nowrap}
+.stars .off{opacity:.4}
+.ins{padding:14px 14px 16px}
+.ins .lvl-h{font-size:18px;line-height:1.3;margin:0 0 6px;letter-spacing:-.01em}
+.ins .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.ins p{margin:0 0 10px}
+.ins ul{margin:0 0 10px;padding-left:20px}
+.ins h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:16px 0 6px}
+.hint-item{display:flex;gap:8px;padding:8px 10px;border-radius:8px;background:var(--warn-bg);font-size:13px;margin-bottom:6px}
+.hint-item b{flex:none;color:var(--warn)}
+.hint-item span{color:var(--text)}
+.rules{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+
+/* ---- editor ---- */
+.tabbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px 8px 12px;border-bottom:1px solid var(--border)}
+.tabbar .grow{flex:1}
+.acts{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--panel-2)}
+.editor{--fs:13px;display:flex;height:300px;background:var(--code-bg);overflow:hidden;font:var(--fs)/1.6 var(--mono)}
+.gutter{margin:0;flex:none;min-width:46px;padding:12px 10px 24px 8px;text-align:right;color:var(--muted);background:var(--gutter);border-right:1px solid var(--border);overflow:hidden;user-select:none;font:inherit;opacity:.85}
+.code{flex:1;min-width:0;border:0;outline:none;resize:none;background:transparent;color:var(--text);padding:12px 14px;white-space:pre;overflow:auto;tab-size:2;font:inherit}
+.code:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.code[readonly]{opacity:.85}
+.estat{display:flex;gap:8px 16px;flex-wrap:wrap;justify-content:space-between;padding:6px 12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+.estat .warn{color:var(--warn);font-weight:600}
+.selbox{padding:14px;display:grid;gap:10px;background:var(--code-bg)}
+.selbox label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.selin{font:15px/1.4 var(--mono);min-height:44px}
+.selin[aria-invalid="true"]{border-color:var(--bad)}
+.sel-read{display:grid;gap:6px;font-size:13px}
+.sel-read .row{display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
+.sel-err{color:var(--bad);font-weight:600}
+.spec-chip{font:600 13px var(--mono);background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:1px 8px}
+
+/* ---- preview ---- */
+.pv-h{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid var(--border)}
+.pv-h h2{margin:0;font-size:14px}
+.pv-h .grow{flex:1}
+.pv-grid{display:grid;gap:12px;padding:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.pv-grid[data-vp="tablet"],.pv-grid[data-vp="desktop"]{grid-template-columns:minmax(0,1fr)}
+.pv-grid[data-show="yours"],.pv-grid[data-show="target"]{grid-template-columns:minmax(0,1fr)}
+.pv-cell{min-width:0}
+.pv-cap{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pv-box{position:relative;overflow:hidden;border:1px solid var(--border);border-radius:10px;background:#fff}
+.pv-box iframe{position:absolute;left:0;top:0;border:0;background:#fff;transform-origin:0 0;display:block}
+.pv-note{padding:0 12px 12px;font-size:12px;color:var(--muted)}
+#checker{position:fixed;left:-99999px;top:0;width:1024px;height:720px;border:0;visibility:hidden;pointer-events:none}
+
+/* ---- results ---- */
+.sec{padding:14px 16px}
+.sec h2{margin:0 0 6px;font-size:15px}
+.sec .lead{margin:0 0 10px;color:var(--muted);font-size:13px}
+.rsum{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:10px 12px;border-radius:10px;margin-bottom:10px;background:var(--panel-2)}
+.rsum.ok{background:var(--good-bg);color:var(--good)}
+.rsum.bad{background:var(--bad-bg);color:var(--bad)}
+.rsum strong{font-size:14px}
+.rsum .stars{font-size:20px}
+.rlist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.ritem{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;background:var(--panel-2);font-size:13px}
+.ritem.pass{background:var(--good-bg)}
+.ritem.fail{background:var(--bad-bg)}
+.rbadge{flex:none;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding:1px 7px;border-radius:99px;margin-top:1px}
+.ritem.pass .rbadge{background:var(--good);color:var(--on-accent)}
+.ritem.fail .rbadge{background:var(--bad);color:var(--on-accent)}
+.ritem .why{display:block;color:var(--muted);font-size:12.5px}
+.ritem.fail .why{color:var(--text)}
+.rgroup{margin:8px 0 2px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.rfilter{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px}
+
+/* ---- helpers ---- */
+.help .tabbar{padding-left:12px}
+.hp{padding:14px 16px}
+.hp .lead{margin:0 0 10px;color:var(--muted);font-size:13px}
+.fld{display:grid;gap:4px;margin-bottom:10px}
+.fld>label,.fld>.lbl{font-size:12px;font-weight:600;color:var(--muted)}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}
+.crow{display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;align-items:center}
+.crow input[type=color]{width:44px;height:34px;padding:2px;border:1px solid var(--border);border-radius:8px;background:var(--panel)}
+.spec-out{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0}
+.spec-num{font:700 22px var(--mono);letter-spacing:.02em}
+.spec-parts{list-style:none;margin:6px 0 0;padding:0;display:flex;gap:6px;flex-wrap:wrap}
+.spec-parts li{font:12px var(--mono);border:1px solid var(--border);border-radius:6px;padding:1px 7px;background:var(--panel-2)}
+.spec-parts li b{color:var(--accent)}
+.verdict{margin:8px 0 0;font-weight:600}
+.swatch{border:1px solid var(--border);border-radius:10px;padding:14px;display:grid;gap:4px}
+.swatch .big{font-size:24px;font-weight:700;line-height:1.2}
+.swatch .sm{font-size:14px}
+.ctab{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+.ctab th,.ctab td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--border)}
+.ctab th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.tag-pass,.tag-fail{font-weight:700;font-size:12px;padding:1px 8px;border-radius:99px}
+.tag-pass{background:var(--good-bg);color:var(--good)}
+.tag-fail{background:var(--bad-bg);color:var(--bad)}
+.sug{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;margin-top:4px}
+.sug i{display:inline-block;width:22px;height:22px;border-radius:6px;border:1px solid var(--border)}
+.bm{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:16px;align-items:start}
+.bm-fig{display:grid;place-items:center;padding:12px;background:var(--panel-2);border-radius:10px;overflow:hidden;min-height:220px}
+.bm-l{position:relative;border:1px dashed #b7791f;background:#fbe5c1;padding:0;color:#4a2f00;font-size:11px;text-align:center}
+.bm-b{position:relative;border-style:solid;border-color:#b7791f;background:#f5cf8f;color:#4a2f00}
+.bm-p{position:relative;background:#b9d9a3;color:#1e3a10}
+.bm-c{background:#8fc0e6;color:#0b2b44;display:grid;place-items:center;font-weight:700;min-width:20px;min-height:18px;font-size:11px}
+.bm-lbl{position:absolute;top:1px;left:4px;font-size:10px;font-weight:700;pointer-events:none}
+.sl{display:grid;grid-template-columns:78px minmax(0,1fr) 44px;gap:8px;align-items:center;margin-bottom:6px}
+.sl label{font-size:12.5px;font-weight:600}
+.sl output{font:12.5px var(--mono);text-align:right}
+.sl input[type=range]{width:100%;accent-color:var(--accent)}
+.pre{margin:0;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--code-bg);font:12.5px/1.6 var(--mono);overflow:auto;white-space:pre;tab-size:2}
+.refgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:10px;margin-top:10px}
+.refc{border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--panel)}
+.refc h3{margin:0 0 2px;font:700 13px var(--mono)}
+.refc p{margin:0 0 6px;font-size:13px}
+.refc .v{font-size:12px;color:var(--muted);margin-bottom:6px}
+.refc pre{margin:0;padding:6px 8px;border-radius:8px;background:var(--code-bg);border:1px solid var(--border);font:12px/1.5 var(--mono);white-space:pre-wrap;word-break:break-word}
+.selftest{margin:0 16px 24px;max-width:1728px}
+.selftest summary{cursor:pointer;color:var(--muted);font-size:12.5px;padding:4px 0}
+.selftest .st-out{font:12px/1.6 var(--mono);white-space:pre-wrap;margin-top:8px}
+
+/* ---- dialog + toast (same as index.html) ---- */
+.overlay{position:fixed;inset:0;background:rgba(10,12,18,.55);display:grid;place-items:center;padding:16px;z-index:50;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.dialog{width:min(440px,100%);max-height:calc(100dvh - 32px);display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden}
+.dialog-h{display:flex;align-items:center;padding:14px 16px 14px 20px;border-bottom:1px solid var(--border)}
+.dialog-h h2{margin:0;font-size:16px}
+.dialog-b{padding:16px 20px;overflow:auto}
+.dialog-b p{margin:0 0 8px}
+.dialog-f{display:flex;gap:8px;justify-content:flex-end;align-items:center;padding:12px 20px;border-top:1px solid var(--border);background:var(--panel-2)}
+#toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;z-index:60}
+.toast{background:var(--text);color:var(--bg);padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);font-weight:600;font-size:13px;animation:fade .2s;max-width:340px}
+.toast.bad{background:var(--bad);color:var(--on-accent)}
+
+@media (max-width:1180px){
+  .lab{grid-template-columns:300px minmax(0,1fr);grid-template-areas:"side edit" "side prev" "side res" "side help"}
+  .prev{position:static;max-height:none;overflow:visible}
+}
+@media (max-width:760px){
+  .lab{grid-template-columns:minmax(0,1fr);grid-template-areas:"side" "edit" "prev" "res" "help";padding:12px 16px 32px}
+  .side{position:static;max-height:none;overflow:visible}
+  .bm{grid-template-columns:minmax(0,1fr)}
+  .editor{height:260px}
+}
+@media (max-width:720px){
+  .topbar{flex-wrap:wrap;padding:8px 16px 6px}
+  .nav{order:5;width:100%;margin-left:0;padding-bottom:2px}
+}
+@media (max-width:480px){
+  .btn .lbl-long{display:none}
+  #toasts{left:16px;right:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" id="logo"></span>
+    <span class="brand-name">Levelup</span>
+  </div>
+  <nav class="nav" aria-label="Levelup pages" data-levelup-nav></nav>
+  <div class="spacer"></div>
+  <button class="icon-btn" id="theme-btn" aria-label="Toggle light/dark theme"></button>
+</header>
+
+<main class="lab" id="lab">
+  <h1 class="sr-only">CSS Lab: HTML and CSS challenges with automatic checking</h1>
+
+  <!-- ===== challenge browser + instructions ===== -->
+  <section class="card side" id="side" aria-label="Challenges">
+    <div class="side-h">
+      <div class="tabs" id="modes" role="group" aria-label="Challenge type"></div>
+      <div>
+        <div class="progress-row"><span id="prog-label">Stars</span><span id="prog-num"></span></div>
+        <div class="bar" aria-hidden="true"><i id="prog-bar" style="width:0%"></i></div>
+      </div>
+    </div>
+    <ol class="levels" id="levels" aria-label="Levels"></ol>
+    <div class="ins" id="ins"></div>
+  </section>
+
+  <!-- ===== editors ===== -->
+  <section class="card edit" id="edit" aria-label="Editor">
+    <div class="tabbar">
+      <div class="tabs" id="etabs" role="tablist" aria-label="Editor files"></div>
+      <span class="grow"></span>
+      <button class="icon-btn" id="font-dec" type="button" aria-label="Smaller font" title="Smaller font"><span style="font-size:11px;font-weight:700">A</span></button>
+      <button class="icon-btn" id="font-inc" type="button" aria-label="Larger font" title="Larger font"><span style="font-size:15px;font-weight:700">A</span></button>
+    </div>
+    <div class="acts" role="toolbar" aria-label="Challenge actions">
+      <button class="btn primary" id="b-check" type="button" title="Check (Ctrl/Cmd + Enter)"></button>
+      <button class="btn" id="b-reset" type="button"></button>
+      <button class="btn" id="b-hint" type="button"></button>
+      <button class="btn" id="b-sol" type="button"></button>
+      <button class="btn" id="b-next" type="button"></button>
+    </div>
+    <div id="epanes">
+      <div class="editor" id="ed-html" role="tabpanel" aria-label="HTML editor" hidden>
+        <pre class="gutter" id="g-html" aria-hidden="true">1</pre>
+        <textarea class="code" id="t-html" maxlength="100000" spellcheck="false" wrap="off" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="HTML code"></textarea>
+      </div>
+      <div class="editor" id="ed-css" role="tabpanel" aria-label="CSS editor" hidden>
+        <pre class="gutter" id="g-css" aria-hidden="true">1</pre>
+        <textarea class="code" id="t-css" maxlength="100000" spellcheck="false" wrap="off" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="CSS code"></textarea>
+      </div>
+      <div class="selbox" id="ed-sel" role="tabpanel" aria-label="Selector" hidden>
+        <label for="t-sel">Type a CSS selector</label>
+        <input class="input selin" id="t-sel" type="text" maxlength="1000" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" placeholder="e.g. .card &gt; p" aria-describedby="sel-read">
+        <div class="sel-read" id="sel-read"></div>
+      </div>
+    </div>
+    <div class="estat">
+      <span id="e-note">Tab indents. Press Esc, then Tab, to move focus out of the editor.</span>
+      <span id="e-warn" class="warn" hidden></span>
+    </div>
+  </section>
+
+  <!-- ===== preview ===== -->
+  <section class="card prev" id="prev" aria-label="Live preview">
+    <div class="pv-h">
+      <h2>Preview</h2>
+      <div class="seg" id="vp-seg" role="group" aria-label="Preview width"></div>
+      <span class="grow"></span>
+      <div class="seg" id="show-seg" role="group" aria-label="Which previews to show"></div>
+    </div>
+    <div class="pv-grid" id="pv-grid" data-vp="fluid" data-show="both">
+      <div class="pv-cell" id="cell-yours">
+        <div class="pv-cap"><span>Yours</span><span class="pill" id="cap-yours"></span></div>
+        <div class="pv-box" id="box-yours"><iframe id="fr-yours" title="Your result (sandboxed, scripts disabled)" sandbox=""></iframe></div>
+      </div>
+      <div class="pv-cell" id="cell-target">
+        <div class="pv-cap"><span id="cap-target-t">Target</span><span class="pill" id="cap-target"></span></div>
+        <div class="pv-box" id="box-target"><iframe id="fr-target" title="Target result (sandboxed, scripts disabled)" sandbox=""></iframe></div>
+      </div>
+    </div>
+    <p class="pv-note" id="pv-note">Your HTML and CSS are shown in a sandboxed frame: scripts, event handlers and network requests are blocked.</p>
+  </section>
+
+  <!-- ===== results ===== -->
+  <section class="card res sec" id="res" aria-labelledby="res-h">
+    <h2 id="res-h">Results</h2>
+    <div id="live" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+    <div id="res-body"><p class="lead">Press <b>Check</b> (Ctrl/Cmd + Enter) to test your solution. Every check is listed here with a plain reason when it fails.</p></div>
+  </section>
+
+  <!-- ===== helpers ===== -->
+  <section class="card help" id="help" aria-label="Helpers">
+    <div class="tabbar">
+      <div class="tabs" id="htabs" role="tablist" aria-label="Helpers"></div>
+    </div>
+    <div id="hpanes">
+      <div class="hp" id="hp-spec" role="tabpanel" hidden>
+        <p class="lead">Which selector wins? Specificity is a triple (ids, classes/attributes/pseudo-classes, elements/pseudo-elements). Compare left to right.</p>
+        <div class="row2">
+          <div class="fld"><label for="sp-a">Selector A</label><input class="input mono" id="sp-a" type="text" spellcheck="false" autocomplete="off" value="nav#main > ul li.active:not(.disabled)"></div>
+          <div class="fld"><label for="sp-b">Selector B (optional)</label><input class="input mono" id="sp-b" type="text" spellcheck="false" autocomplete="off" value=".menu .active"></div>
+        </div>
+        <div id="sp-out" aria-live="polite"></div>
+      </div>
+      <div class="hp" id="hp-contrast" role="tabpanel" hidden>
+        <p class="lead">WCAG contrast between text and its background. Type any hex, rgb(), hsl() or a common colour name.</p>
+        <div class="row2">
+          <div class="fld"><span class="lbl" id="cf-l">Text colour</span>
+            <div class="crow"><input type="color" id="cf-pick" aria-label="Text colour picker" value="#767676"><input class="input mono" id="cf-txt" type="text" spellcheck="false" autocomplete="off" value="#767676" aria-labelledby="cf-l"></div></div>
+          <div class="fld"><span class="lbl" id="cb-l">Background colour</span>
+            <div class="crow"><input type="color" id="cb-pick" aria-label="Background colour picker" value="#ffffff"><input class="input mono" id="cb-txt" type="text" spellcheck="false" autocomplete="off" value="#ffffff" aria-labelledby="cb-l"></div></div>
+        </div>
+        <div id="ct-out" aria-live="polite"></div>
+      </div>
+      <div class="hp" id="hp-box" role="tabpanel" hidden>
+        <p class="lead">The box model: content, then padding, border and margin around it. Move the sliders and switch <code>box-sizing</code> to see the total space an element takes.</p>
+        <div class="bm">
+          <div class="bm-fig" id="bm-fig" aria-hidden="true"></div>
+          <div>
+            <div class="seg" id="bm-seg" role="group" aria-label="box-sizing" style="margin-bottom:10px"></div>
+            <div id="bm-sl"></div>
+            <div id="bm-out" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+      <div class="hp" id="hp-ref" role="tabpanel" hidden>
+        <div class="fld"><label for="rf-q">Search properties</label><input class="input" id="rf-q" type="search" placeholder="e.g. center, gap, shadow" autocomplete="off"></div>
+        <p class="lead" id="rf-count" aria-live="polite"></p>
+        <div class="refgrid" id="rf-list"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<details class="selftest" id="selftest">
+  <summary>Maintainer self-test</summary>
+  <p class="muted" style="margin:6px 0">Runs every reference solution and every starter through the real checker in <em>this</em> browser (this is the only place layout-based checks are exercised against a real layout engine).</p>
+  <button class="btn sm" id="st-run" type="button">Run self-test</button>
+  <div class="st-out" id="st-out" aria-live="polite"></div>
+</details>
+
+<div id="modal-root"></div>
+<div id="toasts" aria-live="polite"></div>
+<iframe id="checker" title="Automated checker (hidden)" aria-hidden="true" tabindex="-1" sandbox="allow-scripts"></iframe>
+
+<script>
+'use strict';
+/* ==========================================================================
+   CSS Lab  -  shared pure library.
+   clLib() is used in TWO places: this page, and (via toString) inside the
+   hidden checker iframe.  Everything in here is pure / DOM-parser only.
+   ========================================================================== */
+/*@@LIB-START*/
+function clLib(){
+  'use strict';
+
+  /* ---------------- sanitising (defence in depth) ---------------- */
+  var BAD_TAGS={script:1,iframe:1,frame:1,frameset:1,object:1,embed:1,applet:1,link:1,meta:1,base:1,style:1,
+    noscript:1,template:1,portal:1,title:1,use:1,animate:1,set:1,animatetransform:1,animatemotion:1,
+    foreignobject:1,audio:1,video:1,source:1,track:1,math:1,slot:1,dialog:0};
+  var IMG_OK=/^data:image\/(png|jpe?g|gif|webp|svg\+xml)[;,]/i;
+  function stripCtl(v){ return String(v).replace(/[\x00-\x20\x7f-\x9f\xad]+/g,'').replace(new RegExp('['+String.fromCharCode(0x200b)+'-'+String.fromCharCode(0x200f,0x2028,0x2029,0xfeff)+']+','g'),''); }
+
+  function cleanCSS(css){
+    var s=String(css==null?'':css).replace(/\u0000/g,'');
+    s=s.replace(/@import\b[^;{}]*;?/gi,'/* @import removed */');
+    s=s.replace(/@charset[^;]*;/gi,'');
+    s=s.replace(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^)]*))\s*\)/gi,function(m,a,b,c){
+      var u=a!==undefined?a:(b!==undefined?b:c); return IMG_OK.test(String(u||'').trim())?m:'url("about:blank")';
+    });
+    s=s.replace(/expression\s*\(/gi,'blocked(').replace(/-moz-binding/gi,'blocked-binding').replace(/behavior\s*:/gi,'blocked:');
+    /* "<" can never be needed to write CSS; escaping it makes "</style>" impossible */
+    s=s.replace(/</g,'\\3c ');
+    return s;
+  }
+
+  function cleanAttrs(el){
+    var ln=el.localName.toLowerCase();
+    Array.prototype.slice.call(el.attributes).forEach(function(at){
+      var n=at.name.toLowerCase(), v=String(at.value), flat=stripCtl(v).toLowerCase();
+      if(n.indexOf('on')===0 || n==='srcdoc' || n==='action' || n==='formaction' || n==='ping' || n==='manifest' ||
+         n==='autofocus' || n==='is' || n==='srcset' || n==='xlink:href' || n==='data' || n==='background' || n==='poster'){ el.removeAttribute(at.name); return; }
+      if((n==='name') && (ln==='img'||ln==='form'||ln==='embed'||ln==='object'||ln==='iframe')){ el.removeAttribute(at.name); return; }
+      if(n==='style'){ el.setAttribute(at.name,cleanCSS(v)); return; }
+      if(n==='href'){
+        if(/^(javascript|vbscript|data|file|blob|filesystem):/.test(flat)) el.removeAttribute(at.name);
+        return;
+      }
+      if(n==='src'){ if(!IMG_OK.test(flat)) el.removeAttribute(at.name); return; }
+      if(flat.indexOf('javascript:')>=0 || flat.indexOf('vbscript:')>=0){ el.removeAttribute(at.name); }
+    });
+  }
+
+  /* Parse untrusted markup into an inert document and return its cleaned <body>. */
+  function sanitizeToBody(html){
+    var src=String(html==null?'':html);
+    if(src.length>200000) throw new Error('HTML is too long');
+    var doc=new DOMParser().parseFromString('<!doctype html><html><head></head><body>'+src+'</body></html>','text/html');
+    var body=doc.body;
+    Array.prototype.slice.call(body.attributes).forEach(function(a){ body.removeAttribute(a.name); });
+    var all=Array.prototype.slice.call(body.querySelectorAll('*'));
+    if(all.length>4000) throw new Error('Too many elements');
+    all.forEach(function(el){
+      if(BAD_TAGS[el.localName.toLowerCase()] && el.parentNode) el.parentNode.removeChild(el);
+    });
+    Array.prototype.slice.call(body.querySelectorAll('*')).forEach(cleanAttrs);
+    return body;
+  }
+
+  /* Serialise the cleaned body; optionally flag elements (by document-order ordinal) for the trusted highlight sheet. */
+  function bodyMarkup(html,hits,targets){
+    var body=sanitizeToBody(html);
+    var all=body.querySelectorAll('*');
+    (hits||[]).forEach(function(i){ if(all[i]) all[i].setAttribute('data-cl-hit',''); });
+    (targets||[]).forEach(function(i){ if(all[i]) all[i].setAttribute('data-cl-target',''); });
+    return body.innerHTML;
+  }
+  function ordinalsFor(html,selector){
+    var body=sanitizeToBody(html), all=Array.prototype.slice.call(body.querySelectorAll('*')), out=[];
+    Array.prototype.slice.call(body.querySelectorAll(selector)).forEach(function(el){ var i=all.indexOf(el); if(i>=0) out.push(i); });
+    return out;
+  }
+
+  /* ---------------- colour ---------------- */
+  var NAMED={black:'#000000',white:'#ffffff',red:'#ff0000',green:'#008000',blue:'#0000ff',yellow:'#ffff00',orange:'#ffa500',
+    purple:'#800080',gray:'#808080',grey:'#808080',silver:'#c0c0c0',navy:'#000080',teal:'#008080',maroon:'#800000',lime:'#00ff00',
+    aqua:'#00ffff',cyan:'#00ffff',fuchsia:'#ff00ff',magenta:'#ff00ff',pink:'#ffc0cb',brown:'#a52a2a',gold:'#ffd700',indigo:'#4b0082',
+    violet:'#ee82ee',tomato:'#ff6347',coral:'#ff7f50',crimson:'#dc143c',salmon:'#fa8072',khaki:'#f0e68c',lightgray:'#d3d3d3',
+    lightgrey:'#d3d3d3',darkgray:'#a9a9a9',darkgrey:'#a9a9a9',whitesmoke:'#f5f5f5',rebeccapurple:'#663399',dodgerblue:'#1e90ff',
+    slategray:'#708090',royalblue:'#4169e1',steelblue:'#4682b4',darkblue:'#00008b',darkgreen:'#006400',orangered:'#ff4500',
+    hotpink:'#ff69b4',skyblue:'#87ceeb',lightblue:'#add8e6',lightgreen:'#90ee90',beige:'#f5f5dc',ivory:'#fffff0',lavender:'#e6e6fa',
+    turquoise:'#40e0d0',chocolate:'#d2691e',transparent:'rgba(0,0,0,0)'};
+  function clamp(n,lo,hi){ return Math.min(hi,Math.max(lo,n)); }
+  function hslToRgb(h,s,l){
+    h=((h%360)+360)%360/360; s=clamp(s,0,1); l=clamp(l,0,1);
+    if(s===0){ var v=Math.round(l*255); return {r:v,g:v,b:v}; }
+    var q=l<.5?l*(1+s):l+s-l*s, p=2*l-q;
+    function f(t){ if(t<0)t+=1; if(t>1)t-=1; if(t<1/6)return p+(q-p)*6*t; if(t<1/2)return q; if(t<2/3)return p+(q-p)*(2/3-t)*6; return p; }
+    return {r:Math.round(f(h+1/3)*255),g:Math.round(f(h)*255),b:Math.round(f(h-1/3)*255)};
+  }
+  function rgbToHsl(c){
+    var r=c.r/255,g=c.g/255,b=c.b/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),h=0,s=0,l=(mx+mn)/2;
+    if(mx!==mn){ var d=mx-mn; s=l>.5?d/(2-mx-mn):d/(mx+mn);
+      if(mx===r) h=(g-b)/d+(g<b?6:0); else if(mx===g) h=(b-r)/d+2; else h=(r-g)/d+4; h*=60; }
+    return {h:h,s:s,l:l};
+  }
+  function parseColor(str){
+    if(str==null) return null;
+    var s=String(str).trim().toLowerCase(); if(!s) return null;
+    if(NAMED[s]) s=NAMED[s];
+    var m=/^#([0-9a-f]{3,8})$/.exec(s);
+    if(m){
+      var h=m[1]; if(h.length===3||h.length===4) h=h.replace(/./g,'$&$&');
+      if(h.length===6) h+='ff'; if(h.length!==8) return null;
+      return {r:parseInt(h.slice(0,2),16),g:parseInt(h.slice(2,4),16),b:parseInt(h.slice(4,6),16),a:parseInt(h.slice(6,8),16)/255};
+    }
+    m=/^(rgba?|hsla?)\(([^)]*)\)$/.exec(s);
+    if(!m) return null;
+    var p=m[2].split(/[\s,\/]+/).filter(Boolean); if(p.length<3) return null;
+    var a=1; if(p[3]!==undefined){ a=/%$/.test(p[3])?parseFloat(p[3])/100:parseFloat(p[3]); if(!isFinite(a)) return null; a=clamp(a,0,1); }
+    if(m[1].charAt(0)==='r'){
+      var v=p.slice(0,3).map(function(x){ var n=parseFloat(x); if(!isFinite(n)) return NaN; return /%$/.test(x)?n*2.55:n; });
+      if(v.some(isNaN)) return null;
+      return {r:Math.round(clamp(v[0],0,255)),g:Math.round(clamp(v[1],0,255)),b:Math.round(clamp(v[2],0,255)),a:a};
+    }
+    var hh=parseFloat(p[0]), ss=parseFloat(p[1]), ll=parseFloat(p[2]);
+    if(!isFinite(hh)||!isFinite(ss)||!isFinite(ll)) return null;
+    var c=hslToRgb(hh,ss/100,ll/100); c.a=a; return c;
+  }
+  function toHex(c){ function x(n){ var s=Math.round(n).toString(16); return s.length<2?'0'+s:s; } return '#'+x(c.r)+x(c.g)+x(c.b); }
+  function onWhite(c){ var a=c.a==null?1:c.a; return {r:c.r*a+255*(1-a),g:c.g*a+255*(1-a),b:c.b*a+255*(1-a)}; }
+  function colorDist(c1,c2){ var a=onWhite(c1), b=onWhite(c2); return Math.sqrt(Math.pow(a.r-b.r,2)+Math.pow(a.g-b.g,2)+Math.pow(a.b-b.b,2)); }
+  function lum(c){
+    function ch(v){ v/=255; return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4); }
+    return 0.2126*ch(c.r)+0.7152*ch(c.g)+0.0722*ch(c.b);
+  }
+  function contrast(fg,bg){
+    var f=onWhite(fg), b=onWhite(bg), l1=lum(f), l2=lum(b), hi=Math.max(l1,l2), lo=Math.min(l1,l2);
+    return (hi+0.05)/(lo+0.05);
+  }
+  /* nearest lightness (same hue/saturation) that reaches `target`; null when impossible */
+  function suggestFg(fg,bg,target){
+    var hsl=rgbToHsl(fg), best=null;
+    for(var d=0; d<=100; d+=0.5){
+      var opts=[hsl.l+d/100, hsl.l-d/100];
+      for(var k=0;k<opts.length;k++){
+        var L=opts[k]; if(L<0||L>1) continue;
+        var rgb=hslToRgb(hsl.h,hsl.s,L); rgb.a=1;
+        if(contrast(rgb,bg)>=target){ best=rgb; break; }
+      }
+      if(best) break;
+    }
+    return best;
+  }
+
+  /* ---------------- specificity ---------------- */
+  function stripComments(s){ return String(s).replace(/\/\*[\s\S]*?(\*\/|$)/g,' '); }
+  function splitTop(s){
+    var out=[],depth=0,q=null,cur='',i,ch;
+    for(i=0;i<s.length;i++){
+      ch=s.charAt(i);
+      if(q){ cur+=ch; if(ch==='\\'){ cur+=s.charAt(++i); } else if(ch===q) q=null; continue; }
+      if(ch==='\\'){ cur+=ch+s.charAt(++i); continue; }
+      if(ch==='"'||ch==="'"){ q=ch; cur+=ch; continue; }
+      if(ch==='('||ch==='[') depth++; else if(ch===')'||ch===']') depth--;
+      if(ch===','&&depth===0){ out.push(cur); cur=''; continue; }
+      cur+=ch;
+    }
+    out.push(cur); return out;
+  }
+  function isHex(ch){ return /[0-9a-fA-F]/.test(ch); }
+  function identEnd(s,i){
+    var n=s.length;
+    while(i<n){
+      var ch=s.charAt(i), code=s.charCodeAt(i);
+      if(ch==='\\'){
+        i++; if(i>=n) break;
+        if(isHex(s.charAt(i))){ var k=0; while(k<6&&i<n&&isHex(s.charAt(i))){ i++; k++; } if(i<n&&/\s/.test(s.charAt(i))) i++; }
+        else i++;
+        continue;
+      }
+      if(/[\w-]/.test(ch)||code>=128){ i++; continue; }
+      break;
+    }
+    return i;
+  }
+  function groupEnd(s,i){ /* s[i]==='(' -> index after the matching ')' or -1 */
+    var depth=0,q=null,n=s.length;
+    for(;i<n;i++){
+      var ch=s.charAt(i);
+      if(q){ if(ch==='\\') i++; else if(ch===q) q=null; continue; }
+      if(ch==='\\'){ i++; continue; }
+      if(ch==='"'||ch==="'"){ q=ch; continue; }
+      if(ch==='(') depth++;
+      else if(ch===')'){ depth--; if(depth===0) return i+1; }
+    }
+    return -1;
+  }
+  function cmpSpec(x,y){ return x.a!==y.a?(x.a>y.a?1:-1):x.b!==y.b?(x.b>y.b?1:-1):x.c!==y.c?(x.c>y.c?1:-1):0; }
+  function maxSpec(arg){
+    var best={a:0,b:0,c:0};
+    if(arg==null) return best;
+    splitTop(arg).forEach(function(part){ if(!part.trim()) return; var r=specOne(part); if(cmpSpec(r,best)>0) best={a:r.a,b:r.b,c:r.c}; });
+    return best;
+  }
+  var LEGACY_PE={before:1,after:1,'first-line':1,'first-letter':1};
+  function specOne(s){
+    var a=0,b=0,c=0,i=0,n=s.length,parts=[],err=null,ch;
+    function nsSkip(j){ return s.charAt(j)==='|'&&s.charAt(j+1)!=='|'&&s.charAt(j+1)!=='='; }
+    while(i<n){
+      ch=s.charAt(i);
+      if(/\s/.test(ch)||ch==='>'||ch==='+'||ch==='~'||ch===','||ch==='|'){ i++; continue; }
+      if(ch==='*'){ i++; if(nsSkip(i)){ i++; } else parts.push({k:'universal',t:'*',w:'0'}); continue; }
+      if(ch==='#'){ var e=identEnd(s,i+1); if(e===i+1){ err='Expected an id name after "#"'; i++; continue; } a++; parts.push({k:'id',t:s.slice(i,e),w:'a'}); i=e; continue; }
+      if(ch==='.'){ var e2=identEnd(s,i+1); if(e2===i+1){ err='Expected a class name after "."'; i++; continue; } b++; parts.push({k:'class',t:s.slice(i,e2),w:'b'}); i=e2; continue; }
+      if(ch==='['){
+        var j=i+1,q=null,close=-1;
+        for(;j<n;j++){ var cj=s.charAt(j); if(q){ if(cj==='\\') j++; else if(cj===q) q=null; continue; } if(cj==='\\'){ j++; continue; } if(cj==='"'||cj==="'"){ q=cj; continue; } if(cj===']'){ close=j; break; } }
+        if(close<0){ err='Unclosed "["'; b++; parts.push({k:'attribute',t:s.slice(i),w:'b'}); i=n; continue; }
+        b++; parts.push({k:'attribute',t:s.slice(i,close+1),w:'b'}); i=close+1; continue;
+      }
+      if(ch===':'){
+        var pe=s.charAt(i+1)===':', st=i+(pe?2:1), e3=identEnd(s,st), name=s.slice(st,e3).toLowerCase(), arg=null, text;
+        if(e3===st){ err='Expected a pseudo-class or pseudo-element name after ":"'; i=st; continue; }
+        if(s.charAt(e3)==='('){
+          var ge=groupEnd(s,e3);
+          if(ge<0){ err='Unclosed "("'; arg=s.slice(e3+1); text=s.slice(i); i=n; }
+          else { arg=s.slice(e3+1,ge-1); text=s.slice(i,ge); i=ge; }
+        } else { text=s.slice(i,e3); i=e3; }
+        if(pe||LEGACY_PE[name]){
+          c++; parts.push({k:'pseudo-element',t:text,w:'c'});
+          if(pe&&(name==='slotted'||name==='cue'||name==='cue-region')&&arg!=null){ var ms=maxSpec(arg); a+=ms.a; b+=ms.b; c+=ms.c; }
+          continue;
+        }
+        switch(name){
+          case 'where': parts.push({k:'pseudo-class',t:text,w:'0'}); break;
+          case 'is': case 'not': case 'matches': case '-webkit-any': case '-moz-any': case 'has': {
+            var m1=maxSpec(arg); a+=m1.a; b+=m1.b; c+=m1.c; parts.push({k:'pseudo-class',t:text,w:'arg'}); break; }
+          case 'nth-child': case 'nth-last-child': {
+            b++; var mo=arg!=null?/\sof\s([\s\S]*)$/i.exec(arg):null;
+            if(mo){ var m2=maxSpec(mo[1]); a+=m2.a; b+=m2.b; c+=m2.c; }
+            parts.push({k:'pseudo-class',t:text,w:'b'}); break; }
+          case 'host': case 'host-context': {
+            b++; if(arg!=null){ var m3=maxSpec(arg); a+=m3.a; b+=m3.b; c+=m3.c; }
+            parts.push({k:'pseudo-class',t:text,w:'b'}); break; }
+          default: b++; parts.push({k:'pseudo-class',t:text,w:'b'});
+        }
+        continue;
+      }
+      if(ch==='&'){ i++; parts.push({k:'nesting',t:'&',w:'?'}); continue; }
+      if(ch===')'||ch===']'||ch==='}'||ch==='{'||ch===';'||ch==='"'||ch==="'"||ch==='='||ch==='('||ch==='!'||ch==='@'||ch==='$'||ch==='%'||ch==='^'){ err='Unexpected "'+ch+'"'; i++; continue; }
+      var te=identEnd(s,i);
+      if(te===i){ err='Unexpected "'+ch+'"'; i++; continue; }
+      if(nsSkip(te)){ i=te+1; continue; }
+      c++; parts.push({k:'type',t:s.slice(i,te),w:'c'}); i=te;
+    }
+    return {a:a,b:b,c:c,parts:parts,err:err};
+  }
+  function specificity(text){
+    var src=stripComments(text).trim();
+    var list=splitTop(src).map(function(p){ return p.trim(); }).filter(function(p){ return p; }).map(function(p){
+      var r=specOne(p); return {text:p,a:r.a,b:r.b,c:r.c,parts:r.parts,err:r.err};
+    });
+    var best=list.reduce(function(m,x){ return !m||cmpSpec(x,m)>0?x:m; },null);
+    return {list:list,max:best?{a:best.a,b:best.b,c:best.c}:{a:0,b:0,c:0},empty:list.length===0};
+  }
+
+  /* ---------------- friendly selector errors ---------------- */
+  var KNOWN_PC={hover:1,focus:1,'focus-visible':1,'focus-within':1,active:1,visited:1,link:1,checked:1,disabled:1,enabled:1,empty:1,
+    'first-child':1,'last-child':1,'only-child':1,'first-of-type':1,'last-of-type':1,'only-of-type':1,'nth-child':1,'nth-last-child':1,
+    'nth-of-type':1,'nth-last-of-type':1,not:1,is:1,where:1,has:1,root:1,target:1,required:1,optional:1,'read-only':1,'read-write':1,
+    'placeholder-shown':1,valid:1,invalid:1,indeterminate:1,default:1,lang:1,dir:1,'any-link':1,scope:1,defined:1,host:1,'host-context':1,
+    before:1,after:1,'first-line':1,'first-letter':1,'in-range':1,'out-of-range':1,'user-invalid':1,'user-valid':1,'autofill':1,'-webkit-any':1,'-moz-any':1,matches:1,'target-within':1,'popover-open':1,modal:1,'fullscreen':1,'playing':1,'paused':1};
+  function explainSelectorError(sel,raw){
+    var s=String(sel==null?'':sel).trim();
+    if(!s) return 'Type a selector first, for example .card or ul > li.';
+    var st=[],q=null,i,ch;
+    for(i=0;i<s.length;i++){
+      ch=s.charAt(i);
+      if(ch==='\\'){ i++; continue; }
+      if(q){ if(ch===q) q=null; continue; }
+      if(ch==='"'||ch==="'"){ q=ch; continue; }
+      if(ch==='('||ch==='[') st.push(ch);
+      else if(ch===')'||ch===']'){ var open=st.pop(); if((ch===')'&&open!=='(')||(ch===']'&&open!=='[')) return 'A "'+ch+'" does not match an opening bracket. Check your brackets.'; }
+    }
+    if(q) return 'A quote (' + q + ') is never closed.';
+    if(st.length) return 'A "'+st[st.length-1]+'" is never closed. Add the matching "'+(st[st.length-1]==='('?')':']')+'".';
+    if(/[{};]/.test(s)) return 'Only type the selector itself. Leave out { }, declarations and semicolons.';
+    if(/(^|,)\s*[>+~]/.test(s)) return 'A selector cannot start with a combinator (> + ~). Put something in front of it.';
+    if(/[>+~]\s*(,|$)/.test(s)) return 'A combinator (> + ~) must be followed by another selector.';
+    if(/(^|,)\s*(,|$)/.test(s)) return 'There is an empty selector next to a comma.';
+    if(/[>+~]\s*[>+~]/.test(s)) return 'Two combinators in a row. Put a selector between them.';
+    if(/(^|[^\w\\-])[.#]\d/.test(s)) return 'A class or id name cannot start with a digit here. Use [id="1a"] or escape it.';
+    var pcs=/(^|[^:]):([a-zA-Z-]+)/g, m;
+    while((m=pcs.exec(stripBracketed(s)))){ if(!KNOWN_PC[m[2].toLowerCase()]) return 'Unknown pseudo-class ":'+m[2]+'". Check the spelling.'; }
+    if(/\[[^\]"']*=\s*[^"'\]\s][^"'\]]*[\s.:\/][^"'\]]*\]/.test(s)) return 'Attribute values that contain spaces or symbols need quotes, like [href="a b"].';
+    if(/[“”‘’]/.test(s)) return 'That looks like a curly quote. Use straight quotes " or \'.';
+    return 'The browser could not parse this selector'+(raw?' ('+String(raw).slice(0,120)+')':'')+'.';
+  }
+  function stripBracketed(s){ return s.replace(/\[[^\]]*\]/g,'[]').replace(/(["'])(?:\\.|(?!\1).)*\1/g,'""'); }
+
+  /* ---------------- checks (pure; run inside the checker frame and in tests) ---------------- */
+  function r1(n){ return Math.round(n*10)/10; }
+  function px(n){ return r1(n)+'px'; }
+  function num(v){ var n=parseFloat(v); return isFinite(n)?n:NaN; }
+  function rect(M,sel,i){
+    var e=M&&M.els&&M.els[sel]; if(!e||!e.r||!e.r[i||0]) return null;
+    var r=e.r[i||0], o=M.origin||{x:0,y:0};
+    return {x:r.x-o.x,y:r.y-o.y,w:r.w,h:r.h};
+  }
+  function sty(M,sel,prop,i){ var e=M&&M.els&&M.els[sel]; return e&&e.s&&e.s[i||0]?e.s[i||0][prop]:undefined; }
+  function within(v,want,tol){ return Array.isArray(want)?(v>=want[0]-0.001&&v<=want[1]+0.001):Math.abs(v-want)<=tol+0.001; }
+  function wantTxt(w){ return Array.isArray(w)?('between '+px(w[0])+' and '+px(w[1])):('about '+px(w)); }
+  var DIM={x:'left position',y:'top position',w:'width',h:'height'};
+  function parseTracks(v){
+    var s=String(v==null?'':v).replace(/\[[^\]]*\]/g,' ').trim();
+    if(!s||s==='none') return null;
+    var toks=s.split(/\s+/), out=[];
+    for(var i=0;i<toks.length;i++){ if(!/^-?[\d.]+(e-?\d+)?px$/i.test(toks[i])) return null; out.push(parseFloat(toks[i])); }
+    return out;
+  }
+
+  /* Box / style checks against a measured map.  spec.checks is an array of declarative checks. */
+  function compareBoxes(spec,M){
+    var out=[], tolD=spec.tol==null?3:spec.tol;
+    (spec.checks||[]).forEach(function(c){ out.push(runCheck(c,M,tolD)); });
+    return out;
+  }
+  function runCheck(c,M,tolD){
+    var tol=c.tol==null?tolD:c.tol, label=c.label||c.t;
+    function fail(m){ return {ok:false,label:label,msg:m}; }
+    var pass={ok:true,label:label,msg:''}, A,B,nm,e,i;
+    function miss(sel){ return 'Could not find an element matching '+sel+'.'; }
+    if(M&&M.noLayout&&c.t!=='exists'&&c.t!=='style'&&c.t!=='selector') return fail('This browser reported no layout at all, so positions could not be measured.');
+    if(M&&M.originFound===false) return fail('The scene element '+(M.originSel||'')+' is missing from the HTML.');
+    switch(c.t){
+      case 'exists': {
+        e=M.els[c.sel]; var n=e?e.n:0, min=c.min==null?1:c.min;
+        if(n<min) return fail('Expected at least '+min+' element(s) matching '+c.sel+', found '+n+'.');
+        if(c.max!=null&&n>c.max) return fail('Expected at most '+c.max+' element(s) matching '+c.sel+', found '+n+'.');
+        return pass; }
+      case 'inside': {
+        A=rect(M,c.a); B=rect(M,c.b); nm=c.an||c.a;
+        if(!A) return fail(miss(c.a)); if(!B) return fail(miss(c.b));
+        var ok, cx=A.x+A.w/2, cy=A.y+A.h/2;
+        if(c.mode==='full') ok=A.x>=B.x-tol&&A.y>=B.y-tol&&A.x+A.w<=B.x+B.w+tol&&A.y+A.h<=B.y+B.h+tol;
+        else ok=cx>=B.x-tol&&cx<=B.x+B.w+tol&&cy>=B.y-tol&&cy<=B.y+B.h+tol;
+        return ok?pass:fail(nm+' is at x '+r1(A.x)+' to '+r1(A.x+A.w)+', y '+r1(A.y)+' to '+r1(A.y+A.h)+', but the '+(c.mode==='full'?'whole box':'centre')+' should be inside the box at x '+r1(B.x)+' to '+r1(B.x+B.w)+', y '+r1(B.y)+' to '+r1(B.y+B.h)+'.'); }
+      case 'box': {
+        A=rect(M,c.el); nm=c.an||c.el;
+        if(!A) return fail(miss(c.el));
+        var bad=[];
+        ['x','y','w','h'].forEach(function(k){ if(c[k]==null) return; if(!within(A[k],c[k],tol)) bad.push(DIM[k]+' is '+px(A[k])+' but should be '+wantTxt(c[k])); });
+        return bad.length?fail(nm+': '+bad.join('; ')+'.'):pass; }
+      case 'rel': {
+        A=rect(M,c.a); B=rect(M,c.b); nm=(c.an||c.a)+' and '+(c.bn||c.b);
+        if(!A) return fail(miss(c.a)); if(!B) return fail(miss(c.b));
+        var acx=A.x+A.w/2, bcx=B.x+B.w/2, acy=A.y+A.h/2, bcy=B.y+B.h/2, okr, why;
+        switch(c.rel){
+          case 'sameRow': okr=Math.abs(acy-bcy)<=tol; why='should be on the same row (vertical centres '+r1(acy)+' and '+r1(bcy)+')'; break;
+          case 'sameCol': okr=Math.abs(acx-bcx)<=tol; why='should be in the same column (horizontal centres '+r1(acx)+' and '+r1(bcx)+')'; break;
+          case 'sameLeft': okr=Math.abs(A.x-B.x)<=tol; why='should share the same left edge ('+r1(A.x)+' and '+r1(B.x)+')'; break;
+          case 'sameTop': okr=Math.abs(A.y-B.y)<=tol; why='should share the same top edge ('+r1(A.y)+' and '+r1(B.y)+')'; break;
+          case 'leftOf': okr=A.x+A.w<=B.x+tol; why='the first should sit entirely to the left of the second'; break;
+          case 'above': okr=A.y+A.h<=B.y+tol; why='the first should sit entirely above the second'; break;
+          default: return fail('Unknown relation '+c.rel);
+        }
+        return okr?pass:fail(nm+' '+why+'.'); }
+      case 'gap': {
+        A=rect(M,c.a); B=rect(M,c.b); nm=(c.an||c.a)+' and '+(c.bn||c.b);
+        if(!A) return fail(miss(c.a)); if(!B) return fail(miss(c.b));
+        var g=c.axis==='y'?B.y-(A.y+A.h):B.x-(A.x+A.w);
+        return (g>=c.range[0]-0.5&&g<=c.range[1]+0.5)?pass:fail('The space between '+nm+' is '+px(g)+' but should be '+wantTxt(c.range)+'.'); }
+      case 'rows': {
+        e=M.els[c.sel]; if(!e||!e.r||!e.r.length) return fail(miss(c.sel));
+        var ys=e.r.map(function(r){ return r.y; }).sort(function(p,q2){ return p-q2; }), rows=0, start=null, rt=c.tol==null?6:c.tol;
+        ys.forEach(function(y){ if(start===null||y-start>rt){ rows++; start=y; } });
+        return rows===c.n?pass:fail('The items form '+rows+' row(s) but should form '+c.n+'.'); }
+      case 'style': {
+        e=M.els[c.el]; if(!e||!e.n) return fail(miss(c.el));
+        var cnt=c.all?Math.min(e.s.length,24):1;
+        for(i=0;i<cnt;i++){
+          var raw=e.s[i]?e.s[i][c.prop]:undefined; if(raw===undefined) return fail('Could not read '+c.prop+'.');
+          var v=String(raw).trim().toLowerCase();
+          if(c['in']&&c['in'].indexOf(v)<0) return fail(c.prop+' is "'+v+'" but should be '+c['in'].map(function(x){ return '"'+x+'"'; }).join(' or ')+'.');
+          if(c.notIn&&c.notIn.indexOf(v)>=0) return fail(c.prop+' is "'+v+'", which is not allowed in this challenge.');
+          if(c.px){ var nv=num(v); if(!(nv>=c.px[0]-0.001&&nv<=c.px[1]+0.001)) return fail(c.prop+' is '+v+' but should be '+wantTxt(c.px)+'.'); }
+        }
+        return pass; }
+      case 'tracks': {
+        var prop=c.axis==='row'?'grid-template-rows':'grid-template-columns';
+        e=M.els[c.el]; if(!e||!e.n) return fail(miss(c.el));
+        var rawv=e.s[0]?e.s[0][prop]:undefined, tr=parseTracks(rawv);
+        if(!tr) return fail('The browser did not report resolved track sizes ("'+String(rawv).slice(0,60)+'"). Is '+c.el+' a grid container?');
+        if(tr.length!==c.px.length) return fail('Found '+tr.length+' '+(c.axis==='row'?'row':'column')+' track(s) ('+tr.map(px).join(', ')+') but expected '+c.px.length+' ('+c.px.map(px).join(', ')+').');
+        for(i=0;i<tr.length;i++){ if(Math.abs(tr[i]-c.px[i])>tol+0.001) return fail((c.axis==='row'?'Row ':'Column ')+(i+1)+' is '+px(tr[i])+' but should be about '+px(c.px[i])+'.'); }
+        return pass; }
+    }
+    return fail('Unknown check type '+c.t);
+  }
+
+  /* Which selectors / computed properties does a spec need measured? */
+  var ALIAS={'gap':'column-gap','border-radius':'border-top-left-radius'};
+  function needsOf(spec){
+    var need={};
+    function add(sel,prop){ if(!sel) return; if(!need[sel]) need[sel]={}; if(prop) need[sel][prop]=1; }
+    if(spec.kind==='compare'){
+      (spec.names||[]).forEach(function(nm){ var k='[data-check="'+nm.n+'"]'; add(k); (nm.s||[]).forEach(function(p){ add(k,p); }); });
+    } else {
+      (spec.checks||[]).forEach(function(c){
+        add(c.sel); add(c.a); add(c.b); add(c.el);
+        if(c.t==='style') add(c.el,c.prop);
+        if(c.t==='tracks') add(c.el,c.axis==='row'?'grid-template-rows':'grid-template-columns');
+      });
+    }
+    var out={}; Object.keys(need).forEach(function(k){ out[k]=Object.keys(need[k]); }); return out;
+  }
+
+  /* ---- Build-it: compare student's named elements with the target's ---- */
+  function boxClose(t,s,tolPx,tolPct,only){
+    var keys=only||['x','y','w','h'], diffs=[];
+    keys.forEach(function(k){
+      var tol=Math.max(tolPx,Math.abs(t[k])*tolPct/100);
+      if(Math.abs(s[k]-t[k])>tol+0.001) diffs.push({k:k,t:t[k],s:s[k],tol:tol});
+    });
+    return {ok:diffs.length===0,diffs:diffs};
+  }
+  var COLOR_PROPS={'color':1,'background-color':1,'border-color':1,'border-top-color':1,'border-bottom-color':1,'border-left-color':1,'border-right-color':1};
+  var LEN_PROPS={'font-size':1,'gap':1,'border-radius':1,'border-width':1,'padding-top':1,'padding-left':1,'margin-top':1,'letter-spacing':1,'width':1,'height':1};
+  var ALIGN_NORM={start:'left','-webkit-left':'left','-moz-left':'left',end:'right','-webkit-right':'right','-moz-right':'right','-webkit-center':'center','-moz-center':'center'};
+  var FW={normal:400,bold:700,lighter:300,bolder:700};
+  function fontWeight(v){ var s=String(v).trim().toLowerCase(); if(FW[s]!==undefined) return FW[s]; var n=parseFloat(s); return isFinite(n)?n:NaN; }
+  function lenPx(v){ var s=String(v).trim().toLowerCase(); if(s==='normal'||s==='none'||s==='0') return 0; var n=parseFloat(s); return isFinite(n)?n:NaN; }
+  function radiusPx(v,r){
+    var s=String(v).trim().toLowerCase(), n=parseFloat(s); if(!isFinite(n)) return 0;
+    var half=r?Math.min(r.w,r.h)/2:Infinity;
+    if(/%$/.test(s)) n=n/100*(r?Math.min(r.w,r.h):0);
+    return Math.min(n,half);
+  }
+  /* returns {ok, want, got} (display strings) */
+  function styleClose(prop,tv,sv,tr,sr,colorTol){
+    if(COLOR_PROPS[prop]){
+      var a=parseColor(tv), b=parseColor(sv);
+      if(!a||!b) return {ok:String(tv).trim()===String(sv).trim(),want:String(tv),got:String(sv)};
+      return {ok:colorDist(a,b)<=colorTol,want:toHex(a)+(a.a<1?' ('+r1(a.a)+' opacity)':''),got:toHex(b)+(b.a<1?' ('+r1(b.a)+' opacity)':'')};
+    }
+    if(prop==='font-weight'){
+      var fa=fontWeight(tv), fb=fontWeight(sv);
+      return {ok:Math.abs(fa-fb)<=50,want:String(fa),got:String(fb)};
+    }
+    if(prop==='border-radius'){
+      var ra=radiusPx(tv,tr), rb=radiusPx(sv,sr);
+      return {ok:Math.abs(ra-rb)<=Math.max(2,ra*0.1),want:px(ra),got:px(rb)};
+    }
+    if(LEN_PROPS[prop]){
+      var la=lenPx(tv), lb=lenPx(sv);
+      if(!isFinite(la)||!isFinite(lb)){ var ta=String(tv).trim(), tb=String(sv).trim(); return {ok:ta===tb,want:ta||'(not reported)',got:tb||'(not reported)'}; }
+      return {ok:Math.abs(la-lb)<=Math.max(1,Math.abs(la)*0.06),want:px(la),got:px(lb)};
+    }
+    var x=String(tv).trim().toLowerCase(), y=String(sv).trim().toLowerCase();
+    if(prop==='text-align'){ x=ALIGN_NORM[x]||x; y=ALIGN_NORM[y]||y; }
+    if(prop==='align-items'){ if(x==='normal') x='stretch'; if(y==='normal') y='stretch'; }
+    if(prop==='justify-content'){ if(x==='normal'||x==='start') x='flex-start'; if(y==='normal'||y==='start') y='flex-start'; }
+    return {ok:x===y,want:x,got:y};
+  }
+  function compareElements(spec,S,T){
+    var out=[], tolPx=spec.tolPx==null?4:spec.tolPx, tolPct=spec.tolPct==null?3:spec.tolPct, ctol=spec.colorTol==null?24:spec.colorTol;
+    var where=spec.where?(' '+spec.where):'';
+    (spec.names||[]).forEach(function(nm){
+      var key='[data-check="'+nm.n+'"]', te=T.els[key], se=S.els[key], title='“'+(nm.title||nm.n)+'”';
+      if(!te||!te.n){ out.push({ok:false,label:title+' (target)',msg:'The reference layout has no data-check="'+nm.n+'" element. This is a bug in the challenge.'}); return; }
+      var exists=!!(se&&se.n>0);
+      out.push({ok:exists,label:title+' exists'+where,msg:exists?'':'Add an element with the attribute data-check="'+nm.n+'".',group:nm.n});
+      if(nm.box!==false){
+        var bl=title+(nm.box==='size'?' size':' position and size')+where;
+        if(!exists) out.push({ok:false,label:bl,msg:'Skipped: the element is missing.',group:nm.n});
+        else if(S.noLayout||T.noLayout) out.push({ok:false,label:bl,msg:'This browser reported no layout, so boxes could not be measured.',group:nm.n});
+        else {
+          var d=boxClose(te.r[0],se.r[0],nm.tol==null?tolPx:nm.tol,tolPct,nm.box==='size'?['w','h']:null);
+          out.push({ok:d.ok,label:bl,group:nm.n,msg:d.ok?'':d.diffs.map(function(q){ return DIM[q.k]+' should be about '+px(q.t)+', yours is '+px(q.s); }).join('; ')+'.'});
+        }
+      }
+      (nm.s||[]).forEach(function(p){
+        var sl=title+' '+p+where;
+        if(!exists){ out.push({ok:false,label:sl,msg:'Skipped: the element is missing.',group:nm.n}); return; }
+        var tv=te.s[0]?te.s[0][p]:undefined, sv=se.s[0]?se.s[0][p]:undefined;
+        if(tv===undefined||sv===undefined){ out.push({ok:false,label:sl,msg:'Could not read '+p+'.',group:nm.n}); return; }
+        var r=styleClose(p,tv,sv,te.r[0],se.r[0],ctol);
+        out.push({ok:r.ok,label:sl,group:nm.n,msg:r.ok?'':title+' '+p+' should be '+(LEN_PROPS[p]||p==='border-radius'?'about ':'')+r.want+', yours is '+r.got+'.'});
+      });
+    });
+    return out;
+  }
+
+  /* ---- Selectors ---- */
+  function selectorVerdict(spec,X){
+    var out=[];
+    if(X.empty) return [{ok:false,label:'Your selector is valid CSS',msg:'Type a selector first.'}];
+    if(X.error) return [{ok:false,label:'Your selector is valid CSS',msg:X.error}];
+    out.push({ok:true,label:'Your selector is valid CSS',msg:''});
+    var m=X.matched||[], t=X.target||[];
+    var missing=t.filter(function(i){ return m.indexOf(i)<0; }), extra=m.filter(function(i){ return t.indexOf(i)<0; });
+    function names(list){ return list.slice(0,4).map(function(i){ return X.all&&X.all[i]?X.all[i]:('element #'+(i+1)); }).join(', ')+(list.length>4?' and '+(list.length-4)+' more':''); }
+    out.push({ok:missing.length===0,label:'Selects all '+t.length+' target element'+(t.length===1?'':'s'),msg:missing.length?'Missed '+missing.length+': '+names(missing)+'.':''});
+    var outside=X.outside||0;
+    out.push({ok:extra.length===0&&outside===0,label:'Selects nothing else',msg:(extra.length||outside)?('Also selects '+(extra.length+outside)+' element'+(extra.length+outside===1?'':'s')+' that should not be included'+(extra.length?': '+names(extra):'')+(outside?(extra.length?' and ':': ')+outside+' outside the example (html, body or the page itself)':'')+'.'):''});
+    return out;
+  }
+
+  function evaluate(spec,P){
+    if(spec.kind==='compare') return compareElements(spec,P.stu,P.tgt);
+    if(spec.kind==='selector') return selectorVerdict(spec,P.sel);
+    return compareBoxes(spec,P.stu);
+  }
+
+  function starsFor(mode,passed,total,hints,solShown){
+    if(!total) return 0;
+    var cap=solShown?1:3, pct=passed/total, s;
+    if(mode==='build') s=passed===total?3:pct>=0.8?2:pct>=0.5?1:0;
+    else s=passed===total?(hints<=0?3:hints<=2?2:1):0;
+    return Math.min(s,cap);
+  }
+  function cssBalance(css){
+    var s=stripComments(css).replace(/(["'])(?:\\.|(?!\1).)*\1/g,'""'), d=0, i;
+    for(i=0;i<s.length;i++){ if(s.charAt(i)==='{') d++; else if(s.charAt(i)==='}'){ d--; if(d<0) return -1; } }
+    return d;
+  }
+
+  return {sanitizeToBody:sanitizeToBody,cleanCSS:cleanCSS,bodyMarkup:bodyMarkup,ordinalsFor:ordinalsFor,
+    parseColor:parseColor,toHex:toHex,colorDist:colorDist,contrast:contrast,suggestFg:suggestFg,rgbToHsl:rgbToHsl,hslToRgb:hslToRgb,lum:lum,
+    specificity:specificity,cmpSpec:cmpSpec,explainSelectorError:explainSelectorError,
+    compareBoxes:compareBoxes,boxClose:boxClose,styleClose:styleClose,compareElements:compareElements,selectorVerdict:selectorVerdict,
+    evaluate:evaluate,needsOf:needsOf,parseTracks:parseTracks,starsFor:starsFor,cssBalance:cssBalance,ALIAS:ALIAS};
+}
+/*@@LIB-END*/
+
+/* ==========================================================================
+   The trusted checker.  It runs INSIDE a hidden <iframe sandbox="allow-scripts">
+   (no allow-same-origin => opaque origin, cannot touch this page).  It receives
+   the student's HTML + CSS via postMessage, sanitises it, injects it, measures it
+   and posts back plain JSON.
+   ========================================================================== */
+/*@@CHECKER-START*/
+function checkerMain(CL){
+  'use strict';
+  var parentWin=window.parent;
+  var MODES={layout:1,selector:1,compare:1};
+  function post(o){ try{ parentWin.postMessage(o,'*'); }catch(e){} }
+  function isStr(x,max){ return typeof x==='string'&&x.length<=max; }
+  function validRun(d){
+    if(!d||typeof d!=='object'||d.cl!=='csslab'||d.type!=='run') return false;
+    if(typeof d.id!=='number'||!isFinite(d.id)) return false;
+    if(!MODES[d.mode]) return false;
+    if(typeof d.vw!=='number'||d.vw<200||d.vw>2400) return false;
+    if(!d.spec||typeof d.spec!=='object') return false;
+    if(!isStr(d.html,200000)||!isStr(d.base,50000)) return false;
+    if(d.mode!=='selector'&&!isStr(d.css,200000)) return false;
+    if(d.mode==='selector'&&!isStr(d.sel,1000)) return false;
+    if(d.mode==='compare'&&(!d.target||!isStr(d.target.html,200000)||!isStr(d.target.css,200000))) return false;
+    return true;
+  }
+  function waitWidth(vw,n,cb){
+    if(Math.abs(window.innerWidth-vw)<=1||n>=60) cb(); else setTimeout(function(){ waitWidth(vw,n+1,cb); },25);
+  }
+  function render(html,css,base){
+    var old=document.head.querySelectorAll('style[data-cl]'), i;
+    for(i=0;i<old.length;i++) old[i].parentNode.removeChild(old[i]);
+    [base,css].forEach(function(t){
+      var st=document.createElement('style'); st.setAttribute('data-cl','1'); st.textContent=CL.cleanCSS(t||''); document.head.appendChild(st);
+    });
+    var body=document.body; while(body.firstChild) body.removeChild(body.firstChild);
+    var clean=CL.sanitizeToBody(html), n;
+    while((n=clean.firstChild)){ clean.removeChild(n); body.appendChild(document.importNode(n,true)); }
+  }
+  function rectOf(el){
+    var r=Element.prototype.getBoundingClientRect.call(el), sx=window.pageXOffset||0, sy=window.pageYOffset||0;
+    function f(v){ return Math.round(v*100)/100; }
+    return {x:f(r.left+sx),y:f(r.top+sy),w:f(r.width),h:f(r.height)};
+  }
+  function qsa(sel){ try{ return Array.prototype.slice.call(document.body.querySelectorAll(sel)); }catch(e){ return []; } }
+  function stylesOf(el,props){
+    var cs=window.getComputedStyle(el), o={};
+    props.forEach(function(p){ var real=CL.ALIAS[p]||p, v=cs.getPropertyValue(real); o[p]=(v==null?'':String(v)).slice(0,200); });
+    return o;
+  }
+  function measure(spec){
+    var needs=CL.needsOf(spec), M={vw:window.innerWidth,vh:window.innerHeight,origin:{x:0,y:0},originFound:true,noLayout:false,els:{}};
+    if(spec.origin){
+      var os=qsa(spec.origin);
+      M.originSel=spec.origin;
+      if(os.length){ var rr=rectOf(os[0]); M.origin={x:rr.x,y:rr.y}; M.noLayout=(rr.w===0&&rr.h===0); } else M.originFound=false;
+    } else {
+      M.noLayout=(rectOf(document.documentElement).w===0);
+    }
+    Object.keys(needs).forEach(function(sel){
+      var list=qsa(sel), ent={n:list.length,r:[],s:[]};
+      list.slice(0,24).forEach(function(el){ ent.r.push(rectOf(el)); ent.s.push(stylesOf(el,needs[sel])); });
+      M.els[sel]=ent;
+    });
+    return M;
+  }
+  function describe(el){
+    var t=el.localName; if(el.id) t+='#'+el.id;
+    var cls=(el.getAttribute('class')||'').trim().split(/\s+/).filter(Boolean).slice(0,3); if(cls.length) t+='.'+cls.join('.');
+    var tx='', k; for(k=0;k<el.childNodes.length;k++){ if(el.childNodes[k].nodeType===3) tx+=el.childNodes[k].nodeValue; }
+    tx=tx.replace(/\s+/g,' ').trim().slice(0,18);
+    return '<'+t+'>'+(tx?' "'+tx+'"':'');
+  }
+  function selectorProbe(sel,targetSel){
+    var X={matched:[],target:[],error:null,outside:0,empty:false,all:[]};
+    var all=Array.prototype.slice.call(document.body.querySelectorAll('*'));
+    X.all=all.slice(0,300).map(describe);
+    try{ document.querySelectorAll(targetSel).forEach(function(el){ var i=all.indexOf(el); if(i>=0) X.target.push(i); }); }catch(e){ X.error='Challenge target selector is invalid.'; return X; }
+    var s=String(sel==null?'':sel).trim();
+    if(!s){ X.empty=true; return X; }
+    if(s.length>500){ X.error='That selector is very long. Try something shorter.'; return X; }
+    try{
+      var list=document.querySelectorAll(s);
+      Array.prototype.forEach.call(list,function(el){ var i=all.indexOf(el); if(i>=0){ if(X.matched.length<500) X.matched.push(i); } else X.outside++; });
+    }catch(err){ X.error=(err&&err.name?err.name:'Error')+': '+String(err&&err.message||err).slice(0,160); }
+    return X;
+  }
+  function handle(d){
+    if(d.mode==='layout'){
+      render(d.html,d.css,d.base);
+      var M=measure(d.spec);
+      return {ok:true,checks:CL.evaluate(d.spec,{stu:M}),layoutOk:!M.noLayout};
+    }
+    if(d.mode==='selector'){
+      render(d.html,'',d.base);
+      var X=selectorProbe(d.sel,d.spec.targetSel);
+      return {ok:true,checks:CL.evaluate(d.spec,{sel:X}),layoutOk:true,
+        sel:{matched:X.matched,target:X.target,error:X.error,outside:X.outside,empty:X.empty,count:X.matched.length}};
+    }
+    render(d.html,d.css,d.base);
+    var S=measure(d.spec);
+    render(d.target.html,d.target.css,d.base);
+    var T=measure(d.spec);
+    return {ok:true,checks:CL.evaluate(d.spec,{stu:S,tgt:T}),layoutOk:!S.noLayout&&!T.noLayout};
+  }
+  window.addEventListener('message',function(e){
+    if(e.source!==parentWin) return;
+    var d=e.data;
+    if(!validRun(d)) return;
+    waitWidth(d.vw,0,function(){
+      var out;
+      try{ out=handle(d); }catch(err){ out={ok:false,error:String(err&&err.message||err).slice(0,200)}; }
+      out.cl='csslab'; out.type='result'; out.id=d.id;
+      post(out);
+    });
+  });
+  post({cl:'csslab',type:'ready'});
+}
+/*@@CHECKER-END*/
+
+/* The srcdoc for the checker frame. Only trusted code goes in here; student text is never interpolated. */
+const PREVIEW_CSP="default-src 'none'; style-src 'unsafe-inline'; img-src data:";
+/* The checker's own script is allowed by a fresh random nonce only: inline event-handler attributes and javascript: URLs
+   would be refused by the browser even if the sanitiser ever missed one. */
+function makeNonce(){
+  const a=new Uint8Array(16);
+  try{ crypto.getRandomValues(a); }catch(e){ for(let i=0;i<a.length;i++) a[i]=Math.floor(Math.random()*256); }
+  let s=''; a.forEach(b=>{ s+=('0'+b.toString(16)).slice(-2); }); return s;
+}
+const checkerCsp=nonce=>"default-src 'none'; script-src 'nonce-"+nonce+"'; style-src 'unsafe-inline'; img-src data:";
+function checkerSource(){
+  return 'var CL=('+clLib.toString()+')();\n('+checkerMain.toString()+')(CL);';
+}
+function checkerSrcdoc(nonce){
+  nonce=nonce||makeNonce();
+  return '<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="'+checkerCsp(nonce)+'">'
+    +'<style>html{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scrollbar{display:none}</style>'
+    +'<script nonce="'+nonce+'">'+checkerSource()+'<\/script></head><body></body></html>';
+}
+
+/* ==========================================================================
+   Challenge data.  Each challenge: id, mode, title, goal, info (plain English),
+   html/css (starter), base (trusted CSS applied first), sol (reference solution),
+   hints (1-3), spec (declarative checker spec, evaluated by the trusted checker).
+   ========================================================================== */
+/*@@DATA-START*/
+const SCENE_HEAD='html,body{margin:0}\n*{box-sizing:border-box}\nbody{padding:12px;background:#fff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}\n';
+const FLEX_BASE=SCENE_HEAD+
+'#scene{position:relative;width:320px;height:200px;border-radius:14px;background:#dff3ff;box-shadow:inset 0 0 0 2px #8fd0f2;overflow:hidden}\n'+
+'.pad{position:absolute;border-radius:50%;background:#8be0a0;box-shadow:inset 0 0 0 3px #3fae63}\n'+
+'.item{position:relative;z-index:1;width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:28px;line-height:1;background:#fffc;box-shadow:0 1px 3px rgba(0,0,0,.3)}\n';
+const GRID_BASE=SCENE_HEAD+
+'#grid{width:320px;height:220px;border-radius:12px;background:#eef0ff;box-shadow:inset 0 0 0 2px #c3c9f5;overflow:hidden}\n'+
+'.cell{display:grid;place-items:center;font-weight:700;font-size:14px;color:#1e1b4b;background:#a5b4fc;border-radius:8px}\n'+
+'.cell:nth-child(even){background:#c7d2fe}\n';
+const SEL_BASE='html,body{margin:0}\n*{box-sizing:border-box}\n'+
+'body{padding:12px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;color:#1f2430;background:#fff}\n'+
+'div,ul,ol,nav,main,section,article,aside,header,footer,form{border:1px dashed #94a3b8;border-radius:8px;padding:8px;margin:4px 0}\n'+
+'li,p,h1,h2,h3,a,button,span,label,input,em,strong{display:inline-block;margin:2px;padding:2px 8px;border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc;font-size:14px;font-weight:400;color:#1f2430;text-decoration:none}\n'+
+'ul,ol{list-style:none}\nli,h2,p{display:block}\nh2{font-weight:700}\n';
+const BUILD_BASE='html,body{margin:0}\n*,*::before,*::after{box-sizing:border-box}\nbody{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;color:#1f2430}\n';
+const HIT_CSS='[data-cl-hit]{outline:3px solid #f59e0b!important;outline-offset:2px!important;animation:cl-pulse 1.1s ease-in-out infinite}\n'+
+'[data-cl-target]{outline:3px dashed #10b981!important;outline-offset:2px!important}\n'+
+'@keyframes cl-pulse{50%{outline-color:#b45309}}\n@media (prefers-reduced-motion:reduce){[data-cl-hit]{animation:none!important}}\n';
+
+function flexSpec(checks){
+  return {kind:'layout',origin:'#scene',vw:1024,tol:2,checks:[
+    {t:'style',el:'#scene',prop:'display','in':['flex','inline-flex'],label:'#scene is a flex container (display: flex)'},
+    {t:'style',el:'.item',prop:'position',notIn:['absolute','fixed'],all:true,label:'Items stay in the normal flow (no absolute positioning)'}
+  ].concat(checks)};
+}
+function gridSpec(checks){
+  return {kind:'layout',origin:'#grid',vw:1024,tol:2,checks:[
+    {t:'style',el:'#grid',prop:'display','in':['grid','inline-grid'],label:'#grid is a grid container (display: grid)'},
+    {t:'style',el:'.cell',prop:'position',notIn:['absolute','fixed'],all:true,label:'Cells stay in the normal flow (no absolute positioning)'}
+  ].concat(checks)};
+}
+const sitOn=(a,b,an)=>({t:'inside',a:a,b:b,mode:'center',an:an,label:an+' sits on its lily pad'});
+
+const FLEX=[
+{ id:'flex-1', mode:'flex', title:'Jump to the right', topic:'justify-content', diff:'easy', pvh:250,
+  goal:'Get the frog onto the lily pad.',
+  info:['The container `#scene` is already a flex container, so its child sits in a row starting at the left.',
+        'Use `justify-content` to slide the frog along the main axis (left to right by default) until it lands on the pad.'],
+  html:'<div id="scene">\n  <div class="pad" id="pad"></div>\n  <div class="item" id="frog">🐸</div>\n</div>',
+  base:FLEX_BASE+'#pad{left:256px;top:0;width:64px;height:64px}\n',
+  css:'#scene {\n  display: flex;\n  \n}',
+  sol:{css:'#scene {\n  display: flex;\n  justify-content: flex-end;\n}'},
+  hints:['`justify-content` decides how flex items are spread along the main axis.',
+         'The pad is at the far end of the row. Which keyword pushes items to the end?',
+         'Add `justify-content: flex-end;` inside `#scene { ... }`.'],
+  spec:flexSpec([sitOn('#frog','#pad','The frog')]) },
+
+{ id:'flex-2', mode:'flex', title:'Space it out', topic:'justify-content', diff:'easy', pvh:250,
+  goal:'Put each of the three frogs on its own pad.',
+  info:['Three frogs, three pads: one at each end and one in the middle.',
+        'There are several `justify-content` values that share out free space. Only one puts the first and last frog exactly at the edges.'],
+  html:'<div id="scene">\n  <div class="pad" id="pad1"></div>\n  <div class="pad" id="pad2"></div>\n  <div class="pad" id="pad3"></div>\n  <div class="item" id="frog1">🐸</div>\n  <div class="item" id="frog2">🐸</div>\n  <div class="item" id="frog3">🐸</div>\n</div>',
+  base:FLEX_BASE+'#pad1,#pad2,#pad3{top:0;width:48px;height:48px}\n#pad1{left:0}#pad2{left:136px}#pad3{left:272px}\n',
+  css:'#scene {\n  display: flex;\n  \n}',
+  sol:{css:'#scene {\n  display: flex;\n  justify-content: space-between;\n}'},
+  hints:['Free space is the room left over after the items are placed.',
+         '`space-around` and `space-evenly` leave room at the edges. Which value does not?',
+         'Use `justify-content: space-between;`.'],
+  spec:flexSpec([sitOn('#frog1','#pad1','Frog 1'),sitOn('#frog2','#pad2','Frog 2'),sitOn('#frog3','#pad3','Frog 3')]) },
+
+{ id:'flex-3', mode:'flex', title:'Down and centred', topic:'align-items', diff:'easy', pvh:250,
+  goal:'Land the frog on the pad at the bottom middle.',
+  info:['`justify-content` works along the main axis. `align-items` works across it (top to bottom in a row).',
+        'You need both properties this time.'],
+  html:'<div id="scene">\n  <div class="pad" id="pad"></div>\n  <div class="item" id="frog">🐸</div>\n</div>',
+  base:FLEX_BASE+'#pad{left:128px;top:136px;width:64px;height:64px}\n',
+  css:'#scene {\n  display: flex;\n  \n}',
+  sol:{css:'#scene {\n  display: flex;\n  justify-content: center;\n  align-items: flex-end;\n}'},
+  hints:['Centre it left-to-right first, then deal with the vertical position.',
+         '`align-items: flex-end` pushes items to the bottom of the cross axis.',
+         'Use `justify-content: center;` and `align-items: flex-end;` together.'],
+  spec:flexSpec([sitOn('#frog','#pad','The frog')]) },
+
+{ id:'flex-4', mode:'flex', title:'Turn the corner', topic:'flex-direction', diff:'medium', pvh:250,
+  goal:'Line the frogs up in a column, each on the pad of its own colour.',
+  info:['`flex-direction` changes which way the main axis runs. With `column` the main axis points down, so `justify-content` now works vertically.',
+        'Watch the order: frog 1 belongs on the top pad.'],
+  html:'<div id="scene">\n  <div class="pad" id="pad1"></div>\n  <div class="pad" id="pad2"></div>\n  <div class="pad" id="pad3"></div>\n  <div class="item" id="frog1">🐸</div>\n  <div class="item" id="frog2">🐸</div>\n  <div class="item" id="frog3">🐸</div>\n</div>',
+  base:FLEX_BASE+'#pad1,#pad2,#pad3{left:0;width:48px;height:48px}\n#pad1{top:0;background:#c8f7c5}#pad2{top:76px;background:#bfe3ff}#pad3{top:152px;background:#ffd1e8}\n#frog1{background:#c8f7c5}#frog2{background:#bfe3ff}#frog3{background:#ffd1e8}\n',
+  css:'#scene {\n  display: flex;\n  \n}',
+  sol:{css:'#scene {\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n}'},
+  hints:['Set `flex-direction: column;` so the frogs stack from top to bottom.',
+         '`column-reverse` would flip the order, and the colours would no longer match.',
+         'After switching to a column, spread the frogs with `justify-content: space-between;`.'],
+  spec:flexSpec([sitOn('#frog1','#pad1','Frog 1'),sitOn('#frog2','#pad2','Frog 2'),sitOn('#frog3','#pad3','Frog 3')]) },
+
+{ id:'flex-5', mode:'flex', title:'Mind the gap', topic:'gap', diff:'medium', pvh:250,
+  goal:'Centre the frogs vertically and leave exactly 24px between them.',
+  info:['`gap` adds space between flex items without touching the outer edges.',
+        'The frogs are 48px wide, so a 24px gap places them at 0px, 72px and 144px.'],
+  html:'<div id="scene">\n  <div class="pad" id="pad1"></div>\n  <div class="pad" id="pad2"></div>\n  <div class="pad" id="pad3"></div>\n  <div class="item" id="frog1">🐸</div>\n  <div class="item" id="frog2">🐸</div>\n  <div class="item" id="frog3">🐸</div>\n</div>',
+  base:FLEX_BASE+'#pad1,#pad2,#pad3{top:76px;width:48px;height:48px}\n#pad1{left:0}#pad2{left:72px}#pad3{left:144px}\n',
+  css:'#scene {\n  display: flex;\n  \n}',
+  sol:{css:'#scene {\n  display: flex;\n  align-items: center;\n  gap: 24px;\n}'},
+  hints:['You need two things: vertical centring and space between items.',
+         '`align-items: center` centres items on the cross axis.',
+         'Add `gap: 24px;` as well.'],
+  spec:flexSpec([sitOn('#frog1','#pad1','Frog 1'),sitOn('#frog2','#pad2','Frog 2'),sitOn('#frog3','#pad3','Frog 3'),
+    {t:'gap',a:'#frog1',b:'#frog2',axis:'x',range:[23,25],an:'Frog 1',bn:'frog 2',label:'24px between frog 1 and frog 2'},
+    {t:'gap',a:'#frog2',b:'#frog3',axis:'x',range:[23,25],an:'Frog 2',bn:'frog 3',label:'24px between frog 2 and frog 3'}]) },
+
+{ id:'flex-6', mode:'flex', title:'Do not squash the logs', topic:'flex-wrap', diff:'medium', pvh:250,
+  goal:'Keep every log 96px wide by letting them wrap onto two rows.',
+  info:['Five logs are 96px wide, but the pond is only 320px wide. By default flex items refuse to wrap, so the browser squeezes them.',
+        '`flex-wrap` lets items continue on a new line when they run out of room.'],
+  html:'<div id="scene">\n  <div class="item">🪵</div>\n  <div class="item">🪵</div>\n  <div class="item">🪵</div>\n  <div class="item">🪵</div>\n  <div class="item">🪵</div>\n</div>',
+  base:FLEX_BASE+'.item{width:96px;background:#f3d9b1}\n',
+  css:'#scene {\n  display: flex;\n  \n}',
+  sol:{css:'#scene {\n  display: flex;\n  flex-wrap: wrap;\n}'},
+  hints:['Look at the width of each log in the preview. They are being shrunk.',
+         'The property you want is `flex-wrap`.',
+         'Use `flex-wrap: wrap;`. Three logs fit on the first row and two on the second.'],
+  spec:flexSpec([{t:'style',el:'.item',prop:'width',px:[94,98],all:true,label:'Every log keeps its full 96px width'},
+    {t:'rows',sel:'.item',n:2,label:'The logs form exactly two rows'}]) },
+
+{ id:'flex-7', mode:'flex', title:'Shuffle and drop', topic:'order, align-self', diff:'medium', pvh:250,
+  goal:'Fish first, then frog, and the turtle sinks to the bottom.',
+  info:['`order` changes the visual order of a flex item without touching the HTML (the default is 0, lower goes first).',
+        '`align-self` overrides `align-items` for a single item.'],
+  html:'<div id="scene">\n  <div class="pad" id="pad-c"></div>\n  <div class="pad" id="pad-a"></div>\n  <div class="pad" id="pad-b"></div>\n  <div class="item" id="a">🐸</div>\n  <div class="item" id="b">🐢</div>\n  <div class="item" id="c">🐟</div>\n</div>',
+  base:FLEX_BASE+'#pad-c,#pad-a,#pad-b{width:48px;height:48px}\n#pad-c{left:0;top:0}#pad-a{left:48px;top:0}#pad-b{left:96px;top:152px}\n',
+  css:'#scene {\n  display: flex;\n}\n\n/* style single items with #a, #b, #c */\n',
+  sol:{css:'#scene {\n  display: flex;\n}\n\n#c {\n  order: -1;\n}\n\n#b {\n  align-self: flex-end;\n}'},
+  hints:['The fish `#c` is last in the HTML but must be first on screen.',
+         'Give `#c` a negative `order`, and give `#b` its own `align-self`.',
+         '`#c { order: -1; }` and `#b { align-self: flex-end; }`.'],
+  spec:flexSpec([sitOn('#c','#pad-c','The fish'),sitOn('#a','#pad-a','The frog'),sitOn('#b','#pad-b','The turtle')]) },
+
+{ id:'flex-8', mode:'flex', title:'Stretch and hold', topic:'flex-grow / shrink / basis', diff:'hard', pvh:250,
+  goal:'Fit the huge log between the frog box (100px) and the fish (48px).',
+  info:['The log (`#mid`) is 300px wide, so the row is too long and every item gets squeezed. `flex-shrink` decides who gives way (default 1 = everyone), `flex-basis` sets a starting size, and `flex-grow` lets an item take free space.',
+        'Goal: `#left` is exactly 100px wide, `#right` stays 48px, and the log ends up filling the bridge (about 172px). There is more than one way to get there.'],
+  html:'<div id="scene">\n  <div class="pad" id="bridge"></div>\n  <div class="item" id="left">🐸</div>\n  <div class="item" id="mid">🪵</div>\n  <div class="item" id="right">🐟</div>\n</div>',
+  base:FLEX_BASE+'#bridge{left:100px;top:0;width:172px;height:48px;border-radius:12px;background:#f3d9b1;box-shadow:inset 0 0 0 3px #c99a5a}\n#mid{width:300px;background:#f3d9b1}\n',
+  css:'#scene {\n  display: flex;\n}\n\n#left {\n  \n}\n\n#right {\n  \n}',
+  sol:{css:'#scene {\n  display: flex;\n}\n\n#left {\n  flex: 0 0 100px;\n}\n\n#right {\n  flex-shrink: 0;\n}'},
+  hints:['Items that do not fit shrink in proportion to their size. The frog box and the fish must refuse to shrink.',
+         '`#left { flex: 0 0 100px; }` means grow 0, shrink 0, basis 100px.',
+         'Add `#right { flex-shrink: 0; }` and the log gives up the extra 128px by itself. (Alternative: `#left { flex-basis: 100px; }` plus `#mid { flex: 1; }`.)'],
+  spec:flexSpec([
+    {t:'box',el:'#left',w:[98,102],an:'The frog box',label:'The frog box is 100px wide'},
+    {t:'box',el:'#mid',x:[98,102],w:[168,176],an:'The log',label:'The log fills the bridge (about 172px wide, starting at 100px)'},
+    {t:'box',el:'#right',w:[46,50],x:[268,274],an:'The fish',label:'The fish stays 48px wide at the far end'}]) }
+];
+
+const GRID=[
+{ id:'grid-1', mode:'grid', title:'Three equal columns', topic:'grid-template-columns, repeat, fr', diff:'easy', pvh:270,
+  goal:'Lay the six cells out in three equal columns.',
+  info:['`grid-template-columns` defines the columns. The `fr` unit means "a fraction of the free space".',
+        '`repeat(3, 1fr)` is a short way of writing `1fr 1fr 1fr`.'],
+  html:'<div id="grid">\n  <div class="cell" id="c1">1</div>\n  <div class="cell" id="c2">2</div>\n  <div class="cell" id="c3">3</div>\n  <div class="cell" id="c4">4</div>\n  <div class="cell" id="c5">5</div>\n  <div class="cell" id="c6">6</div>\n</div>',
+  base:GRID_BASE,
+  css:'#grid {\n  display: grid;\n  \n}',
+  sol:{css:'#grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n}'},
+  hints:['Without column tracks every cell gets its own row.',
+         'You want three tracks that each take one fraction of the width.',
+         'Add `grid-template-columns: repeat(3, 1fr);`.'],
+  spec:gridSpec([{t:'tracks',el:'#grid',axis:'col',px:[106.67,106.67,106.67],tol:2,label:'Three equal columns of about 107px'},
+    {t:'rel',a:'#c1',b:'#c3',rel:'sameRow',label:'Cells 1, 2 and 3 share the first row',an:'Cell 1',bn:'cell 3'},
+    {t:'rel',a:'#c1',b:'#c4',rel:'sameCol',label:'Cell 4 sits under cell 1',an:'Cell 1',bn:'cell 4'}]) },
+
+{ id:'grid-2', mode:'grid', title:'Fixed and flexible', topic:'px + fr tracks', diff:'easy', pvh:270,
+  goal:'Make columns of 80px, 1 share and 2 shares.',
+  info:['Tracks can mix units. A fixed `80px` column is carved out first, and the remaining width is shared out by the `fr` values.',
+        'The container is 320px wide: 80px is fixed, so 240px is left for a 1 : 2 split.'],
+  html:'<div id="grid">\n  <div class="cell" id="c1">1</div>\n  <div class="cell" id="c2">2</div>\n  <div class="cell" id="c3">3</div>\n</div>',
+  base:GRID_BASE,
+  css:'#grid {\n  display: grid;\n  \n}',
+  sol:{css:'#grid {\n  display: grid;\n  grid-template-columns: 80px 1fr 2fr;\n}'},
+  hints:['You need three column tracks.',
+         'The first is a fixed length; the other two are fractions.',
+         'Use `grid-template-columns: 80px 1fr 2fr;`.'],
+  spec:gridSpec([{t:'tracks',el:'#grid',axis:'col',px:[80,80,160],tol:2,label:'Columns of 80px, 80px and 160px'},
+    {t:'box',el:'#c3',x:160,w:160,an:'Cell 3',label:'Cell 3 starts at 160px and is 160px wide'}]) },
+
+{ id:'grid-3', mode:'grid', title:'Rows, minmax and gap', topic:'grid-template-rows, minmax(), gap', diff:'medium', pvh:270,
+  goal:'Stack three cells: 50px, flexible (at least 80px), 40px, with a 10px gap.',
+  info:['`grid-template-rows` works just like columns. `minmax(80px, 1fr)` means "never smaller than 80px, otherwise take a share of the free space".',
+        '`gap` adds space between tracks. Total height is 220px, so the middle row should end up 110px tall.'],
+  html:'<div id="grid">\n  <div class="cell" id="c1">Header</div>\n  <div class="cell" id="c2">Content</div>\n  <div class="cell" id="c3">Footer</div>\n</div>',
+  base:GRID_BASE,
+  css:'#grid {\n  display: grid;\n  \n}',
+  sol:{css:'#grid {\n  display: grid;\n  grid-template-rows: 50px minmax(80px, 1fr) 40px;\n  gap: 10px;\n}'},
+  hints:['Write three row tracks and add a gap.',
+         'The middle track is `minmax(80px, 1fr)`.',
+         'Use `grid-template-rows: 50px minmax(80px, 1fr) 40px;` and `gap: 10px;`.'],
+  spec:gridSpec([{t:'tracks',el:'#grid',axis:'row',px:[50,110,40],tol:2,label:'Rows of 50px, 110px and 40px'},
+    {t:'gap',a:'#c1',b:'#c2',axis:'y',range:[9,11],an:'Header',bn:'content',label:'10px between header and content'},
+    {t:'gap',a:'#c2',b:'#c3',axis:'y',range:[9,11],an:'Content',bn:'footer',label:'10px between content and footer'}]) },
+
+{ id:'grid-4', mode:'grid', title:'Name your areas', topic:'grid-template-areas, grid-area', diff:'medium', pvh:270,
+  goal:'Build a page layout: full-width header and footer, a 100px sidebar and a main area.',
+  info:['`grid-template-areas` lets you draw the layout with words. Each quoted string is a row.',
+        'Give each element a `grid-area` name and place it. Columns: `100px 1fr`. Rows: `50px 1fr 40px`.'],
+  html:'<div id="grid">\n  <div class="cell" id="hd">Header</div>\n  <div class="cell" id="sb">Sidebar</div>\n  <div class="cell" id="mn">Main</div>\n  <div class="cell" id="ft">Footer</div>\n</div>',
+  base:GRID_BASE,
+  css:'#grid {\n  display: grid;\n  \n}\n\n#hd { }\n#sb { }\n#mn { }\n#ft { }',
+  sol:{css:'#grid {\n  display: grid;\n  grid-template-columns: 100px 1fr;\n  grid-template-rows: 50px 1fr 40px;\n  grid-template-areas:\n    "hd hd"\n    "sb mn"\n    "ft ft";\n}\n\n#hd { grid-area: hd; }\n#sb { grid-area: sb; }\n#mn { grid-area: mn; }\n#ft { grid-area: ft; }'},
+  hints:['Define the tracks first: two columns, three rows.',
+         'Draw the layout with `grid-template-areas`, repeating a name to span columns.',
+         'Areas: "hd hd" / "sb mn" / "ft ft", then `grid-area: hd;` on `#hd` and so on. (Line numbers work too.)'],
+  spec:gridSpec([
+    {t:'box',el:'#hd',x:0,y:0,w:320,h:50,tol:3,an:'Header',label:'Header spans the top (320 x 50)'},
+    {t:'box',el:'#sb',x:0,y:50,w:100,h:130,tol:3,an:'Sidebar',label:'Sidebar is a 100px column on the left'},
+    {t:'box',el:'#mn',x:100,y:50,w:220,h:130,tol:3,an:'Main',label:'Main fills the middle'},
+    {t:'box',el:'#ft',x:0,y:180,w:320,h:40,tol:3,an:'Footer',label:'Footer spans the bottom (320 x 40)'}]) },
+
+{ id:'grid-5', mode:'grid', title:'Span it', topic:'grid-column, grid-row, span', diff:'medium', pvh:270,
+  goal:'Make cell A two columns wide and cell D two rows tall.',
+  info:['Items can cover several tracks with `span`. `grid-column: span 2` means "start wherever you land and cover two columns".',
+        'The other cells will flow around them automatically.'],
+  html:'<div id="grid">\n  <div class="cell" id="a">A</div>\n  <div class="cell" id="b">B</div>\n  <div class="cell" id="c">C</div>\n  <div class="cell" id="d">D</div>\n  <div class="cell" id="e">E</div>\n  <div class="cell" id="f">F</div>\n</div>',
+  base:GRID_BASE,
+  css:'#grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-auto-rows: 60px;\n  gap: 8px;\n}\n\n#a {\n  \n}\n\n#d {\n  \n}',
+  sol:{css:'#grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-auto-rows: 60px;\n  gap: 8px;\n}\n\n#a {\n  grid-column: span 2;\n}\n\n#d {\n  grid-row: span 2;\n}'},
+  hints:['Add rules to `#a` and `#d` only.',
+         'One uses `grid-column`, the other `grid-row`.',
+         '`#a { grid-column: span 2; }` and `#d { grid-row: span 2; }`.'],
+  spec:gridSpec([
+    {t:'box',el:'#a',x:0,w:[207,214],h:[57,63],an:'Cell A',label:'A covers two columns (about 211px wide)'},
+    {t:'box',el:'#d',w:[98,105],h:[124,132],an:'Cell D',label:'D covers two rows (about 128px tall)'}]) },
+
+{ id:'grid-6', mode:'grid', title:'Flow and centre', topic:'grid-auto-flow, place-items', diff:'hard', pvh:270,
+  goal:'Fill the grid column by column and centre each cell in its box.',
+  info:['By default items fill each row before moving down. `grid-auto-flow: column` fills columns first.',
+        '`place-items: center` centres every item inside its grid area, both horizontally and vertically.'],
+  html:'<div id="grid">\n  <div class="cell" id="c1">1</div>\n  <div class="cell" id="c2">2</div>\n  <div class="cell" id="c3">3</div>\n  <div class="cell" id="c4">4</div>\n</div>',
+  base:GRID_BASE+'.cell{width:44px;height:44px}\n',
+  css:'#grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  \n}',
+  sol:{css:'#grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  grid-auto-flow: column;\n  place-items: center;\n}'},
+  hints:['Cell 2 should end up under cell 1, not beside it.',
+         'Use `grid-auto-flow` for the fill order and `place-items` for the alignment.',
+         '`grid-auto-flow: column;` and `place-items: center;`.'],
+  spec:gridSpec([
+    {t:'box',el:'#c1',x:58,y:33,w:44,h:44,tol:3,an:'Cell 1',label:'Cell 1 is centred in the top-left box'},
+    {t:'box',el:'#c2',x:58,y:143,w:44,h:44,tol:3,an:'Cell 2',label:'Cell 2 is centred in the bottom-left box'},
+    {t:'box',el:'#c3',x:218,y:33,w:44,h:44,tol:3,an:'Cell 3',label:'Cell 3 is centred in the top-right box'},
+    {t:'box',el:'#c4',x:218,y:143,w:44,h:44,tol:3,an:'Cell 4',label:'Cell 4 is centred in the bottom-right box'}]) }
+];
+
+const selSpec=t=>({kind:'selector',targetSel:t});
+const SELS=[
+{ id:'sel-1', mode:'sel', title:'Type selector', topic:'element names', diff:'easy', pvh:230,
+  goal:'Select both buttons.', info:['A selector that is just an element name matches every element of that type.'],
+  html:'<div class="toolbar">\n  <button>Save</button>\n  <button>Cancel</button>\n  <a href="#">Help</a>\n  <p>Pick one.</p>\n</div>',
+  sel:'', targetSel:'button', sol:{sel:'button'},
+  hints:['Use the tag name with no dot or hash.','It is the same word as the HTML tag: `button`.'], spec:selSpec('button') },
+{ id:'sel-2', mode:'sel', title:'Class selector', topic:'.class', diff:'easy', pvh:230,
+  goal:'Select only the finished tasks.', info:['A class selector starts with a dot and matches elements that have that class.'],
+  html:'<ul>\n  <li class="task done">Buy milk</li>\n  <li class="task">Walk dog</li>\n  <li class="task done">Pay bills</li>\n  <li class="note">Smile</li>\n</ul>',
+  sel:'', targetSel:'.done', sol:{sel:'.done'},
+  hints:['Two list items carry the class `done`.','Start with a dot: `.done`.'], spec:selSpec('.done') },
+{ id:'sel-3', mode:'sel', title:'Id and descendant', topic:'#id and space', diff:'easy', pvh:260,
+  goal:'Select the links inside the sidebar, but not the others.', info:['`#name` matches the element with that id. A space between two selectors means "anywhere inside".'],
+  html:'<nav id="sidebar">\n  <a href="#">Home</a>\n  <a href="#">About</a>\n</nav>\n<main>\n  <a href="#">Read more</a>\n  <p>See <a href="#">this link</a></p>\n</main>',
+  sel:'', targetSel:'#sidebar a', sol:{sel:'#sidebar a'},
+  hints:['First pick the container by its id.','Then add a space and the element you want inside it.','Try `#sidebar a`.'], spec:selSpec('#sidebar a') },
+{ id:'sel-4', mode:'sel', title:'Direct children', topic:'child combinator >', diff:'medium', pvh:300,
+  goal:'Select only the top-level menu items, not the nested ones.', info:['`A > B` matches B only when its parent is A. Descendants further down are ignored.'],
+  html:'<ul class="menu">\n  <li>Coffee\n    <ul class="sub">\n      <li>Latte</li>\n      <li>Mocha</li>\n    </ul>\n  </li>\n  <li>Tea</li>\n  <li>Juice</li>\n</ul>',
+  sel:'', targetSel:'.menu > li', sol:{sel:'.menu > li'},
+  hints:['A plain space would also match the nested items.','Use the `>` combinator between the list and its items.','`.menu > li`'], spec:selSpec('.menu > li') },
+{ id:'sel-5', mode:'sel', title:'Next sibling', topic:'adjacent sibling +', diff:'medium', pvh:300,
+  goal:'Select each paragraph that comes straight after a heading.', info:['`A + B` matches B when it is the very next sibling after A.'],
+  html:'<h2>Title</h2>\n<p>Lead paragraph</p>\n<p>Second</p>\n<p>Third</p>\n<h2>Other</h2>\n<p>After other</p>',
+  sel:'', targetSel:'h2 + p', sol:{sel:'h2 + p'},
+  hints:['Only two paragraphs come immediately after an `h2`.','Use `+` between `h2` and `p`.','`h2 + p`'], spec:selSpec('h2 + p') },
+{ id:'sel-6', mode:'sel', title:'Attribute selector', topic:'[attr$=value]', diff:'medium', pvh:300,
+  goal:'Select the links that point to PDF files.', info:['Attribute selectors match on an attribute\'s value. `[href$=".pdf"]` means "ends with .pdf".'],
+  html:'<ul class="files">\n  <li><a href="report.pdf">Report</a></li>\n  <li><a href="notes.txt">Notes</a></li>\n  <li><a href="https://example.com/guide.pdf">Guide</a></li>\n  <li><a href="photo.png" target="_blank">Photo</a></li>\n</ul>',
+  sel:'', targetSel:'a[href$=".pdf"]', sol:{sel:'a[href$=".pdf"]'},
+  hints:['Square brackets test an attribute.','`$=` means the value ends with the text you give.','`a[href$=".pdf"]` (quotes around the value are good practice).'], spec:selSpec('a[href$=".pdf"]') },
+{ id:'sel-7', mode:'sel', title:'Negation', topic:':not()', diff:'hard', pvh:280,
+  goal:'Select the cards that are still available (not sold out).', info:['`:not(...)` matches everything except what is inside the brackets. Several selectors give the same answer here; any exact match passes.'],
+  html:'<div class="cards">\n  <div class="card">A</div>\n  <div class="card sold-out">B</div>\n  <div class="card">C</div>\n  <div class="card sold-out">D</div>\n  <div class="card">E</div>\n</div>',
+  sel:'', targetSel:'.card:not(.sold-out)', sol:{sel:'.card:not(.sold-out)'},
+  hints:['Start from `.card`, then exclude something.','Put the class to exclude inside `:not()`.','`.card:not(.sold-out)` (or `.card:nth-child(odd)` also works).'], spec:selSpec('.card:not(.sold-out)') },
+{ id:'sel-8', mode:'sel', title:'Parents with :has()', topic:':has()', diff:'hard', pvh:300,
+  goal:'Select the list items that contain a "new" badge.', info:['`:has(...)` selects an element based on what is inside it. It is the "parent selector" CSS never had.','It needs a recent browser (Chrome 105+, Safari 15.4+, Firefox 121+).'],
+  html:'<ul class="shop">\n  <li>Plain item</li>\n  <li><span class="badge">new</span> Fresh bread</li>\n  <li>Old bread</li>\n  <li><span class="badge">new</span> Butter</li>\n  <li><em>Jam</em></li>\n</ul>',
+  sel:'', targetSel:'li:has(.badge)', sol:{sel:'li:has(.badge)'},
+  hints:['You need the `li`, not the `span`.','Filter `li` by what it contains with `:has()`.','`li:has(.badge)`'], spec:selSpec('li:has(.badge)') }
+];
+
+SELS.forEach(c=>{ c.base=SEL_BASE; });
+
+/* ---- Build it ---- */
+const N=(n,s,o)=>Object.assign({n:n,s:s||[]},o||{});
+const BUILD=[
+{ id:'build-1', mode:'build', title:'Article card', topic:'card layout', diff:'easy', pvh:520,
+  goal:'Recreate the article card.',
+  info:['Match the target as closely as you can. The checker finds elements through their `data-check` attribute, so keep those and add them to any element that is missing.','The starter is missing the tag pill and the button. `box-sizing: border-box`, a zero body margin and a system font are already applied.'],
+  html:'<article class="card" data-check="card">\n  <div class="cover" data-check="cover"></div>\n  <div class="body">\n    <h2 class="title" data-check="title">Colour theory in 5 minutes</h2>\n    <p class="text" data-check="text">A quick tour of hue, saturation and contrast, with examples you can copy.</p>\n  </div>\n</article>',
+  css:'/* style the card here */\n',
+  base:BUILD_BASE,
+  sol:{html:'<article class="card" data-check="card">\n  <div class="cover" data-check="cover"></div>\n  <div class="body">\n    <span class="tag" data-check="tag">Design</span>\n    <h2 class="title" data-check="title">Colour theory in 5 minutes</h2>\n    <p class="text" data-check="text">A quick tour of hue, saturation and contrast, with examples you can copy.</p>\n    <button class="btn" data-check="btn">Read more</button>\n  </div>\n</article>',
+       css:'body {\n  background: #f1f5f9;\n  padding: 24px;\n}\n.card {\n  width: 320px;\n  margin: 0 auto;\n  background: #ffffff;\n  border-radius: 16px;\n  overflow: hidden;\n  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15);\n}\n.cover {\n  height: 140px;\n  background: linear-gradient(135deg, #6366f1, #ec4899);\n}\n.body {\n  padding: 20px;\n}\n.tag {\n  display: inline-block;\n  padding: 2px 10px;\n  border-radius: 999px;\n  background: #e0e7ff;\n  color: #3730a3;\n  font-size: 12px;\n  font-weight: 600;\n}\n.title {\n  margin: 12px 0 8px;\n  font-size: 22px;\n  line-height: 1.25;\n  color: #0f172a;\n}\n.text {\n  margin: 0 0 16px;\n  font-size: 15px;\n  color: #475569;\n}\n.btn {\n  padding: 10px 18px;\n  border: 0;\n  border-radius: 8px;\n  background: #4f46e5;\n  color: #fff;\n  font-size: 15px;\n  font-weight: 600;\n}'},
+  hints:['Start with the outer card: fixed width, centred with `margin: 0 auto`, rounded corners.','The cover is a 140px tall gradient block. Add the missing tag (`data-check="tag"`) and button (`data-check="btn"`).','The tag is a pill: `display: inline-block`, small padding, a very large `border-radius`. The button is indigo with white bold text and 8px corners.'],
+  vps:[{vw:600,where:'',names:[
+    N('card',['background-color','border-radius']),N('cover'),N('tag',['font-size','font-weight','background-color','color','border-radius']),
+    N('title',['font-size','color']),N('text',['font-size','color']),N('btn',['background-color','color','border-radius','font-size','font-weight'])]}] },
+
+{ id:'build-2', mode:'build', title:'Navbar', topic:'flex navigation', diff:'medium', pvh:300,
+  goal:'Recreate the dark navigation bar: logo, three links and a button on the right.',
+  info:['Logo on the left, links next to it, and the "Sign up" button pushed to the far right.','The starter is missing the button. A flex container with `gap` and a single `margin-right: auto` does most of the work.'],
+  html:'<header class="nav" data-check="nav">\n  <a class="logo" href="#" data-check="logo">◆ Acme</a>\n  <nav class="links" data-check="links">\n    <a href="#" data-check="link-1">Home</a>\n    <a href="#" data-check="link-2">Features</a>\n    <a href="#" data-check="link-3">Pricing</a>\n  </nav>\n</header>',
+  css:'/* style the navbar here */\n',
+  base:BUILD_BASE,
+  sol:{html:'<header class="nav" data-check="nav">\n  <a class="logo" href="#" data-check="logo">◆ Acme</a>\n  <nav class="links" data-check="links">\n    <a href="#" data-check="link-1">Home</a>\n    <a href="#" data-check="link-2">Features</a>\n    <a href="#" data-check="link-3">Pricing</a>\n  </nav>\n  <button class="cta" data-check="cta">Sign up</button>\n</header>',
+       css:'.nav {\n  display: flex;\n  align-items: center;\n  gap: 28px;\n  height: 64px;\n  padding: 0 24px;\n  background: #111827;\n}\n.logo {\n  font-size: 20px;\n  font-weight: 700;\n  color: #fff;\n  text-decoration: none;\n}\n.links {\n  display: flex;\n  gap: 20px;\n  margin-right: auto;\n}\n.links a {\n  color: #cbd5e1;\n  font-size: 15px;\n  text-decoration: none;\n}\n.cta {\n  padding: 8px 16px;\n  border: 0;\n  border-radius: 8px;\n  background: #6366f1;\n  color: #fff;\n  font-size: 15px;\n  font-weight: 600;\n}'},
+  hints:['Make `.nav` a flex container, 64px tall, with `align-items: center`.','Add the missing `<button data-check="cta">Sign up</button>` to the header. Push it right by giving the links `margin-right: auto`.','Links are light grey (#cbd5e1) 15px with no underline; the logo is white, bold, 20px; the button is #6366f1 with 8px corners.'],
+  vps:[{vw:800,where:'',names:[
+    N('nav',['display','background-color']),N('logo',['font-size','font-weight','color']),N('links',['display','gap']),
+    N('link-1',['color','font-size']),N('link-2',['color']),N('link-3',['color']),
+    N('cta',['background-color','color','border-radius','font-size','font-weight'])]}] },
+
+{ id:'build-3', mode:'build', title:'Pricing table', topic:'grid columns', diff:'medium', pvh:620,
+  goal:'Recreate the three-tier pricing table with a highlighted middle tier.',
+  info:['Three equal cards with a 24px gap, centred text, and a bigger bold price. The middle tier ("Pro") is highlighted.','The starter is missing the third tier. Copy the markup pattern of the others and give it `data-check="tier-3"` and `data-check="price-3"`.'],
+  html:'<section class="pricing" data-check="pricing">\n  <h1 class="heading" data-check="heading">Simple pricing</h1>\n  <div class="tiers" data-check="tiers">\n    <div class="tier" data-check="tier-1">\n      <h2 class="name">Starter</h2>\n      <p class="price" data-check="price-1">$9</p>\n      <ul class="feat"><li>1 project</li><li>Community support</li></ul>\n      <button class="pick">Choose</button>\n    </div>\n    <div class="tier featured" data-check="tier-2">\n      <h2 class="name">Pro</h2>\n      <p class="price" data-check="price-2">$29</p>\n      <ul class="feat"><li>10 projects</li><li>Email support</li></ul>\n      <button class="pick">Choose</button>\n    </div>\n  </div>\n</section>',
+  css:'/* style the pricing table here */\n',
+  base:BUILD_BASE,
+  sol:{html:'<section class="pricing" data-check="pricing">\n  <h1 class="heading" data-check="heading">Simple pricing</h1>\n  <div class="tiers" data-check="tiers">\n    <div class="tier" data-check="tier-1">\n      <h2 class="name">Starter</h2>\n      <p class="price" data-check="price-1">$9</p>\n      <ul class="feat"><li>1 project</li><li>Community support</li></ul>\n      <button class="pick">Choose</button>\n    </div>\n    <div class="tier featured" data-check="tier-2">\n      <h2 class="name">Pro</h2>\n      <p class="price" data-check="price-2">$29</p>\n      <ul class="feat"><li>10 projects</li><li>Email support</li></ul>\n      <button class="pick">Choose</button>\n    </div>\n    <div class="tier" data-check="tier-3">\n      <h2 class="name">Team</h2>\n      <p class="price" data-check="price-3">$79</p>\n      <ul class="feat"><li>Unlimited projects</li><li>Phone support</li></ul>\n      <button class="pick">Choose</button>\n    </div>\n  </div>\n</section>',
+       css:'body {\n  background: #f8fafc;\n  padding: 32px 16px;\n}\n.pricing {\n  max-width: 840px;\n  margin: 0 auto;\n  text-align: center;\n}\n.heading {\n  margin: 0 0 24px;\n  font-size: 32px;\n  color: #0f172a;\n}\n.tiers {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 24px;\n}\n.tier {\n  padding: 24px;\n  background: #fff;\n  border: 1px solid #e2e8f0;\n  border-radius: 12px;\n}\n.tier.featured {\n  background: #eef2ff;\n  border-color: #6366f1;\n}\n.name {\n  margin: 0 0 8px;\n  font-size: 18px;\n  color: #334155;\n}\n.price {\n  margin: 0 0 16px;\n  font-size: 36px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.feat {\n  margin: 0 0 20px;\n  padding: 0;\n  list-style: none;\n  font-size: 14px;\n  color: #475569;\n}\n.feat li {\n  padding: 4px 0;\n}\n.pick {\n  width: 100%;\n  padding: 10px 0;\n  border: 0;\n  border-radius: 8px;\n  background: #4f46e5;\n  color: #fff;\n  font-size: 15px;\n  font-weight: 600;\n}'},
+  hints:['`.pricing` is a centred column (max-width 840px, `margin: 0 auto`, `text-align: center`).','`.tiers` is a grid: `repeat(3, 1fr)` with a 24px gap. Add the missing third tier in the HTML.','Prices are 36px bold. The featured tier has a pale indigo background (#eef2ff) and an indigo border.'],
+  vps:[{vw:900,where:'',names:[
+    N('heading',['font-size','text-align','color']),N('tiers',['display','gap']),
+    N('tier-1',['background-color','border-radius','text-align']),N('tier-2',['background-color','border-radius']),N('tier-3',['background-color','border-radius']),
+    N('price-1',['font-size','font-weight']),N('price-2',['font-size','color']),N('price-3',['font-size'])]}] },
+
+{ id:'build-4', mode:'build', title:'Responsive gallery', topic:'grid + media query', diff:'hard', pvh:520,
+  goal:'Recreate the gallery: three columns on wide screens, two columns at 600px and below.',
+  info:['The gallery is a grid with a 12px gap. Tiles keep a 4:3 shape (`aspect-ratio`) and have rounded corners.','It is checked at two widths (900px and 500px), so it needs a media query. Try the preview width buttons to see the reflow.'],
+  html:'<main class="wrap" data-check="wrap">\n  <h1 class="title" data-check="title">Trip photos</h1>\n  <div class="gallery" data-check="gallery">\n    <figure class="tile" data-check="tile-1">🏔️</figure>\n    <figure class="tile" data-check="tile-2">🌊</figure>\n    <figure class="tile" data-check="tile-3">🌲</figure>\n    <figure class="tile" data-check="tile-4">🏜️</figure>\n    <figure class="tile" data-check="tile-5">🌅</figure>\n    <figure class="tile" data-check="tile-6">🏝️</figure>\n  </div>\n</main>',
+  css:'/* style the gallery here */\n',
+  base:BUILD_BASE,
+  sol:{html:'<main class="wrap" data-check="wrap">\n  <h1 class="title" data-check="title">Trip photos</h1>\n  <div class="gallery" data-check="gallery">\n    <figure class="tile" data-check="tile-1">🏔️</figure>\n    <figure class="tile" data-check="tile-2">🌊</figure>\n    <figure class="tile" data-check="tile-3">🌲</figure>\n    <figure class="tile" data-check="tile-4">🏜️</figure>\n    <figure class="tile" data-check="tile-5">🌅</figure>\n    <figure class="tile" data-check="tile-6">🏝️</figure>\n  </div>\n</main>',
+       css:'body {\n  background: #0f172a;\n  padding: 20px;\n  color: #e2e8f0;\n}\n.title {\n  margin: 0 0 16px;\n  font-size: 26px;\n}\n.gallery {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 12px;\n}\n.tile {\n  margin: 0;\n  aspect-ratio: 4 / 3;\n  border-radius: 10px;\n  display: grid;\n  place-items: center;\n  font-size: 40px;\n  background: #334155;\n}\n@media (max-width: 600px) {\n  .gallery {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}'},
+  hints:['A `figure` has default margins; remove them with `margin: 0`.','`.gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }` and `aspect-ratio: 4 / 3` on the tiles.','Add `@media (max-width: 600px) { .gallery { grid-template-columns: repeat(2, 1fr); } }`.'],
+  vps:[
+   {vw:900,where:'at 900px wide',names:[N('title',['font-size']),N('gallery',['display','gap']),N('tile-1',['border-radius','background-color']),N('tile-2'),N('tile-3'),N('tile-4'),N('tile-6')]},
+   {vw:500,where:'at 500px wide',names:[N('gallery',['gap']),N('tile-1'),N('tile-2'),N('tile-3'),N('tile-6')]}] },
+
+{ id:'build-5', mode:'build', title:'Centred login form', topic:'centring + forms', diff:'hard', pvh:620,
+  goal:'Recreate the login card, centred on the page, with full-width inputs and button.',
+  info:['The card is 360px wide, centred both horizontally and vertically. Labels sit above full-width inputs, and the button is full width.','The starter is missing the submit button and the "Forgot password?" link.'],
+  html:'<main class="screen" data-check="screen">\n  <form class="login" data-check="login">\n    <h1 class="heading" data-check="heading">Welcome back</h1>\n    <label class="field">Email\n      <input type="email" placeholder="you@example.com" data-check="email">\n    </label>\n    <label class="field">Password\n      <input type="password" data-check="password">\n    </label>\n  </form>\n</main>',
+  css:'/* style the login form here */\n',
+  base:BUILD_BASE,
+  sol:{html:'<main class="screen" data-check="screen">\n  <form class="login" data-check="login">\n    <h1 class="heading" data-check="heading">Welcome back</h1>\n    <label class="field">Email\n      <input type="email" placeholder="you@example.com" data-check="email">\n    </label>\n    <label class="field">Password\n      <input type="password" data-check="password">\n    </label>\n    <button class="submit" type="button" data-check="submit">Sign in</button>\n    <p class="alt"><a href="#" data-check="forgot">Forgot password?</a></p>\n  </form>\n</main>',
+       css:'body {\n  background: #eef2ff;\n}\n.screen {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n}\n.login {\n  width: 360px;\n  padding: 32px;\n  background: #fff;\n  border-radius: 16px;\n  box-shadow: 0 8px 30px rgba(30, 27, 75, 0.15);\n}\n.heading {\n  margin: 0 0 20px;\n  font-size: 24px;\n  text-align: center;\n  color: #1e1b4b;\n}\n.field {\n  display: block;\n  margin-bottom: 16px;\n  font-size: 14px;\n  font-weight: 600;\n  color: #334155;\n}\n.field input {\n  display: block;\n  width: 100%;\n  margin-top: 6px;\n  padding: 10px 12px;\n  border: 1px solid #cbd5e1;\n  border-radius: 8px;\n  font-size: 15px;\n}\n.submit {\n  width: 100%;\n  padding: 12px;\n  border: 0;\n  border-radius: 8px;\n  background: #4f46e5;\n  color: #fff;\n  font-size: 16px;\n  font-weight: 600;\n}\n.alt {\n  margin: 16px 0 0;\n  text-align: center;\n  font-size: 14px;\n}'},
+  hints:['Centre the card with `display: grid; place-items: center; min-height: 100vh;` on `.screen`.','Inputs need `display: block; width: 100%` so they fill the card. Buttons and inputs do not inherit fonts, so set `font-size` on them.','Add the button (`data-check="submit"`) and the link (`data-check="forgot"`). The button is #4f46e5, white, 16px bold, 8px corners, full width.'],
+  vps:[{vw:700,where:'',names:[
+    N('screen',['display']),N('login',['background-color','border-radius']),N('heading',['font-size','text-align','color']),
+    N('email',['border-radius','font-size']),N('password'),N('submit',['background-color','color','border-radius','font-size','font-weight']),N('forgot',['font-size'],{box:'size'})]}] }
+];
+
+const MODES=[{id:'flex',label:'Flexbox',list:FLEX},{id:'grid',label:'Grid',list:GRID},{id:'sel',label:'Selectors',list:SELS},{id:'build',label:'Build it',list:BUILD}];
+const ALL=[].concat(FLEX,GRID,SELS,BUILD);
+/*@@DATA-END*/
+
+/* ---- property reference (helper d) ---- */
+const REF=[
+['display','How the box lays out itself and its children.','block | inline | inline-block | flex | grid | none','display: flex;'],
+['position','How an element is positioned relative to the page or its ancestors.','static | relative | absolute | fixed | sticky','position: sticky; top: 0;'],
+['top / right / bottom / left','Offsets for positioned elements.','<length> | <percentage> | auto','inset: 0; /* all four */'],
+['z-index','Stacking order of positioned elements.','<integer> | auto','z-index: 10;'],
+['width / height','Size of the content box (or border box with border-box).','<length> | <percentage> | auto | fit-content','width: min(100%, 60ch);'],
+['min-width / max-width','Lower and upper limits for size.','<length> | <percentage> | none','max-width: 720px;'],
+['margin','Space outside the border.','<length> | <percentage> | auto (1 to 4 values)','margin: 0 auto;'],
+['padding','Space between the border and the content.','<length> | <percentage> (1 to 4 values)','padding: 12px 16px;'],
+['border','Line around the padding box (width, style, colour).','<width> <style> <colour>','border: 1px solid #cbd5e1;'],
+['border-radius','Rounds the corners.','<length> | <percentage>','border-radius: 12px;'],
+['box-sizing','Whether width includes padding and border.','content-box | border-box','box-sizing: border-box;'],
+['overflow','What happens to content that does not fit.','visible | hidden | scroll | auto | clip','overflow: auto;'],
+['box-shadow','Adds a shadow (or inset glow) around the box.','<x> <y> <blur> <spread> <colour>','box-shadow: 0 4px 14px rgba(0,0,0,.15);'],
+['color','Text colour.','<colour>','color: #1a1e27;'],
+['background','Shorthand for background colour, image, position and more.','<colour> | <image> ...','background: linear-gradient(#6366f1, #ec4899);'],
+['background-color','Fill colour behind content.','<colour>','background-color: #eef2ff;'],
+['font-size','Size of the text.','<length> | <percentage>','font-size: 1.125rem;'],
+['font-weight','Boldness of the text.','100 to 900 | normal | bold','font-weight: 600;'],
+['font-family','Typeface stack, tried in order.','<family>, ... , <generic>','font-family: system-ui, sans-serif;'],
+['line-height','Height of each line of text.','<number> | <length> | normal','line-height: 1.5;'],
+['text-align','Horizontal alignment of inline content.','left | right | center | justify','text-align: center;'],
+['text-decoration','Underline, overline or strike-through.','none | underline | line-through','text-decoration: none;'],
+['text-transform','Changes letter case.','none | uppercase | lowercase | capitalize','text-transform: uppercase;'],
+['letter-spacing','Extra space between letters.','normal | <length>','letter-spacing: .06em;'],
+['flex-direction','Main axis direction of a flex container.','row | row-reverse | column | column-reverse','flex-direction: column;'],
+['justify-content','Distributes items along the main axis.','flex-start | center | flex-end | space-between | space-around | space-evenly','justify-content: space-between;'],
+['align-items','Aligns items on the cross axis.','stretch | flex-start | center | flex-end | baseline','align-items: center;'],
+['align-self','Overrides align-items for one item.','auto | flex-start | center | flex-end | stretch','align-self: flex-end;'],
+['flex-wrap','Lets flex items wrap onto new lines.','nowrap | wrap | wrap-reverse','flex-wrap: wrap;'],
+['flex','Shorthand for grow, shrink and basis.','<grow> <shrink> <basis>','flex: 1 1 0;'],
+['gap','Space between rows and columns in flex and grid.','<length> (1 or 2 values)','gap: 16px 24px;'],
+['order','Visual order of flex or grid items.','<integer>','order: -1;'],
+['grid-template-columns','Defines grid column tracks.','<track-size>+ | repeat() | minmax()','grid-template-columns: repeat(3, 1fr);'],
+['grid-template-areas','Draws a named-area layout.','"name name" "name name"','grid-template-areas: "hd hd" "sb mn";'],
+['grid-column / grid-row','Places an item on grid lines or spans tracks.','<line> / <line> | span <n>','grid-column: 1 / -1;'],
+['place-items','Shorthand for align-items and justify-items.','<align> <justify>','place-items: center;'],
+['aspect-ratio','Keeps a box at a given width : height ratio.','<ratio> | auto','aspect-ratio: 16 / 9;'],
+['opacity','Transparency of an element and its children.','0 to 1','opacity: .6;'],
+['transition','Animates property changes over time.','<property> <duration> <easing>','transition: background .15s ease;'],
+['transform','Moves, scales or rotates without affecting layout.','translate() | scale() | rotate()','transform: translateY(-2px);'],
+['cursor','Mouse pointer shape over the element.','pointer | default | text | not-allowed','cursor: pointer;'],
+['object-fit','How an image fills its box.','fill | contain | cover | none','object-fit: cover;'],
+['@media','Applies rules only under certain conditions such as width.','(min-width: 600px) | (prefers-color-scheme: dark)','@media (max-width: 600px) { ... }']
+];
+
+/* ==========================================================================
+   App
+   ========================================================================== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const md=s=>esc(s).replace(/`([^`]+)`/g,'<code>$1</code>');
+const CL=clLib();
+const has=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+const P={
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M20.5 14A8.5 8.5 0 1110 3.5a7 7 0 0010.5 10.5z"/>',
+  code:'<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
+  play:'<path d="M7 4l13 8-13 8z"/>',
+  bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z"/>',
+  eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  reset:'<path d="M3 12a9 9 0 109-9 9 9 0 00-6.4 2.6L3 8M3 3v5h5"/>',
+  next:'<path d="M5 12h14M13 6l6 6-6 6"/>'
+};
+const ic=(n,s=16)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+function toast(msg,bad){
+  const t=document.createElement('div'); t.className='toast'+(bad?' bad':''); t.textContent=msg;
+  $('#toasts').appendChild(t); setTimeout(()=>t.remove(),2800);
+}
+function announce(msg){ const l=$('#live'); l.textContent=''; setTimeout(()=>{ l.textContent=msg; },30); }
+
+/* ---------- storage (every access guarded, in-memory fallback) ---------- */
+const KEY='code-playground:v1', KEY2='code-playground:css:v1';
+const mem={};
+function lsGet(k){ try{ const v=localStorage.getItem(k); if(v!==null) return v; }catch(e){} return has(mem,k)?mem[k]:null; }
+function lsSet(k,v){ mem[k]=v; try{ localStorage.setItem(k,v); }catch(e){} }
+function readShared(){ try{ const o=JSON.parse(lsGet(KEY)); return o&&typeof o==='object'&&!Array.isArray(o)?o:{}; }catch(e){ return {}; } }
+let theme=(()=>{ const t=readShared().theme; return t==='light'||t==='dark'?t:null; })();
+const prefersDark=()=>{ try{ return !!(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches); }catch(e){ return false; } };
+const isDark=()=>theme?theme==='dark':prefersDark();
+function applyTheme(){
+  if(theme) document.documentElement.dataset.theme=theme; else delete document.documentElement.dataset.theme;
+  $('#theme-btn').innerHTML=ic(isDark()?'sun':'moon',18);
+  $('#theme-btn').title=isDark()?'Switch to light theme':'Switch to dark theme';
+}
+function toggleTheme(){
+  theme=isDark()?'light':'dark';
+  try{ const o=readShared(); o.theme=theme; lsSet(KEY,JSON.stringify(o)); }catch(e){}
+  applyTheme();
+}
+
+/* ---------- state ---------- */
+const MODE_IDS=MODES.map(m=>m.id);
+const modeOf=id=>MODES.find(m=>m.id===id);
+function defState(){ return {v:1,mode:'flex',last:{flex:0,grid:0,sel:0,build:0},stars:{},drafts:{},hints:{},sol:{},vp:'fluid',show:'both',tab:{},htab:'spec',font:13}; }
+function loadState(){
+  const s=defState();
+  let o=null; try{ o=JSON.parse(lsGet(KEY2)); }catch(e){}
+  if(!o||typeof o!=='object'||o.v!==1) return s;
+  if(MODE_IDS.includes(o.mode)) s.mode=o.mode;
+  MODES.forEach(m=>{ const i=o.last&&o.last[m.id]; if(Number.isInteger(i)&&i>=0&&i<m.list.length) s.last[m.id]=i; });
+  const ids=new Set(ALL.map(c=>c.id));
+  ['stars','hints'].forEach(k=>{ if(o[k]&&typeof o[k]==='object') Object.keys(o[k]).forEach(id=>{ const n=o[k][id]; if(ids.has(id)&&Number.isInteger(n)&&n>=0&&n<=3) s[k][id]=n; }); });
+  if(o.sol&&typeof o.sol==='object') Object.keys(o.sol).forEach(id=>{ if(ids.has(id)&&o.sol[id]===true) s.sol[id]=true; });
+  if(o.drafts&&typeof o.drafts==='object') Object.keys(o.drafts).forEach(id=>{
+    const d=o.drafts[id]; if(!ids.has(id)||!d||typeof d!=='object') return;
+    const c={}; ['html','css','sel'].forEach(k=>{ if(typeof d[k]==='string'&&d[k].length<100000) c[k]=d[k]; }); s.drafts[id]=c;
+  });
+  if(['phone','tablet','desktop','fluid'].includes(o.vp)) s.vp=o.vp;
+  if(['both','yours','target'].includes(o.show)) s.show=o.show;
+  if(['spec','contrast','box','ref'].includes(o.htab)) s.htab=o.htab;
+  if(Number.isInteger(o.font)&&o.font>=10&&o.font<=22) s.font=o.font;
+  return s;
+}
+let S=loadState();
+let saveT=0;
+function save(){ clearTimeout(saveT); saveT=setTimeout(saveNow,200); }
+function saveNow(){ clearTimeout(saveT); lsSet(KEY2,JSON.stringify(S)); }
+const cur=()=>modeOf(S.mode).list[S.last[S.mode]];
+
+function starter(ch){ return {html:ch.html,css:ch.css||'',sel:ch.sel||''}; }
+function getCode(ch){
+  const d=S.drafts[ch.id], s=starter(ch); if(!d) return s;
+  return {html:ch.mode==='build'&&typeof d.html==='string'?d.html:ch.html, css:typeof d.css==='string'?d.css:s.css, sel:typeof d.sel==='string'?d.sel:s.sel};
+}
+function readCode(){ return {html:$('#t-html').value,css:$('#t-css').value,sel:$('#t-sel').value}; }
+function saveDraft(){ const ch=cur(), c=readCode(); S.drafts[ch.id]={html:c.html,css:c.css,sel:c.sel}; save(); }
+const starText=n=>'★'.repeat(n)+'☆'.repeat(3-n);
+const starsHtml=n=>'<span class="stars" title="'+n+' of 3 stars"><span aria-hidden="true">'+'★'.repeat(n)+'<span class="off">'+'☆'.repeat(3-n)+'</span></span><span class="sr-only">'+n+' of 3 stars</span></span>';
+
+/* ---------- editors ---------- */
+const EDS={html:{ta:$('#t-html'),gut:$('#g-html'),pane:$('#ed-html')},css:{ta:$('#t-css'),gut:$('#g-css'),pane:$('#ed-css')}};
+function updateGutter(k){
+  const e=EDS[k], n=e.ta.value.split('\n').length;
+  if(e.n===n) return; e.n=n;
+  e.gut.textContent=Array.from({length:n},(_,i)=>i+1).join('\n');
+}
+function insertText(ta,text){
+  ta.focus();
+  let ok=false;
+  try{ ok=typeof document.execCommand==='function'&&document.execCommand('insertText',false,text); }catch(e){ ok=false; }
+  if(!ok){ ta.setRangeText(text,ta.selectionStart,ta.selectionEnd,'end'); ta.dispatchEvent(new Event('input',{bubbles:true})); }
+}
+function deleteSel(ta){
+  let ok=false;
+  try{ ok=typeof document.execCommand==='function'&&document.execCommand('delete'); }catch(e){ ok=false; }
+  if(!ok){ ta.setRangeText('',ta.selectionStart,ta.selectionEnd,'end'); ta.dispatchEvent(new Event('input',{bubbles:true})); }
+}
+const lineStart=(v,i)=>i===0?0:v.lastIndexOf('\n',i-1)+1;
+const PAIRS={'(':')','[':']','{':'}','"':'"',"'":"'"};
+let escArmed=false;
+function onEditorKey(e,lang){
+  const ta=e.target;
+  if(e.key==='Escape'){ escArmed=true; $('#e-note').textContent='Focus released: press Tab to leave the editor.'; return; }
+  if(e.key==='Tab'&&escArmed){ escArmed=false; resetNote(); return; }
+  if(e.key!=='Shift'&&e.key!=='Control'&&e.key!=='Meta'&&e.key!=='Alt'){ if(escArmed){ escArmed=false; resetNote(); } }
+  if(ta.readOnly) return;
+  if(e.ctrlKey||e.metaKey||e.altKey||e.isComposing) return;
+  const s=ta.selectionStart, en=ta.selectionEnd, v=ta.value, k=e.key;
+  if(k==='Tab'){
+    e.preventDefault();
+    if(s===en&&!e.shiftKey){ insertText(ta,'  '); return; }
+    const ls=lineStart(v,s); let le=v.indexOf('\n',en); if(le<0) le=v.length;
+    const block=v.slice(ls,le);
+    const out=e.shiftKey?block.replace(/^( {1,2}|\t)/gm,''):block.replace(/^/gm,'  ');
+    ta.setSelectionRange(ls,le); insertText(ta,out); ta.setSelectionRange(ls,ls+out.length);
+    return;
+  }
+  if(k==='Enter'&&!e.shiftKey){
+    e.preventDefault();
+    const indent=v.slice(lineStart(v,s),s).match(/^\s*/)[0], before=v[s-1], after=v[en];
+    const opener=before&&'{[('.includes(before);
+    if(opener&&after&&PAIRS[before]===after){ insertText(ta,'\n'+indent+'  \n'+indent); const p=s+1+indent.length+2; ta.setSelectionRange(p,p); }
+    else if(opener) insertText(ta,'\n'+indent+'  ');
+    else insertText(ta,'\n'+indent);
+    return;
+  }
+  if(lang!=='css') return;
+  if(k==='Backspace'&&s===en&&s>0&&has(PAIRS,v[s-1])&&PAIRS[v[s-1]]===v[s]){ e.preventDefault(); ta.setSelectionRange(s-1,s+1); deleteSel(ta); return; }
+  if(k.length!==1) return;
+  const isCloser=')]}"\''.includes(k);
+  if(isCloser&&s===en&&v[s]===k){ e.preventDefault(); ta.setSelectionRange(s+1,s+1); return; }
+  if(has(PAIRS,k)){
+    const close=PAIRS[k];
+    if(s!==en){ e.preventDefault(); insertText(ta,k+v.slice(s,en)+close); ta.setSelectionRange(s+1,en+1); return; }
+    if(k===close&&s>0&&/[\w$]/.test(v[s-1])) return;
+    if(v[s]&&/[\w$]/.test(v[s])) return;
+    e.preventDefault(); insertText(ta,k+close); ta.setSelectionRange(s+1,s+1);
+  }
+}
+function resetNote(){ $('#e-note').textContent='Tab indents. Press Esc, then Tab, to move focus out of the editor.'; }
+
+function tabsFor(mode){
+  if(mode==='sel') return [{id:'sel',label:'Selector'},{id:'html',label:'HTML (read-only)'}];
+  if(mode==='build') return [{id:'html',label:'HTML'},{id:'css',label:'CSS'}];
+  return [{id:'css',label:'CSS'},{id:'html',label:'HTML (read-only)'}];
+}
+function curTab(){
+  const tabs=tabsFor(S.mode), want=S.tab[S.mode];
+  return tabs.some(t=>t.id===want)?want:tabs[0].id;
+}
+function renderEditorTabs(){
+  const tabs=tabsFor(S.mode), c=curTab();
+  $('#etabs').innerHTML=tabs.map(t=>`<button class="tab" role="tab" type="button" id="etab-${t.id}" data-tab="${t.id}" aria-selected="${t.id===c}" tabindex="${t.id===c?0:-1}" aria-controls="${t.id==='sel'?'ed-sel':'ed-'+t.id}">${esc(t.label)}</button>`).join('');
+  ['html','css','sel'].forEach(k=>{ const p=k==='sel'?$('#ed-sel'):EDS[k].pane; p.hidden=(k!==c); });
+}
+function setEditorTab(id,focus){
+  S.tab[S.mode]=id; renderEditorTabs(); save();
+  if(focus){ const b=$('#etab-'+id); if(b) b.focus(); }
+}
+function loadEditors(){
+  const ch=cur(), c=getCode(ch), ro=ch.mode!=='build';
+  EDS.html.ta.value=c.html; EDS.css.ta.value=c.css; $('#t-sel').value=c.sel;
+  EDS.html.ta.readOnly=ro; EDS.html.ta.setAttribute('aria-readonly',String(ro));
+  EDS.html.ta.setAttribute('aria-label',ro?'HTML code (read-only in this challenge)':'HTML code');
+  EDS.css.ta.setAttribute('aria-label',ch.mode==='sel'?'CSS code':'CSS code');
+  ['html','css'].forEach(k=>{ EDS[k].n=0; updateGutter(k); EDS[k].ta.scrollTop=0; EDS[k].ta.scrollLeft=0; EDS[k].gut.scrollTop=0; });
+  applyFont(); renderEditorTabs(); updateCssWarn();
+}
+function applyFont(){ $$('.editor').forEach(e=>e.style.setProperty('--fs',S.font+'px')); }
+function updateCssWarn(){
+  const w=$('#e-warn'), ch=cur();
+  if(ch.mode==='sel'){ w.hidden=true; return; }
+  const b=CL.cssBalance($('#t-css').value);
+  if(b===0){ w.hidden=true; return; }
+  w.hidden=false; w.textContent=b>0?'CSS has '+b+' unclosed "{"':'CSS has an extra "}"';
+}
+function onEdit(k){
+  updateGutter(k); saveDraft(); updateCssWarn();
+  if(S.mode==='sel') return;
+  schedulePreview(300);
+}
+
+/* ---------- preview ---------- */
+const VPS=[{id:'phone',label:'Phone 375',w:375},{id:'tablet',label:'Tablet 768',w:768},{id:'desktop',label:'Desktop 1024',w:1024},{id:'fluid',label:'Fluid',w:0}];
+function buildSrcdoc(base,css,html,hits,targets){
+  let body;
+  try{ body=CL.bodyMarkup(html,hits,targets); }catch(err){ body='<p style="font:14px system-ui;padding:12px;color:#b00">'+esc(String(err&&err.message||err))+'</p>'; }
+  return '<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="'+PREVIEW_CSP+'">'
+    +'<meta name="viewport" content="width=device-width,initial-scale=1"><base target="_blank">'
+    +'<style>'+CL.cleanCSS(base)+'</style><style>'+CL.cleanCSS(css)+'</style><style>'+HIT_CSS+'</style></head><body>'+body+'</body></html>';
+}
+const FR={yours:$('#fr-yours'),target:$('#fr-target')};
+let lastSrc={yours:null,target:null};
+function setFrame(k,src){ if(lastSrc[k]===src) return; lastSrc[k]=src; FR[k].srcdoc=src; }
+let liveSel={sel:null,matched:[]};
+function yoursSrc(){
+  const ch=cur(), c=readCode();
+  if(ch.mode==='sel'){
+    const hits=liveSel.sel===c.sel.trim()?liveSel.matched:[];
+    return buildSrcdoc(ch.base,'',ch.html,hits,[]);
+  }
+  return buildSrcdoc(ch.base,c.css,ch.mode==='build'?c.html:ch.html,[],[]);
+}
+function targetSrc(){
+  const ch=cur();
+  if(ch.mode==='sel'){
+    let t=[]; try{ t=CL.ordinalsFor(ch.html,ch.targetSel); }catch(e){}
+    return buildSrcdoc(ch.base,'',ch.html,[],t);
+  }
+  return buildSrcdoc(ch.base,ch.sol.css,ch.mode==='build'?ch.sol.html:ch.html,[],[]);
+}
+let pvTimer=0;
+function schedulePreview(ms){ clearTimeout(pvTimer); pvTimer=setTimeout(renderYours,ms==null?300:ms); }
+function renderYours(){ clearTimeout(pvTimer); setFrame('yours',yoursSrc()); }
+function renderTarget(){ setFrame('target',targetSrc()); }
+function layoutPreview(){
+  const ch=cur(), H=ch.pvh||300, vp=VPS.find(v=>v.id===S.vp)||VPS[3];
+  const grid=$('#pv-grid'); grid.dataset.vp=S.vp; grid.dataset.show=S.show;
+  $('#cell-yours').hidden=S.show==='target'; $('#cell-target').hidden=S.show==='yours';
+  ['yours','target'].forEach(k=>{
+    const box=$('#box-'+k), fr=FR[k], availW=box.clientWidth||300, W=vp.w||availW, s=Math.min(1,availW/W);
+    fr.style.width=W+'px'; fr.style.height=H+'px'; fr.style.transform=s<1?'scale('+s.toFixed(4)+')':'none';
+    box.style.height=Math.max(60,Math.round(H*s))+'px';
+  });
+  const w=vp.w?vp.w+'px':'fluid';
+  $('#cap-yours').textContent=w; $('#cap-target').textContent=w;
+}
+function renderPvControls(){
+  $('#vp-seg').innerHTML=VPS.map(v=>`<button type="button" data-vp="${v.id}" aria-pressed="${S.vp===v.id}">${v.label}</button>`).join('');
+  $('#show-seg').innerHTML=[['both','Both'],['yours','Yours'],['target','Target']].map(a=>`<button type="button" data-show="${a[0]}" aria-pressed="${S.show===a[0]}">${a[1]}</button>`).join('');
+}
+
+/* ---------- checker bridge (hidden sandboxed iframe, postMessage only) ---------- */
+const CK={frame:$('#checker'),loaded:false,readyP:null,readyRes:null,pending:new Map(),seq:0,gen:0};
+function ckInit(){
+  if(CK.loaded) return CK.readyP;
+  CK.loaded=true;
+  CK.readyP=new Promise(res=>{ CK.readyRes=res; });
+  CK.frame.srcdoc=checkerSrcdoc()+'<!--'+(++CK.gen)+'-->';
+  return CK.readyP;
+}
+function ckReset(){ CK.loaded=false; CK.readyP=null; CK.readyRes=null; try{ CK.frame.srcdoc=''; }catch(e){} }
+function vetResult(d){
+  if(!d||d.ok!==true) return {ok:false,error:d&&typeof d.error==='string'?d.error.slice(0,200):'The checker reported an error.'};
+  if(!Array.isArray(d.checks)||d.checks.length>400) return null;
+  const checks=[];
+  for(const c of d.checks){
+    if(!c||typeof c.ok!=='boolean'||typeof c.label!=='string'||typeof c.msg!=='string') return null;
+    checks.push({ok:c.ok,label:c.label.slice(0,300),msg:c.msg.slice(0,600),group:typeof c.group==='string'?c.group.slice(0,60):''});
+  }
+  let sel=null;
+  if(d.sel){
+    const s=d.sel;
+    if(typeof s!=='object'||!Array.isArray(s.matched)||!Array.isArray(s.target)) return null;
+    const ints=a=>a.length<=600&&a.every(n=>Number.isInteger(n)&&n>=0&&n<100000);
+    if(!ints(s.matched)||!ints(s.target)) return null;
+    sel={matched:s.matched.slice(),target:s.target.slice(),error:typeof s.error==='string'?s.error.slice(0,300):null,outside:Number.isInteger(s.outside)?s.outside:0,empty:!!s.empty,count:s.matched.length};
+  }
+  return {ok:true,checks,sel,layoutOk:d.layoutOk!==false};
+}
+window.addEventListener('message',e=>{
+  if(!CK.frame.contentWindow||e.source!==CK.frame.contentWindow) return;
+  if(e.origin!=='null') return;                 /* a sandboxed frame without allow-same-origin has the opaque origin "null" */
+  const d=e.data;
+  if(!d||typeof d!=='object'||d.cl!=='csslab') return;
+  if(d.type==='ready'){ if(CK.readyRes) CK.readyRes(); return; }
+  if(d.type==='result'&&typeof d.id==='number'){
+    const p=CK.pending.get(d.id); if(!p) return;
+    CK.pending.delete(d.id); clearTimeout(p.t);
+    const v=vetResult(d);
+    if(v) p.res(v); else p.rej(new Error('The checker sent an unexpected reply.'));
+  }
+});
+/* give the browser a moment to apply the checker frame's new width (falls back to a timer if rAF is throttled) */
+function nextFrame(){ return new Promise(r=>{ let done=false; const f=()=>{ if(!done){ done=true; r(); } }; try{ requestAnimationFrame(()=>requestAnimationFrame(f)); }catch(e){} setTimeout(f,120); }); }
+let ckChain=Promise.resolve();
+function runChecker(payload){
+  const p=ckChain.then(()=>runOne(payload));
+  ckChain=p.catch(()=>{});
+  return p;
+}
+function runOne(payload){
+  return new Promise((res,rej)=>{
+    const id=++CK.seq;
+    const t=setTimeout(()=>{ CK.pending.delete(id); ckReset(); rej(new Error('The checker did not answer within 3 seconds.')); },3000);
+    CK.pending.set(id,{res,rej,t});
+    ckInit().then(()=>{
+      if(!CK.pending.has(id)) return;
+      CK.frame.style.width=payload.vw+'px';
+      return nextFrame();
+    }).then(()=>{
+      if(!CK.pending.has(id)) return;
+      try{ CK.frame.contentWindow.postMessage(Object.assign({cl:'csslab',type:'run',id:id},payload),'*'); }
+      catch(err){ CK.pending.delete(id); clearTimeout(t); rej(err); }
+    });
+  });
+}
+
+/* ---------- grading ---------- */
+function friendlySel(sel,raw){
+  let m=CL.explainSelectorError(sel,raw);
+  try{ if(/:has\(/i.test(sel)&&window.CSS&&CSS.supports&&!CSS.supports('selector(:has(*))')) m='This browser does not support :has() yet. Try a recent Chrome, Safari or Firefox.'; }catch(e){}
+  return m;
+}
+async function grade(ch,code){
+  if(code.html.length>200000||code.css.length>200000||code.sel.length>1000) throw new Error('Your code is longer than the checker accepts (200,000 characters).');
+  if(ch.mode==='flex'||ch.mode==='grid'){
+    const r=await runChecker({mode:'layout',html:ch.html,css:code.css,base:ch.base,spec:ch.spec,vw:ch.spec.vw||1024});
+    if(!r.ok) throw new Error(r.error);
+    return {checks:r.checks,layoutOk:r.layoutOk};
+  }
+  if(ch.mode==='sel'){
+    const r=await runChecker({mode:'selector',html:ch.html,sel:code.sel,base:ch.base,spec:ch.spec,vw:1024});
+    if(!r.ok) throw new Error(r.error);
+    const out={checks:r.checks,sel:r.sel,layoutOk:true};
+    if(r.sel&&r.sel.error) out.checks=[{ok:false,label:'Your selector is valid CSS',msg:friendlySel(code.sel,r.sel.error),group:''}];
+    return out;
+  }
+  let checks=[], layoutOk=true;
+  for(const vp of ch.vps){
+    const spec={kind:'compare',names:vp.names,where:vp.where,tolPx:4,tolPct:3,colorTol:24};
+    const r=await runChecker({mode:'compare',html:code.html,css:code.css,target:{html:ch.sol.html,css:ch.sol.css},base:ch.base,spec,vw:vp.vw});
+    if(!r.ok) throw new Error(r.error);
+    r.checks.forEach(c=>{ c.vp=vp.where; });
+    checks=checks.concat(r.checks); if(!r.layoutOk) layoutOk=false;
+  }
+  return {checks,layoutOk};
+}
+
+/* ---------- UI: modes, levels, instructions ---------- */
+function renderModes(){
+  $('#modes').innerHTML=MODES.map(m=>`<button class="tab" type="button" data-mode="${m.id}" aria-pressed="${S.mode===m.id}">${esc(m.label)}</button>`).join('');
+}
+function renderProgress(){
+  const total=ALL.length*3, got=ALL.reduce((n,c)=>n+(S.stars[c.id]||0),0);
+  $('#prog-label').textContent='Stars earned';
+  $('#prog-num').textContent=got+' / '+total;
+  $('#prog-bar').style.width=(total?Math.round(got/total*100):0)+'%';
+}
+function renderLevels(){
+  const m=modeOf(S.mode);
+  $('#levels').innerHTML=m.list.map((c,i)=>{
+    const n=S.stars[c.id]||0, on=i===S.last[S.mode];
+    return `<li><button class="lvl" type="button" data-i="${i}" aria-current="${on}"><span class="lvl-n" aria-hidden="true">${i+1}</span><span class="lvl-t">${esc(c.title)}</span>${starsHtml(n)}</button></li>`;
+  }).join('');
+}
+function starRule(ch){
+  return ch.mode==='build'
+    ?'Stars: 3 = every check passes, 2 = at least 80%, 1 = at least 50%. Viewing the solution caps a level at 1 star.'
+    :'Stars: 3 = solved with no hints, 2 = with 1 or 2 hints, 1 = with 3 hints or after viewing the solution.';
+}
+function renderIns(){
+  const ch=cur(), n=S.hints[ch.id]||0;
+  $('#ins').innerHTML=`<div class="tags"><span class="pill ${ch.diff}">${esc(ch.diff)}</span><span class="pill">${esc(ch.topic)}</span><span class="pill">Level ${S.last[S.mode]+1} of ${modeOf(S.mode).list.length}</span></div>
+    <h2 class="lvl-h">${esc(ch.title)}</h2>
+    <p><b>${md(ch.goal)}</b></p>
+    ${ch.info.map(t=>'<p>'+md(t)+'</p>').join('')}
+    <h3>Hints</h3>
+    <div id="hints" aria-live="polite">${hintsHtml(ch,n)}</div>
+    <p class="rules">${esc(starRule(ch))}</p>`;
+}
+function hintsHtml(ch,n){
+  if(!n) return '<p class="muted" style="font-size:13px">No hints used yet. Press <b>Show hint</b> if you are stuck (up to '+ch.hints.length+').</p>';
+  return ch.hints.slice(0,n).map((h,i)=>`<div class="hint-item"><b>Hint ${i+1}</b><span>${md(h)}</span></div>`).join('');
+}
+function renderActs(){
+  const ch=cur(), n=S.hints[ch.id]||0;
+  $('#b-check').innerHTML=ic('play',14)+'<span>Check</span><span class="kbd" aria-hidden="true">Ctrl+↵</span>';
+  $('#b-reset').innerHTML=ic('reset',14)+'<span><span class="lbl-long">Reset </span>level</span>';
+  const hb=$('#b-hint'); hb.innerHTML=ic('bulb',14)+'<span>Show hint (<span id="hint-n">'+n+'</span>/'+ch.hints.length+')</span>';
+  hb.disabled=n>=ch.hints.length;
+  $('#b-sol').innerHTML=ic('eye',14)+'<span>Show solution</span>';
+  $('#b-next').innerHTML='<span>Next level</span>'+ic('next',14);
+  $('#b-check').setAttribute('aria-keyshortcuts','Control+Enter Meta+Enter');
+}
+function clearResults(){
+  $('#res-body').innerHTML='<p class="lead">Press <b>Check</b> (Ctrl/Cmd + Enter) to test your solution. Every check is listed here with a plain reason when it fails.</p>';
+  $('#b-next').classList.remove('success');
+}
+function renderAll(){
+  renderModes(); renderLevels(); renderIns(); renderActs(); renderProgress();
+  loadEditors(); clearResults(); renderPvControls();
+  liveSel={sel:null,matched:[]};
+  const ch=cur();
+  $('#cap-target-t').textContent=ch.mode==='sel'?'Target (dashed green)':'Target';
+  $('#pv-note').textContent=ch.mode==='sel'
+    ?'Elements your selector matches pulse with a solid amber outline. The Target frame shows the elements that must be selected with a dashed green outline.'
+    :'Your HTML and CSS are shown in a sandboxed frame: scripts, event handlers and network requests are blocked.';
+  layoutPreview(); renderTarget(); renderYours();
+  if(ch.mode==='sel') onSelInput(true);
+}
+function selectLevel(mode,i){
+  const a=document.activeElement, inModes=!!(a&&a.closest&&a.closest('#modes')), inLevels=!!(a&&a.closest&&a.closest('#levels'));
+  saveDraft(); S.mode=mode; S.last[mode]=i; saveNow(); renderAll();
+  /* the lists are re-rendered: keep keyboard focus where the user was */
+  const target=inModes?$('#modes [data-mode="'+mode+'"]'):inLevels?$('#levels [aria-current="true"]'):null;
+  if(target) target.focus();
+}
+
+/* ---------- selector mode ---------- */
+let probeTok=0, probeT=0;
+function specChip(sel){
+  const r=CL.specificity(sel);
+  if(r.empty) return '';
+  return `<span class="spec-chip" title="Specificity: ids, classes/attributes/pseudo-classes, elements/pseudo-elements">(${r.max.a}, ${r.max.b}, ${r.max.c})</span>`;
+}
+function renderSelRead(state){
+  const el=$('#sel-read'), sel=$('#t-sel').value, r=CL.specificity(sel);
+  const chip=specChip(sel);
+  let status='';
+  const inp=$('#t-sel'); inp.removeAttribute('aria-invalid');
+  if(!sel.trim()) status='<span class="muted">Type a selector to see what it matches.</span>';
+  else if(state&&state.err){ status='<span class="sel-err">'+esc(state.err)+'</span>'; inp.setAttribute('aria-invalid','true'); }
+  else if(state&&state.count!=null) status='<b>'+state.count+'</b> element'+(state.count===1?'':'s')+' matched'+(state.count?' (pulsing outline in the preview)':'')+'. Target: <b>'+state.target+'</b>.';
+  else status='<span class="muted">Checking…</span>';
+  const warn=r.list.find(x=>x.err);
+  el.innerHTML=`<div class="row"><span>Specificity</span>${chip||'<span class="muted">-</span>'}${r.list.length>1?'<span class="muted">(highest of '+r.list.length+' selectors in the list)</span>':''}${warn?'<span class="muted">('+esc(warn.err)+')</span>':''}</div><div class="row">${status}</div>`;
+}
+function onSelInput(immediate){
+  const ch=cur(); if(ch.mode!=='sel') return;
+  renderSelRead(null);
+  clearTimeout(probeT);
+  probeT=setTimeout(probeSelector,immediate===true?0:250);
+}
+async function probeSelector(){
+  const ch=cur(); if(ch.mode!=='sel') return;
+  const sel=$('#t-sel').value, tok=++probeTok;
+  if(!sel.trim()){ liveSel={sel:'',matched:[]}; renderSelRead(null); renderYours(); return; }
+  try{
+    const r=await runChecker({mode:'selector',html:ch.html,sel:sel,base:ch.base,spec:ch.spec,vw:1024});
+    if(tok!==probeTok||ch!==cur()) return;
+    if(!r.ok||!r.sel){ renderSelRead({err:'Checker problem: '+(r.error||'no reply')}); return; }
+    if(r.sel.error){ liveSel={sel:sel.trim(),matched:[]}; renderSelRead({err:friendlySel(sel,r.sel.error)}); }
+    else { liveSel={sel:sel.trim(),matched:r.sel.matched}; renderSelRead({count:r.sel.count+r.sel.outside,target:r.sel.target.length}); }
+    renderYours();
+  }catch(err){ if(tok===probeTok) renderSelRead({err:'The live check is unavailable ('+err.message+'). You can still press Check.'}); }
+}
+
+/* ---------- results ---------- */
+let busy=false;
+function renderResults(ch,g){
+  const total=g.checks.length, passed=g.checks.filter(c=>c.ok).length, all=passed===total;
+  const hints=S.hints[ch.id]||0, sol=!!S.sol[ch.id];
+  const stars=CL.starsFor(ch.mode,passed,total,hints,sol);
+  const prev=S.stars[ch.id]||0;
+  if(stars>prev){ S.stars[ch.id]=stars; }
+  saveNow();
+  const build=ch.mode==='build';
+  let head, said;
+  if(all){ head='All '+total+' checks passed'; said=head+'. '+stars+' of 3 stars.'; }
+  else { head=passed+' of '+total+' checks passed'; said=head+'. '+(build?stars+' of 3 stars so far.':'Not there yet.'); }
+  const parts=[`<div class="rsum ${all?'ok':'bad'}"><strong>${esc(head)}</strong>${stars||all?starsHtml(stars):''}<span>${esc(all?(sol?'Solution viewed, so this level is capped at 1 star.':'Nice work.'):(build?'Fix the failing items below, then check again.':'Read the reasons below and try again.'))}</span></div>`];
+  if(!g.layoutOk) parts.push('<p class="lead">This browser reported no layout information, so position checks could not run.</p>');
+  if(total>8) parts.push('<label class="rfilter"><input type="checkbox" id="only-fail"> Show failing checks only</label>');
+  const groups=[]; g.checks.forEach(c=>{ const key=build?(c.vp||''):''; let grp=groups.find(x=>x.key===key); if(!grp){ grp={key:key,items:[]}; groups.push(grp); } grp.items.push(c); });
+  groups.forEach(grp=>{
+    if(grp.key) parts.push(`<div class="rgroup">${esc(grp.key)}</div>`);
+    parts.push('<ul class="rlist">'+grp.items.map(c=>`<li class="ritem ${c.ok?'pass':'fail'}"><span class="rbadge">${c.ok?'Pass':'Fail'}</span><span>${esc(c.label)}${c.ok?'':`<span class="why">${esc(c.msg)}</span>`}</span></li>`).join('')+'</ul>');
+  });
+  $('#res-body').innerHTML=parts.join('');
+  const f=$('#only-fail'); if(f) f.addEventListener('change',()=>{ $$('.ritem.pass').forEach(li=>{ li.hidden=f.checked; }); });
+  $('#b-next').classList.toggle('success',all);
+  renderLevels(); renderProgress();
+  announce(said);
+  return {all,stars,passed,total};
+}
+async function doCheck(){
+  if(busy) return; busy=true;
+  const b=$('#b-check'); b.disabled=true;
+  const ch=cur(), code=readCode();
+  $('#res-body').innerHTML='<p class="lead">Checking…</p>'; announce('Checking your solution');
+  try{
+    const g=await grade(ch,code);
+    if(ch!==cur()) return;
+    renderResults(ch,g);
+  }catch(err){
+    $('#res-body').innerHTML='<div class="rsum bad"><strong>The automatic checker could not run</strong><span>'+esc(err.message)+' Try pressing Check again.</span></div>';
+    announce('The automatic checker could not run.');
+  }finally{ busy=false; b.disabled=false; }
+}
+
+/* ---------- dialog ---------- */
+function confirmDialog(o){
+  return new Promise(res=>{
+    const prev=document.activeElement, root=$('#modal-root');
+    root.innerHTML=`<div class="overlay"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-t" aria-describedby="dlg-b"><div class="dialog-h"><h2 id="dlg-t">${esc(o.title)}</h2></div><div class="dialog-b" id="dlg-b">${o.body}</div><div class="dialog-f"><button class="btn" type="button" id="dlg-no">Cancel</button><button class="btn primary" type="button" id="dlg-yes">${esc(o.ok)}</button></div></div></div>`;
+    const done=v=>{ document.removeEventListener('keydown',onKey,true); root.innerHTML=''; if(prev&&prev.focus) prev.focus(); res(v); };
+    const onKey=e=>{
+      if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); done(false); }
+      else if(e.key==='Tab'){
+        const f=$$('button',root); if(!f.length) return;
+        const first=f[0], last=f[f.length-1];
+        if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); }
+        else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); }
+      }
+    };
+    document.addEventListener('keydown',onKey,true);
+    $('#dlg-no').addEventListener('click',()=>done(false));
+    $('#dlg-yes').addEventListener('click',()=>done(true));
+    $('.overlay',root).addEventListener('mousedown',e=>{ if(e.target.classList.contains('overlay')) done(false); });
+    $('#dlg-no').focus();
+  });
+}
+
+/* ---------- toolbar actions ---------- */
+const BK={};
+function setCode(c){
+  const ch=cur();
+  if(ch.mode==='build') EDS.html.ta.value=c.html;
+  EDS.css.ta.value=c.css; $('#t-sel').value=c.sel;
+  ['html','css'].forEach(k=>{ EDS[k].n=0; updateGutter(k); });
+  saveDraft(); updateCssWarn(); renderYours();
+  if(ch.mode==='sel') onSelInput(true);
+}
+async function doReset(){
+  const ch=cur();
+  const ok=await confirmDialog({title:'Reset this level?',body:'<p>Your code goes back to the starter and hints start again. Your best stars are kept.</p>',ok:'Reset level'});
+  if(!ok) return;
+  delete S.drafts[ch.id]; delete S.hints[ch.id]; delete S.sol[ch.id]; delete BK[ch.id]; saveNow();
+  renderIns(); renderActs(); setCode(starter(ch)); clearResults();
+  toast('Level reset');
+}
+function doHint(){
+  const ch=cur(), n=S.hints[ch.id]||0;
+  if(n>=ch.hints.length) return;
+  S.hints[ch.id]=n+1; saveNow();
+  $('#hints').innerHTML=hintsHtml(ch,n+1);
+  renderActs();
+  announce('Hint '+(n+1)+': '+ch.hints[n].replace(/`/g,''));
+  if(n+1>=ch.hints.length) $('#b-sol').focus();
+}
+async function doSolution(){
+  const ch=cur();
+  const ok=await confirmDialog({title:'Show the solution?',body:'<p>Your code will be replaced by the reference solution. A copy of your code is kept so you can restore it.</p><p class="muted">Viewing the solution caps this level at 1 star until you reset it.</p>',ok:'Show solution'});
+  if(!ok) return;
+  BK[ch.id]=readCode();
+  S.sol[ch.id]=true; saveNow();
+  const c=starter(ch);
+  if(ch.mode==='sel') c.sel=ch.sol.sel; else { c.css=ch.sol.css; if(ch.mode==='build') c.html=ch.sol.html; }
+  setCode(c);
+  $('#res-body').innerHTML='<div class="rsum"><strong>Solution loaded</strong><span>Read it, then press Check or Reset level to try again yourself.</span><button class="btn sm" type="button" id="b-restore">Restore my code</button></div>';
+  $('#b-restore').addEventListener('click',()=>{ if(BK[ch.id]){ setCode(BK[ch.id]); clearResults(); toast('Your code is back'); } });
+  announce('Solution loaded into the editor.');
+}
+function doNext(){
+  const mi=MODE_IDS.indexOf(S.mode), list=modeOf(S.mode).list, i=S.last[S.mode];
+  if(i+1<list.length) return selectLevel(S.mode,i+1);
+  if(mi+1<MODES.length) return selectLevel(MODE_IDS[mi+1],0);
+  toast('That was the last level. Well done!'); announce('That was the last level.');
+}
+
+/* ---------- helper panels ---------- */
+const HTABS=[{id:'spec',label:'Specificity'},{id:'contrast',label:'Contrast'},{id:'box',label:'Box model'},{id:'ref',label:'Property reference'}];
+function renderHTabs(){
+  $('#htabs').innerHTML=HTABS.map(t=>`<button class="tab" role="tab" type="button" data-h="${t.id}" id="htab-${t.id}" aria-selected="${S.htab===t.id}" tabindex="${S.htab===t.id?0:-1}" aria-controls="hp-${t.id}">${esc(t.label)}</button>`).join('');
+  HTABS.forEach(t=>{ $('#hp-'+t.id).hidden=t.id!==S.htab; $('#hp-'+t.id).setAttribute('aria-labelledby','htab-'+t.id); });
+}
+/* (a) specificity */
+function renderSpecOut(){
+  const A=CL.specificity($('#sp-a').value), B=CL.specificity($('#sp-b').value);
+  const block=(name,r)=>{
+    if(r.empty) return '';
+    return r.list.map(x=>`<div style="margin-bottom:10px"><div class="spec-out"><span class="muted">${esc(name)}</span><code>${esc(x.text)}</code><span class="spec-num">(${x.a}, ${x.b}, ${x.c})</span></div>
+      ${x.err?'<div class="sel-err">'+esc(x.err)+'</div>':''}
+      <ul class="spec-parts">${x.parts.map(p=>'<li><b>'+esc(p.w==='a'?'ids':p.w==='b'?'class':p.w==='c'?'element':p.w==='arg'?'from ()':p.w==='?'?'?':'0')+'</b> '+esc(p.t)+'</li>').join('')||'<li>nothing</li>'}</ul></div>`).join('');
+  };
+  let v='';
+  if(!A.empty&&!B.empty){
+    const c=CL.cmpSpec(A.max,B.max);
+    v='<p class="verdict">'+(c>0?'A wins: it is more specific than B.':c<0?'B wins: it is more specific than A.':'Tie: the rule that comes later in the stylesheet wins.')+'</p>';
+  }
+  $('#sp-out').innerHTML=block('A',A)+block('B',B)+v+'<p class="muted" style="font-size:12.5px;margin:6px 0 0">Order does not matter until specificity ties. <code>!important</code> and inline styles sit above these numbers.</p>';
+}
+/* (b) contrast */
+function renderContrast(){
+  const fg=CL.parseColor($('#cf-txt').value), bg=CL.parseColor($('#cb-txt').value), out=$('#ct-out');
+  $('#cf-txt').toggleAttribute('aria-invalid',!fg); $('#cb-txt').toggleAttribute('aria-invalid',!bg);
+  if(!fg||!bg){ out.innerHTML='<p class="sel-err">Enter valid colours, for example #1a1e27, rgb(26 30 39) or tomato.</p>'; return; }
+  const r=CL.contrast(fg,bg), rr=Math.round(r*100)/100;
+  const row=(name,need)=>`<tr><td>${name}</td><td>${need}:1</td><td><span class="${r>=need?'tag-pass':'tag-fail'}">${r>=need?'Pass':'Fail'}</span></td></tr>`;
+  let sug='';
+  [4.5,7].forEach(t=>{
+    if(r>=t) return;
+    const s=CL.suggestFg(fg,bg,t);
+    sug+=s?`<div class="sug"><i style="background:${CL.toHex(s)}"></i><span>Nearest text colour reaching ${t}:1 (same hue, only lightness changed): <code>${CL.toHex(s)}</code> (${(Math.round(CL.contrast(s,bg)*100)/100)}:1)</span></div>`
+          :`<div class="sug"><span>No lightness of this text colour reaches ${t}:1 on that background. Change the background instead.</span></div>`;
+  });
+  out.innerHTML=`<div class="swatch" style="background:${esc(CL.toHex(bg))};color:${esc(CL.toHex(fg))}"><span class="big">${rr}:1</span><span class="sm">Normal text sample: the quick brown fox jumps over the lazy dog.</span></div>
+    <table class="ctab"><thead><tr><th scope="col">Text size and level</th><th scope="col">Needs</th><th scope="col">Result</th></tr></thead><tbody>
+    ${row('Normal text, AA',4.5)}${row('Normal text, AAA',7)}${row('Large text (18px bold or 24px), AA',3)}${row('Large text, AAA',4.5)}</tbody></table>${sug}`;
+}
+function syncColor(txtId,pickId,fromPick){
+  const t=$('#'+txtId), p=$('#'+pickId);
+  if(fromPick) t.value=p.value; else { const c=CL.parseColor(t.value); if(c) p.value=CL.toHex(c); }
+  renderContrast();
+}
+/* (c) box model */
+const BM={m:16,b:4,p:16,w:120,h:56,sizing:'content-box'};
+const BM_ROWS=[['m','margin',0,40],['b','border',0,20],['p','padding',0,40],['w','width',40,200],['h','height',24,120]];
+function renderBmControls(){
+  $('#bm-seg').innerHTML=['content-box','border-box'].map(v=>`<button type="button" data-bs="${v}" aria-pressed="${BM.sizing===v}">${v}</button>`).join('');
+  $('#bm-sl').innerHTML=BM_ROWS.map(r=>`<div class="sl"><label for="bm-${r[0]}">${r[1]}</label><input type="range" id="bm-${r[0]}" data-bm="${r[0]}" min="${r[2]}" max="${r[3]}" value="${BM[r[0]]}"><output for="bm-${r[0]}" id="bo-${r[0]}">${BM[r[0]]}px</output></div>`).join('');
+}
+function renderBm(){
+  const {m,b,p,w,h,sizing}=BM;
+  const cw=sizing==='border-box'?Math.max(0,w-2*p-2*b):w, ch=sizing==='border-box'?Math.max(0,h-2*p-2*b):h;
+  const bw=cw+2*p+2*b, bh=ch+2*p+2*b, mw=bw+2*m, mh=bh+2*m;
+  const s=Math.min(1,236/mw,190/mh);
+  const f=v=>Math.round(v*s*10)/10;
+  $('#bm-fig').innerHTML=`<div class="bm-l" style="padding:${f(m)}px"><span class="bm-lbl">margin</span><div class="bm-b" style="border-width:${f(b)}px;padding:0"><span class="bm-lbl" style="top:${-0}px">border</span><div class="bm-p" style="padding:${f(p)}px"><span class="bm-lbl" style="left:${f(3)}px">padding</span><div class="bm-c" style="width:${f(cw)}px;height:${f(ch)}px">content</div></div></div></div>`;
+  $('#bm-out').innerHTML=`<pre class="pre">width: ${w}px;\nheight: ${h}px;\npadding: ${p}px;\nborder: ${b}px solid;\nmargin: ${m}px;\nbox-sizing: ${sizing};</pre>
+    <p style="margin:8px 0 0;font-size:13px">Content box: <b>${cw} × ${ch}</b>px. Border box: <b>${bw} × ${bh}</b>px. Space it takes in the layout (with margin): <b>${mw} × ${mh}</b>px.</p>`;
+}
+/* (d) reference */
+function renderRef(){
+  const q=$('#rf-q').value.trim().toLowerCase();
+  const list=REF.filter(r=>!q||r.join(' ').toLowerCase().includes(q));
+  $('#rf-count').textContent=list.length+' of '+REF.length+' properties'+(q?' match "'+$('#rf-q').value.trim()+'"':'');
+  $('#rf-list').innerHTML=list.map(r=>`<div class="refc"><h3>${esc(r[0])}</h3><p>${esc(r[1])}</p><div class="v">Values: ${esc(r[2])}</div><pre>${esc(r[3])}</pre></div>`).join('')||'<p class="muted">Nothing matches. Try a shorter word.</p>';
+}
+
+/* ---------- maintainer self-test (runs in the real browser) ---------- */
+async function selfTest(){
+  const out=$('#st-out'), btn=$('#st-run'); btn.disabled=true; out.textContent='Running...\n';
+  let bad=0, lines=[];
+  for(const ch of ALL){
+    try{
+      const sol=ch.mode==='sel'?{html:ch.html,css:'',sel:ch.sol.sel}:{html:ch.mode==='build'?ch.sol.html:ch.html,css:ch.sol.css,sel:''};
+      const st=starter(ch);
+      const gs=await grade(ch,sol), gt=await grade(ch,st);
+      const sp=gs.checks.filter(c=>c.ok).length, tp=gt.checks.filter(c=>c.ok).length;
+      const okSol=sp===gs.checks.length, okStart=tp<gt.checks.length;
+      if(!okSol||!okStart) bad++;
+      lines.push((okSol&&okStart?'OK   ':'FAIL ')+ch.id.padEnd(9)+' solution '+sp+'/'+gs.checks.length+(okSol?'':'  <-- should be all passing')+' | starter '+tp+'/'+gt.checks.length+(okStart?'':'  <-- should fail'));
+      if(!okSol) gs.checks.filter(c=>!c.ok).slice(0,3).forEach(c=>lines.push('       '+c.label+': '+c.msg));
+    }catch(err){ bad++; lines.push('ERR  '+ch.id+': '+err.message); }
+    out.textContent=lines.join('\n');
+  }
+  lines.push('\n'+(bad?bad+' problem(s) found.':'All '+ALL.length+' challenges behave as expected in this browser.'));
+  out.textContent=lines.join('\n'); btn.disabled=false;
+}
+
+/* ---------- wiring ---------- */
+function arrowNav(e,sel){
+  if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft'&&e.key!=='Home'&&e.key!=='End') return null;
+  const tabs=$$(sel,e.currentTarget), i=tabs.indexOf(document.activeElement); if(i<0) return null;
+  let j=e.key==='ArrowRight'?(i+1)%tabs.length:e.key==='ArrowLeft'?(i-1+tabs.length)%tabs.length:e.key==='Home'?0:tabs.length-1;
+  e.preventDefault(); return tabs[j];
+}
+function init(){
+  $('#logo').innerHTML=ic('code',18);
+  $('#theme-btn').addEventListener('click',toggleTheme);
+  applyTheme();
+  try{ if(window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{ if(!theme) applyTheme(); }); }catch(e){}
+
+  $('#modes').addEventListener('click',e=>{ const b=e.target.closest('[data-mode]'); if(b&&b.dataset.mode!==S.mode) selectLevel(b.dataset.mode,S.last[b.dataset.mode]); });
+  $('#levels').addEventListener('click',e=>{ const b=e.target.closest('[data-i]'); if(b) selectLevel(S.mode,+b.dataset.i); });
+  $('#etabs').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b) setEditorTab(b.dataset.tab); });
+  $('#etabs').addEventListener('keydown',e=>{ const t=arrowNav(e,'[data-tab]'); if(t) setEditorTab(t.dataset.tab,true); });
+
+  ['html','css'].forEach(k=>{
+    const e=EDS[k];
+    e.ta.addEventListener('input',()=>onEdit(k));
+    e.ta.addEventListener('scroll',()=>{ e.gut.scrollTop=e.ta.scrollTop; });
+    e.ta.addEventListener('keydown',ev=>onEditorKey(ev,k));
+    e.ta.addEventListener('blur',()=>{ if(escArmed){ escArmed=false; resetNote(); } });
+  });
+  $('#t-sel').addEventListener('input',()=>{ saveDraft(); onSelInput(); });
+  $('#t-sel').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!(e.ctrlKey||e.metaKey)){ e.preventDefault(); doCheck(); } });
+  $('#font-dec').addEventListener('click',()=>{ S.font=Math.max(10,S.font-1); applyFont(); save(); });
+  $('#font-inc').addEventListener('click',()=>{ S.font=Math.min(22,S.font+1); applyFont(); save(); });
+
+  $('#b-check').addEventListener('click',doCheck);
+  $('#b-reset').addEventListener('click',doReset);
+  $('#b-hint').addEventListener('click',doHint);
+  $('#b-sol').addEventListener('click',doSolution);
+  $('#b-next').addEventListener('click',doNext);
+  document.addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){ e.preventDefault(); doCheck(); } });
+
+  $('#vp-seg').addEventListener('click',e=>{ const b=e.target.closest('[data-vp]'); if(!b) return; S.vp=b.dataset.vp; save(); renderPvControls(); layoutPreview(); });
+  $('#show-seg').addEventListener('click',e=>{ const b=e.target.closest('[data-show]'); if(!b) return; S.show=b.dataset.show; save(); renderPvControls(); layoutPreview(); });
+  let rz=0; const relayout=()=>{ cancelAnimationFrame(rz); rz=requestAnimationFrame(layoutPreview); };
+  window.addEventListener('resize',relayout);
+  if(typeof ResizeObserver!=='undefined') new ResizeObserver(relayout).observe($('#pv-grid'));
+
+  renderHTabs();
+  $('#htabs').addEventListener('click',e=>{ const b=e.target.closest('[data-h]'); if(b){ S.htab=b.dataset.h; save(); renderHTabs(); } });
+  $('#htabs').addEventListener('keydown',e=>{ const t=arrowNav(e,'[data-h]'); if(t){ S.htab=t.dataset.h; save(); renderHTabs(); $('#htab-'+S.htab).focus(); } });
+  $('#sp-a').addEventListener('input',renderSpecOut); $('#sp-b').addEventListener('input',renderSpecOut); renderSpecOut();
+  $('#cf-txt').addEventListener('input',()=>syncColor('cf-txt','cf-pick',false)); $('#cb-txt').addEventListener('input',()=>syncColor('cb-txt','cb-pick',false));
+  $('#cf-pick').addEventListener('input',()=>syncColor('cf-txt','cf-pick',true)); $('#cb-pick').addEventListener('input',()=>syncColor('cb-txt','cb-pick',true));
+  renderContrast();
+  renderBmControls(); renderBm();
+  $('#bm-sl').addEventListener('input',e=>{ const k=e.target.dataset&&e.target.dataset.bm; if(!k||!has(BM,k)) return; BM[k]=+e.target.value; $('#bo-'+k).textContent=BM[k]+'px'; renderBm(); });
+  $('#bm-seg').addEventListener('click',e=>{ const b=e.target.closest('[data-bs]'); if(!b) return; BM.sizing=b.dataset.bs; $$('#bm-seg button').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); renderBm(); });
+  $('#rf-q').addEventListener('input',renderRef); renderRef();
+  $('#st-run').addEventListener('click',selfTest);
+
+  renderAll();
+  window.addEventListener('pagehide',saveNow);
+}
+init();
+/* test hook: pure helpers only, no authority */
+window.CSSLAB={CL:CL,checkerSource:checkerSource,checkerSrcdoc:checkerSrcdoc,buildSrcdoc:buildSrcdoc,ALL:ALL,MODES:MODES,grade:grade,getState:()=>S};
+</script>
+<script src="levelup-nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,1813 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SQL &amp; Regex - Levelup</title>
+<meta name="description" content="Practice SQL in an in-browser SQLite database and learn regular expressions with a live tester, plain-English explainer and guided challenges.">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f5f8; --panel:#ffffff; --panel-2:#f1f3f7; --border:#e1e4ea; --text:#1a1e27; --muted:#667085;
+  --accent:#4f46e5; --accent-h:#4338ca; --accent-soft:#eceeff; --on-accent:#ffffff;
+  --good:#137a4b; --good-bg:#e5f6ed; --bad:#c0362c; --bad-bg:#fdecea; --warn:#9a5b06; --warn-bg:#fff3de;
+  --code-bg:#fbfbfd; --gutter:#f1f3f7; --shadow:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.06);
+  --mono: ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+    --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+    --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+    --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+  --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+  --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+  --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono)}
+code{font-family:var(--mono);font-size:.9em;background:var(--panel-2);border:1px solid var(--border);border-radius:5px;padding:1px 5px;overflow-wrap:anywhere}
+h1,h2,h3,h4{letter-spacing:-.01em}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip{position:absolute;left:8px;top:-48px;z-index:100;background:var(--accent);color:var(--on-accent);padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:600}
+.skip:focus{top:8px}
+
+/* header */
+.topbar{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;padding:8px 16px;min-height:56px;background:var(--panel);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;text-decoration:none;color:inherit}
+.logo{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--accent);color:var(--on-accent)}
+.brand-name{font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.nav{display:flex;gap:2px;margin-left:8px;overflow-x:auto;scrollbar-width:thin;min-width:0}
+.nav a{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;color:var(--muted);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap}
+.nav a:hover{background:var(--panel-2);color:var(--text)}
+.nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.spacer{flex:1}
+.icon-btn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--panel-2);color:var(--text)}
+
+/* shared controls */
+.btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel);font-weight:600;font-size:13px;white-space:nowrap;transition:background .15s,border-color .15s,box-shadow .15s}
+.btn:hover:not(:disabled){background:var(--panel-2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover:not(:disabled){background:var(--accent-h);border-color:var(--accent-h)}
+.btn.success{background:var(--good);border-color:var(--good);color:var(--on-accent)}
+.btn.success:hover:not(:disabled){filter:brightness(1.08);background:var(--good)}
+.btn.danger{color:var(--bad)}
+.btn.sm{height:28px;padding:0 10px;font-size:12px}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover:not(:disabled){background:var(--panel-2)}
+.input,.select,.textarea{width:100%;border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:7px 10px;min-height:34px;transition:border-color .15s,box-shadow .15s}
+.input:focus,.select:focus,.textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.input[aria-invalid="true"]{border-color:var(--bad)}
+.textarea{resize:vertical;font-family:var(--mono);font-size:13px;line-height:1.55}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+.pill{display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:99px;font-size:11px;font-weight:600;background:var(--panel-2);color:var(--muted);white-space:nowrap}
+.pill.easy{background:var(--good-bg);color:var(--good)}
+.pill.medium{background:var(--warn-bg);color:var(--warn)}
+.pill.hard{background:var(--bad-bg);color:var(--bad)}
+.pill.pk{background:var(--accent-soft);color:var(--accent)}
+.kbd{font-family:var(--mono);font-size:10px;opacity:.75;border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:2px}
+.bar{height:6px;background:var(--panel-2);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--good);border-radius:99px;transition:width .3s}
+.spinner{width:12px;height:12px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--accent);animation:spin .7s linear infinite;display:inline-block;vertical-align:-2px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.seg{display:inline-flex;padding:3px;border-radius:9px;background:var(--panel-2);border:1px solid var(--border);gap:2px}
+.seg button{border:0;background:transparent;border-radius:7px;padding:5px 14px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--accent);box-shadow:var(--shadow)}
+#toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;z-index:60}
+.toast{background:var(--text);color:var(--bg);padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);font-weight:600;font-size:13px;animation:fade .2s;max-width:340px}
+.toast.bad{background:var(--bad);color:var(--on-accent)}
+@keyframes fade{from{opacity:0}}
+
+/* page */
+.page{max-width:1320px;margin:0 auto;padding:16px}
+.intro{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;margin-bottom:12px}
+.intro h1{font-size:20px;line-height:1.3;margin:0 0 2px}
+.intro p{margin:0;color:var(--muted);max-width:70ch}
+.tabs{display:flex;gap:2px}
+.tab{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-weight:600;font-size:14px}
+.tab:hover{background:var(--panel-2);color:var(--text)}
+.tab[aria-selected="true"]{background:var(--accent-soft);color:var(--accent)}
+.tab .count{font-size:11px;background:var(--panel-2);color:var(--muted);border-radius:99px;padding:0 7px;line-height:18px}
+.tab[aria-selected="true"] .count{background:var(--panel);color:var(--accent)}
+.toptabs{padding:4px;margin-bottom:16px;display:inline-flex}
+.section-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--border);min-height:48px}
+.section-h h2{margin:0;font-size:14px}
+.section-h .tools{display:flex;gap:6px;align-items:center;margin-left:auto;flex-wrap:wrap}
+.sec-body{padding:14px}
+.stack{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;min-width:0}
+.small{font-size:12px;color:var(--muted)}
+.lead{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+.notice{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--panel-2);font-size:13px}
+.notice svg{flex:none;margin-top:2px}
+.notice.ok{background:var(--good-bg);color:var(--good)}
+.notice.bad{background:var(--bad-bg);color:var(--bad)}
+.notice.warn{background:var(--warn-bg);color:var(--warn)}
+.notice .nt{color:var(--text);min-width:0;overflow-wrap:anywhere}
+.notice .nt strong{display:block;color:inherit}
+.notice.ok .nt strong{color:var(--good)} .notice.bad .nt strong{color:var(--bad)} .notice.warn .nt strong{color:var(--warn)}
+.notice .btn{margin-top:8px}
+
+/* details / cheat sheets */
+details.cheat{padding:0}
+details.cheat>summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:700;display:flex;align-items:center;gap:8px;border-radius:12px}
+details.cheat>summary::-webkit-details-marker{display:none}
+details.cheat>summary::before{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s}
+details.cheat[open]>summary::before{transform:rotate(45deg)}
+details.cheat>summary:hover{background:var(--panel-2)}
+.cheat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px 16px;padding:4px 14px 14px}
+.cheat-item{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:baseline;font-size:13px;padding:6px 0;border-top:1px dashed var(--border)}
+.cheat-item code{white-space:pre-wrap}
+.cheat-h{grid-column:1/-1;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:8px}
+
+/* SQL */
+.sql-grid{display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px;align-items:start}
+.schema{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;padding:12px}
+.schema h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 8px}
+.tbl{margin-bottom:12px}
+.tbl-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;padding:6px 8px;border:1px solid var(--border);border-radius:8px;background:var(--panel-2);font-weight:700;font-family:var(--mono);font-size:12.5px}
+.tbl-btn:hover{border-color:var(--accent);background:var(--accent-soft)}
+.tbl-btn small{font-family:var(--sans);font-weight:500;color:var(--muted);font-size:11px}
+.cols{list-style:none;margin:4px 0 0;padding:0 0 0 6px;border-left:2px solid var(--border)}
+.cols li{display:flex;align-items:center;gap:6px;padding:2px 6px;font-family:var(--mono);font-size:12px;flex-wrap:wrap}
+.cols .ty{color:var(--muted);font-size:11px;margin-left:auto}
+.cols .pill{height:16px;font-size:10px;padding:0 5px}
+.editor-wrap{padding:12px 14px 4px}
+.sql-editor{min-height:170px;tab-size:2;white-space:pre;overflow:auto;background:var(--code-bg)}
+.hint-line{padding:0 14px 12px;font-size:12px;color:var(--muted)}
+.res-meta{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:12.5px;color:var(--muted);margin-bottom:10px}
+.res-meta strong{color:var(--text)}
+.tbl-wrap{overflow:auto;max-height:420px;border:1px solid var(--border);border-radius:10px;background:var(--panel)}
+table.rs{border-collapse:separate;border-spacing:0;min-width:100%;font-size:13px}
+table.rs th{position:sticky;top:0;z-index:1;background:var(--panel-2);text-align:left;font-weight:700;font-size:12px;padding:7px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+table.rs td{padding:6px 12px;border-bottom:1px solid var(--border);white-space:nowrap;font-family:var(--mono);font-size:12.5px}
+table.rs tr:last-child td{border-bottom:0}
+table.rs tbody tr:hover td{background:var(--panel-2)}
+table.rs .num{text-align:right;font-variant-numeric:tabular-nums}
+table.rs th.num{text-align:right}
+table.rs .rn{color:var(--muted);text-align:right;font-size:11px;width:1%}
+.null{color:var(--muted);font-style:italic}
+.msg-list{margin:0 0 10px;padding-left:18px;font-size:12.5px;color:var(--muted)}
+.hist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+.hist li{min-width:0}
+.hist button{display:block;width:100%;text-align:left;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--panel);font-family:var(--mono);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist button:hover{border-color:var(--accent);background:var(--accent-soft)}
+
+/* challenges */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:7px;min-height:32px;padding:3px 12px 3px 4px;border:1px solid var(--border);border-radius:99px;background:var(--panel);font-weight:600;font-size:12.5px;color:var(--text);text-align:left}
+.chip:hover{background:var(--panel-2)}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.chip.free{padding-left:12px}
+.chip-n{display:grid;place-items:center;flex:none;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border);font-size:11px;background:var(--panel)}
+.chip.done .chip-n{background:var(--good);border-color:var(--good);color:var(--on-accent)}
+.chip-t{min-width:0}
+.ch-detail{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.ch-head{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.ch-head h3{margin:0;font-size:16px}
+.ch-detail p{margin:0 0 10px}
+.ch-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.hint-box{border:1px solid var(--border);background:var(--panel-2);border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:10px}
+.codeblock{margin:0;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--code-bg);font:12.5px/1.6 var(--mono);overflow:auto;white-space:pre;tab-size:2;max-height:320px}
+.prog{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);margin-bottom:12px}
+.prog .bar{flex:1;max-width:280px}
+.fb{margin-top:10px}
+.cases{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:10px 0}
+.case-col{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--panel)}
+.case-col h4{margin:0;padding:6px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--panel-2);border-bottom:1px solid var(--border)}
+.case-col ul{list-style:none;margin:0;padding:6px 10px;display:grid;gap:4px}
+.case-col li{display:flex;align-items:baseline;gap:8px;font-size:12.5px;min-width:0}
+.case-col li code{background:none;border:0;padding:0;white-space:pre-wrap;word-break:break-all}
+.case-col li.ok{color:var(--good)}
+.case-col li.bad{color:var(--bad)}
+.case-col li .flag-txt{margin-left:auto;font-size:11px;font-weight:700;white-space:nowrap}
+.case-col li.ok code,.case-col li.bad code{color:var(--text)}
+
+/* regex */
+.rx-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;align-items:start}
+.fld{display:grid;gap:4px;margin-bottom:12px}
+.fld>label,.fld>.lbl{font-size:12px;font-weight:600;color:var(--muted)}
+.rx-pat{display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:8px;background:var(--panel);padding:0 10px;transition:border-color .15s,box-shadow .15s}
+.rx-pat:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);outline:2px solid var(--accent);outline-offset:1px}
+.rx-pat.bad{border-color:var(--bad)}
+.rx-pat input{flex:1;min-width:0;border:0;outline:none;background:transparent;font-family:var(--mono);font-size:14px;min-height:38px}
+.rx-slash{font-family:var(--mono);font-size:16px;color:var(--muted)}
+.rx-fl{font-family:var(--mono);color:var(--accent);font-weight:700;min-width:1ch}
+.flags{display:flex;gap:6px;flex-wrap:wrap}
+.flag{min-width:38px;height:32px;padding:0 10px;border-radius:8px;border:1px solid var(--border);background:var(--panel);font-family:var(--mono);font-weight:700;font-size:13px;color:var(--muted)}
+.flag:hover{background:var(--panel-2);color:var(--text)}
+.flag[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.flag[aria-pressed="true"]::after{content:" on";font-family:var(--sans);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+.rx-out{margin:0;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--code-bg);font:13px/1.7 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;max-height:300px;overflow:auto;min-height:44px}
+mark{color:inherit;border-radius:3px;padding:0 1px}
+mark.m-a{background:var(--accent-soft);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;text-decoration-color:var(--accent)}
+mark.m-b{background:var(--warn-bg);text-decoration:underline dashed;text-decoration-thickness:2px;text-underline-offset:3px;text-decoration-color:var(--warn)}
+.m-empty{display:inline-block;width:0;height:1.1em;border-left:2px solid var(--bad);vertical-align:text-bottom;margin:0 1px}
+.rx-count{font-weight:700;font-size:13px}
+.mlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;max-height:320px;overflow:auto}
+.mlist li{border:1px solid var(--border);border-radius:8px;padding:6px 10px;background:var(--panel);font-size:12.5px}
+.mlist .mh{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.mlist .mn{font-weight:700;color:var(--muted)}
+.mlist .gr{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;margin-top:4px;padding-top:4px;border-top:1px dashed var(--border)}
+.mlist .gr dt{color:var(--muted);font-weight:600;font-size:12px}
+.mlist .gr dd{margin:0;font-family:var(--mono);font-size:12px;overflow-wrap:anywhere;white-space:pre-wrap}
+.rx-src{font:13px/1.6 var(--mono);padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--code-bg);margin:0 0 10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.rx-src mark{background:var(--accent);color:var(--on-accent);border-radius:3px;padding:1px 0}
+.exp{max-height:460px;overflow:auto}
+.exp ul{list-style:none;margin:0;padding:0 0 0 14px;border-left:1px dashed var(--border)}
+.exp>ul{padding-left:0;border-left:0}
+.exp .row{padding:3px 8px;border-radius:6px;font-size:13px;overflow-wrap:anywhere;border:1px solid transparent}
+.exp .row:hover,.exp .row:focus{background:var(--accent-soft);outline:none;border-color:color-mix(in srgb,var(--accent) 40%,transparent)}
+.exp .row:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.exp .row code{background:var(--panel-2);font-size:.92em}
+.exp .row.unk{color:var(--warn)}
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.lib-item{display:grid;gap:6px;align-content:start;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel)}
+.lib-item h3{margin:0;font-size:13.5px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.lib-item code{display:block;white-space:pre-wrap;word-break:break-all;font-size:11.5px}
+.lib-item p{margin:0;font-size:12px;color:var(--muted)}
+.rx-input{display:flex;gap:8px;align-items:center}
+.rx-input .rx-pat{flex:1;min-width:0}
+
+@media (max-width:1000px){
+  .sql-grid,.rx-grid{grid-template-columns:minmax(0,1fr)}
+  .schema{position:static;max-height:none}
+  .schema .tbls{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:4px 12px}
+}
+@media (max-width:820px){
+  .nav{order:3;flex:1 1 100%;margin-left:0;padding-bottom:2px}
+  .topbar{padding:8px 16px}
+}
+@media (max-width:640px){
+  .cases{grid-template-columns:minmax(0,1fr)}
+  .toptabs{display:flex}
+  .toptabs .tab{flex:1;justify-content:center}
+  .btn .lbl-long{display:none}
+  .rx-input{flex-wrap:wrap}
+  .ch-actions .btn{flex:1 1 auto;justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+  <a class="brand" href="index.html" aria-label="Levelup home"><span class="logo" id="logo"></span><span class="brand-name">Levelup</span></a>
+  <nav class="nav" aria-label="Levelup pages" data-levelup-nav></nav>
+  <div class="spacer"></div>
+  <button class="icon-btn" id="theme-btn" type="button" aria-label="Toggle light/dark theme"></button>
+</header>
+
+<main class="page" id="main">
+  <div class="intro">
+    <div>
+      <h1>SQL &amp; Regex playground</h1>
+      <p>Query a small company database with real SQLite, or test and learn regular expressions with a live matcher and plain-English explainer. Everything runs in your browser.</p>
+    </div>
+  </div>
+
+  <div class="tabs card toptabs" role="tablist" aria-label="Playground sections">
+    <button class="tab" role="tab" type="button" id="tab-sql" aria-controls="panel-sql" aria-selected="true">SQL <span class="count" id="cnt-sql" aria-hidden="true"></span></button>
+    <button class="tab" role="tab" type="button" id="tab-rx" aria-controls="panel-rx" aria-selected="false" tabindex="-1">Regex <span class="count" id="cnt-rx" aria-hidden="true"></span></button>
+  </div>
+
+  <!-- ================= SQL ================= -->
+  <section id="panel-sql" role="tabpanel" aria-labelledby="tab-sql" tabindex="-1">
+    <div class="sql-grid">
+      <aside class="schema card" aria-label="Database schema">
+        <h2>Tables</h2>
+        <div class="tbls" id="schema"></div>
+        <p class="small" style="margin:8px 0 0">Click a table name to insert <code>SELECT * FROM ... LIMIT 10;</code> into the editor.</p>
+      </aside>
+
+      <div class="stack">
+        <div id="sql-load" role="status" aria-live="polite"></div>
+
+        <section class="card" aria-labelledby="sql-ch-title">
+          <div class="section-h">
+            <h2 id="sql-ch-title">Guided challenges</h2>
+            <div class="tools"><span class="small" id="sql-prog-label"></span></div>
+          </div>
+          <div class="sec-body">
+            <div class="prog"><div class="bar" role="progressbar" aria-label="SQL challenges solved" id="sql-prog-bar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0"><i style="width:0"></i></div></div>
+            <p class="lead">Pick a challenge, write your query in the editor below, then press <strong>Check</strong>. Column names do not matter but column order does; row order only matters when the task asks for sorting.</p>
+            <div class="chips" id="sql-chips" role="group" aria-label="Choose a challenge"></div>
+            <div class="ch-detail" id="sql-ch-detail" hidden></div>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="sql-ed-title">
+          <div class="section-h">
+            <h2 id="sql-ed-title">Query</h2>
+            <div class="tools">
+              <button class="btn ghost sm" type="button" id="sql-reset" title="Throw away all changes and re-create the sample data">Reset database</button>
+              <button class="btn primary" type="button" id="sql-run" title="Run (Ctrl/Cmd + Enter)">Run <span class="kbd" aria-hidden="true">Ctrl+Enter</span></button>
+            </div>
+          </div>
+          <div class="editor-wrap">
+            <label class="sr-only" for="sql-editor">SQL query</label>
+            <textarea class="textarea sql-editor" id="sql-editor" rows="8" spellcheck="false" wrap="off" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="sql-editor-hint" placeholder="SELECT * FROM employees;"></textarea>
+          </div>
+          <div class="hint-line" id="sql-editor-hint">Ctrl/Cmd + Enter runs the query. Tab indents; press Esc first, then Tab, to move focus out. Several statements are allowed; the last SELECT is shown.</div>
+        </section>
+
+        <section class="card" aria-labelledby="sql-res-title">
+          <div class="section-h"><h2 id="sql-res-title">Result</h2></div>
+          <div class="sec-body">
+            <div id="sql-status" role="status" aria-live="polite"><span class="muted">Run a query to see results here.</span></div>
+            <div id="sql-error" role="alert"></div>
+            <ul class="msg-list" id="sql-msgs" hidden></ul>
+            <div class="tbl-wrap" id="sql-table" tabindex="0" role="region" aria-label="Query result table" hidden></div>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="sql-hist-title">
+          <div class="section-h"><h2 id="sql-hist-title">History</h2><div class="tools"><button class="btn ghost sm" type="button" id="sql-hist-clear">Clear</button></div></div>
+          <div class="sec-body"><ul class="hist" id="sql-hist"></ul></div>
+        </section>
+
+        <details class="card cheat" id="sql-cheat">
+          <summary>SQL cheat sheet</summary>
+          <div class="cheat-grid" id="sql-cheat-grid"></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= REGEX ================= -->
+  <section id="panel-rx" role="tabpanel" aria-labelledby="tab-rx" tabindex="-1" hidden>
+    <div class="stack">
+      <div class="rx-grid">
+        <div class="stack">
+          <section class="card" aria-labelledby="rx-in-title">
+            <div class="section-h"><h2 id="rx-in-title">Pattern and test text</h2></div>
+            <div class="sec-body">
+              <div class="fld">
+                <label for="rx-pat">Pattern</label>
+                <div class="rx-pat" id="rx-pat-box">
+                  <span class="rx-slash" aria-hidden="true">/</span>
+                  <input id="rx-pat" type="text" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="rx-error" placeholder="type a pattern, e.g. \d+">
+                  <span class="rx-slash" aria-hidden="true">/</span><span class="rx-fl" id="rx-fl-show" aria-hidden="true"></span>
+                </div>
+                <div id="rx-error" role="alert"></div>
+              </div>
+              <div class="fld">
+                <span class="lbl" id="rx-flags-lbl">Flags</span>
+                <div class="flags" id="rx-flags" role="group" aria-labelledby="rx-flags-lbl"></div>
+                <p class="small" style="margin:6px 0 0">g global &middot; i ignore case &middot; m multiline &middot; s dotAll &middot; u unicode &middot; y sticky. Hover or focus a flag for details.</p>
+              </div>
+              <div class="fld" style="margin-bottom:0">
+                <label for="rx-text">Test string</label>
+                <textarea class="textarea" id="rx-text" rows="6" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="card" aria-labelledby="rx-res-title">
+            <div class="section-h"><h2 id="rx-res-title">Matches</h2><div class="tools"><span class="rx-count" id="rx-count" role="status" aria-live="polite"></span></div></div>
+            <div class="sec-body">
+              <pre class="rx-out" id="rx-hl" aria-label="Test string with matches highlighted"></pre>
+              <p class="small" style="margin:6px 0 10px">Matches alternate between a solid underline and a dashed underline. A red bar marks an empty match.</p>
+              <ol class="mlist" id="rx-list" aria-label="Match details"></ol>
+            </div>
+          </section>
+
+          <section class="card" aria-labelledby="rx-rep-title">
+            <div class="section-h"><h2 id="rx-rep-title">Replace</h2></div>
+            <div class="sec-body">
+              <div class="fld">
+                <label for="rx-repl">Replacement <span class="muted">(use <code>$1</code>, <code>$&lt;name&gt;</code>, <code>$&amp;</code>)</span></label>
+                <input class="input mono" id="rx-repl" type="text" spellcheck="false" autocomplete="off">
+              </div>
+              <div class="lbl small" id="rx-rep-lbl">Result</div>
+              <pre class="rx-out" id="rx-rep-out" aria-labelledby="rx-rep-lbl" aria-live="polite"></pre>
+            </div>
+          </section>
+        </div>
+
+        <section class="card" aria-labelledby="rx-exp-title">
+          <div class="section-h"><h2 id="rx-exp-title">Plain-English explainer</h2></div>
+          <div class="sec-body">
+            <p class="lead">Hover or focus a row to highlight that part of the pattern.</p>
+            <pre class="rx-src" id="rx-src" aria-label="Pattern source"></pre>
+            <div class="exp" id="rx-exp"></div>
+          </div>
+        </section>
+      </div>
+
+      <section class="card" aria-labelledby="rx-lib-title">
+        <div class="section-h"><h2 id="rx-lib-title">Common patterns</h2></div>
+        <div class="sec-body"><div class="lib" id="rx-lib"></div></div>
+      </section>
+
+      <section class="card" aria-labelledby="rx-ch-title">
+        <div class="section-h"><h2 id="rx-ch-title">Regex challenges</h2><div class="tools"><span class="small" id="rx-prog-label"></span></div></div>
+        <div class="sec-body">
+          <div class="prog"><div class="bar" role="progressbar" aria-label="Regex challenges solved" id="rx-prog-bar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><i style="width:0"></i></div></div>
+          <p class="lead">Write one pattern that matches every string in the first list and none in the second. Each challenge says whether the whole string must match or the pattern may match anywhere.</p>
+          <div class="chips" id="rx-chips" role="group" aria-label="Choose a challenge"></div>
+          <div class="ch-detail" id="rx-ch-detail" hidden></div>
+        </div>
+      </section>
+
+      <details class="card cheat" id="rx-cheat">
+        <summary>Regex cheat sheet</summary>
+        <div class="cheat-grid" id="rx-cheat-grid"></div>
+      </details>
+    </div>
+  </section>
+</main>
+<div id="toasts" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ==========================================================================
+   Core: DOM helpers, storage, theme, icons, tabs
+   ========================================================================== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const plural=(n,w,pl)=>n+' '+(n===1?w:(pl||w+'s'));
+
+const KEY_SHARED='code-playground:v1';          /* shared with index.html: only `theme` is touched here */
+const KEY_OWN='code-playground:sqlregex:v1';    /* this page's own progress */
+
+function lsRead(key){
+  try{ const o=JSON.parse(localStorage.getItem(key)); return (o&&typeof o==='object'&&!Array.isArray(o))?o:null; }catch(e){ return null; }
+}
+function lsWrite(key,val){ try{ localStorage.setItem(key,JSON.stringify(val)); return true; }catch(e){ return false; } }
+
+const RX_DEFAULT_TEXT='Contact: ada@example.com, grace@navy.mil\nSupport: help@code-playground.dev (24/7)\nNot an address: nobody@, @nowhere';
+const S=(function(){
+  const d={tab:'sql',sqlDone:{},rxDone:{},history:[],drafts:{},sqlActive:null,rxActive:null,
+           rx:{pattern:'(\\w+)@([\\w.-]+)\\.(\\w+)',flags:'g',text:RX_DEFAULT_TEXT,repl:'$1 at $2'},rxDrafts:{}};
+  const o=lsRead(KEY_OWN)||{};
+  const s=Object.assign(d,o);
+  if(s.tab!=='sql'&&s.tab!=='regex') s.tab='sql';
+  ['sqlDone','rxDone','drafts','rxDrafts','rx'].forEach(k=>{ if(!s[k]||typeof s[k]!=='object'||Array.isArray(s[k])) s[k]=d[k]; });
+  s.rx=Object.assign({},d.rx,s.rx);
+  ['pattern','flags','text','repl'].forEach(k=>{ if(typeof s.rx[k]!=='string') s.rx[k]=d.rx[k]; });
+  s.history=Array.isArray(s.history)?s.history.filter(x=>typeof x==='string').slice(0,10):[];
+  return s;
+})();
+let saveTimer=0;
+function save(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>lsWrite(KEY_OWN,S),150); }
+function saveNow(){ clearTimeout(saveTimer); lsWrite(KEY_OWN,S); }
+
+/* icons (same stroke style as index.html) */
+const P={
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M20.5 14A8.5 8.5 0 1110 3.5a7 7 0 0010.5 10.5z"/>',
+  code:'<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  alert:'<path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.5v.5"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/>'
+};
+const ic=(n,s=16)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+
+function toast(msg,bad){
+  const t=document.createElement('div'); t.className='toast'+(bad?' bad':''); t.textContent=msg;
+  $('#toasts').appendChild(t); setTimeout(()=>t.remove(),3200);
+}
+/* tiny inline formatter for trusted static strings: `code` -> <code> (input is escaped first) */
+const fmtInline=s=>esc(s).replace(/`([^`]+)`/g,'<code>$1</code>');
+
+/* ---- theme: same key + shape as index.html; only the `theme` field is written ---- */
+let themeMem=null;                              /* fallback when storage is blocked */
+function getTheme(){ const o=lsRead(KEY_SHARED); return o&&(o.theme==='light'||o.theme==='dark')?o.theme:themeMem; }
+function setTheme(t){ themeMem=t; const o=lsRead(KEY_SHARED)||{}; o.theme=t; lsWrite(KEY_SHARED,o); }
+function isDark(){
+  const t=getTheme(); if(t) return t==='dark';
+  try{ return !!(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches); }catch(e){ return false; }
+}
+function applyTheme(){
+  const t=getTheme();
+  if(t) document.documentElement.dataset.theme=t; else delete document.documentElement.dataset.theme;
+  const b=$('#theme-btn'); if(!b) return;
+  b.innerHTML=ic(isDark()?'sun':'moon',18);
+  b.title=isDark()?'Switch to light theme':'Switch to dark theme';
+}
+function toggleTheme(){ setTheme(isDark()?'light':'dark'); applyTheme(); }
+
+/* ---- progress display shared by both tabs ---- */
+function setProgress(kind,solved,total){
+  const bar=$('#'+kind+'-prog-bar');
+  bar.setAttribute('aria-valuenow',String(solved)); bar.setAttribute('aria-valuemax',String(total));
+  bar.firstElementChild.style.width=(total?solved/total*100:0)+'%';
+  $('#'+kind+'-prog-label').textContent=solved+' of '+total+' solved';
+  $('#cnt-'+(kind==='sql'?'sql':'rx')).textContent=solved+'/'+total;
+}
+/* chips row shared by SQL and Regex challenges */
+function renderChips(host,list,done,active,freeLabel){
+  let h='';
+  if(freeLabel) h+=`<button type="button" class="chip free" data-id="" aria-pressed="${active?'false':'true'}">${esc(freeLabel)}</button>`;
+  h+=list.map((c,i)=>{
+    const d=!!done[c.id];
+    return `<button type="button" class="chip${d?' done':''}" data-id="${esc(c.id)}" aria-pressed="${c.id===active}" aria-label="Challenge ${i+1}: ${esc(c.title)}${d?', solved':''}"><span class="chip-n" aria-hidden="true">${d?ic('check',13):i+1}</span><span class="chip-t">${esc(c.short||c.title)}</span></button>`;
+  }).join('');
+  host.innerHTML=h;
+}
+function verdictHtml(kind,title,body){
+  const cls=kind==='ok'?'ok':kind==='warn'?'warn':'bad';
+  return `<div class="notice ${cls}">${ic(kind==='ok'?'check':'alert',18)}<div class="nt"><strong>${esc(title)}</strong>${body}</div></div>`;
+}
+function cheatHtml(groups){
+  return groups.map(g=>`<div class="cheat-h">${esc(g.h)}</div>`+g.items.map(it=>`<div class="cheat-item"><code>${esc(it[0])}</code><span>${esc(it[1])}</span></div>`).join('')).join('');
+}
+
+/* ---- top-level tabs ---- */
+let sqlStarted=false;
+function setTab(name,focus){
+  if(name!=='sql'&&name!=='regex') name='sql';
+  S.tab=name; save();
+  const tabs={sql:$('#tab-sql'),regex:$('#tab-rx')}, panels={sql:$('#panel-sql'),regex:$('#panel-rx')};
+  Object.keys(tabs).forEach(k=>{
+    const on=k===name;
+    tabs[k].setAttribute('aria-selected',String(on)); tabs[k].tabIndex=on?0:-1; panels[k].hidden=!on;
+  });
+  if(focus) tabs[name].focus();
+  if(name==='sql'&&!sqlStarted){ sqlStarted=true; sqlStart(); }
+  if(name==='regex') rxRefresh();
+}
+function initTabs(){
+  const order=['sql','regex'], tabs={sql:$('#tab-sql'),regex:$('#tab-rx')};
+  order.forEach(k=>{
+    tabs[k].addEventListener('click',()=>setTab(k));
+    tabs[k].addEventListener('keydown',e=>{
+      let i=order.indexOf(k);
+      if(e.key==='ArrowRight') i=(i+1)%order.length;
+      else if(e.key==='ArrowLeft') i=(i+order.length-1)%order.length;
+      else if(e.key==='Home') i=0; else if(e.key==='End') i=order.length-1; else return;
+      e.preventDefault(); setTab(order[i],true);
+    });
+  });
+}
+
+/* ==========================================================================
+   SQL: sample data, schema description, challenges
+   ========================================================================== */
+const SEED_SQL=`
+CREATE TABLE departments (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  location TEXT NOT NULL
+);
+CREATE TABLE employees (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  department_id INTEGER REFERENCES departments(id),
+  manager_id INTEGER REFERENCES employees(id),
+  salary INTEGER NOT NULL,
+  hire_date TEXT NOT NULL,
+  title TEXT
+);
+CREATE TABLE customers (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  city TEXT,
+  signup_date TEXT NOT NULL
+);
+CREATE TABLE orders (
+  id INTEGER PRIMARY KEY,
+  customer_id INTEGER REFERENCES customers(id),
+  order_date TEXT NOT NULL,
+  total REAL NOT NULL,
+  status TEXT NOT NULL
+);
+CREATE TABLE order_items (
+  id INTEGER PRIMARY KEY,
+  order_id INTEGER NOT NULL REFERENCES orders(id),
+  product TEXT NOT NULL,
+  quantity INTEGER NOT NULL,
+  unit_price REAL NOT NULL
+);
+
+INSERT INTO departments (id, name, location) VALUES
+  (1, 'Engineering', 'Berlin'),
+  (2, 'Sales', 'New York'),
+  (3, 'Marketing', 'London'),
+  (4, 'Finance', 'Berlin'),
+  (5, 'Legal', 'London');
+
+INSERT INTO employees (id, name, department_id, manager_id, salary, hire_date, title) VALUES
+  (1, 'Grace Okafor', NULL, NULL, 185000, '2015-03-01', 'CEO'),
+  (2, 'Liam Chen', 1, 1, 150000, '2016-06-15', 'CTO'),
+  (3, 'Sofia Rossi', 2, 1, 140000, '2016-09-01', 'VP Sales'),
+  (4, 'Noah Patel', 3, 1, 125000, '2017-02-20', 'CMO'),
+  (5, 'Emma Wagner', 4, 1, 130000, '2017-05-11', 'CFO'),
+  (6, 'Mateo Garcia', 1, 2, 120000, '2018-01-08', 'Engineering Manager'),
+  (7, 'Ava Kim', 1, 6, 105000, '2019-04-22', 'Senior Engineer'),
+  (8, 'Ethan Brown', 1, 6, 98000, '2020-08-03', 'Software Engineer'),
+  (9, 'Mia Johnson', 1, 6, 98000, '2021-02-15', 'Software Engineer'),
+  (10, 'Lucas Silva', 1, 6, 72000, '2023-07-10', 'Junior Engineer'),
+  (11, 'Isabella Moreau', 2, 3, 95000, '2018-11-19', 'Sales Manager'),
+  (12, 'Oliver Novak', 2, 11, 68000, '2020-03-30', 'Sales Rep'),
+  (13, 'Charlotte Dubois', 2, 11, 71000, '2021-06-01', 'Sales Rep'),
+  (14, 'Henry Larsen', 2, 11, 66000, '2022-09-12', 'Sales Rep'),
+  (15, 'Amelia Nowak', 3, 4, 82000, '2019-10-07', 'Marketing Lead'),
+  (16, 'James Ito', 3, 15, 61000, '2022-01-24', 'Content Specialist'),
+  (17, 'Harper Singh', 4, 5, 90000, '2018-05-14', 'Senior Accountant'),
+  (18, 'Elijah Mendes', 4, 17, 64000, '2023-03-06', 'Accountant'),
+  (19, 'Zoe Hansen', NULL, 2, 80000, '2024-02-19', NULL),
+  (20, 'Jack Murphy', 2, 3, 99000, '2019-01-14', 'Account Executive');
+
+INSERT INTO customers (id, name, city, signup_date) VALUES
+  (1, 'Acme Corp', 'Berlin', '2022-01-10'),
+  (2, 'Globex', 'New York', '2022-02-14'),
+  (3, 'Initech', 'London', '2022-03-03'),
+  (4, 'Umbrella Ltd', 'London', '2022-05-21'),
+  (5, 'Hooli', 'New York', '2022-07-09'),
+  (6, 'Stark Industries', 'New York', '2022-09-30'),
+  (7, 'Wayne Enterprises', 'Berlin', '2023-01-17'),
+  (8, 'Wonka Foods', 'Paris', '2023-03-25'),
+  (9, 'Soylent Co', 'Paris', '2023-06-12'),
+  (10, 'Vandelay Imports', NULL, '2023-08-01'),
+  (11, 'Cyberdyne', 'London', '2023-10-19'),
+  (12, 'Pied Piper', 'Berlin', '2024-01-05');
+
+INSERT INTO orders (id, customer_id, order_date, total, status) VALUES
+  (1, 1, '2023-01-26', 60, 'delivered'),
+  (2, 2, '2023-02-10', 3420, 'shipped'),
+  (3, 5, '2023-03-21', 80, 'cancelled'),
+  (4, 2, '2023-04-16', 1385, 'delivered'),
+  (5, 2, '2023-05-12', 570, 'delivered'),
+  (6, 7, '2023-06-15', 800, 'shipped'),
+  (7, 10, '2023-07-13', 1590, 'delivered'),
+  (8, 3, '2023-08-01', 230, 'shipped'),
+  (9, 6, '2023-09-13', 450, 'delivered'),
+  (10, 10, '2023-10-17', 240, 'shipped'),
+  (11, 1, '2023-11-11', 385, 'pending'),
+  (12, 7, '2023-12-21', 100, 'delivered'),
+  (13, 2, '2023-01-15', 270, 'delivered'),
+  (14, NULL, '2023-02-11', 140, 'cancelled'),
+  (15, 4, '2024-03-09', 2160, 'shipped'),
+  (16, 1, '2024-04-02', 130, 'shipped'),
+  (17, 2, '2024-05-23', 480, 'shipped'),
+  (18, 1, '2024-06-13', 1200, 'cancelled'),
+  (19, 5, '2024-07-02', 1305, 'shipped'),
+  (20, 10, '2024-08-18', 750, 'cancelled'),
+  (21, 5, '2024-09-14', 950, 'delivered'),
+  (22, 4, '2024-10-10', 880, 'shipped'),
+  (23, 7, '2024-11-15', 1400, 'shipped'),
+  (24, 2, '2024-12-16', 540, 'delivered'),
+  (25, 2, '2024-01-10', 75, 'delivered'),
+  (26, NULL, '2024-02-14', 240, 'shipped'),
+  (27, 3, '2024-03-09', 720, 'cancelled'),
+  (28, 5, '2024-04-14', 1360, 'cancelled'),
+  (29, 6, '2024-05-14', 270, 'delivered'),
+  (30, 2, '2024-06-26', 700, 'delivered');
+INSERT INTO order_items (id, order_id, product, quantity, unit_price) VALUES
+  (1, 1, 'Mouse', 1, 25),
+  (2, 1, 'USB Hub', 1, 35),
+  (3, 2, 'Laptop', 1, 1200),
+  (4, 2, 'Headset', 3, 90),
+  (5, 2, 'Chair', 3, 250),
+  (6, 2, 'Monitor', 4, 300),
+  (7, 3, 'Keyboard', 1, 80),
+  (8, 4, 'Monitor', 4, 300),
+  (9, 4, 'USB Hub', 3, 35),
+  (10, 4, 'Keyboard', 1, 80),
+  (11, 5, 'Webcam', 1, 60),
+  (12, 5, 'Keyboard', 3, 80),
+  (13, 5, 'Headset', 3, 90),
+  (14, 6, 'Keyboard', 1, 80),
+  (15, 6, 'Docking Station', 4, 180),
+  (16, 7, 'Laptop', 1, 1200),
+  (17, 7, 'USB Hub', 2, 35),
+  (18, 7, 'Keyboard', 4, 80),
+  (19, 8, 'Keyboard', 2, 80),
+  (20, 8, 'USB Hub', 2, 35),
+  (21, 9, 'Desk', 1, 450),
+  (22, 10, 'Webcam', 4, 60),
+  (23, 11, 'Mouse', 1, 25),
+  (24, 11, 'Docking Station', 2, 180),
+  (25, 12, 'Mouse', 4, 25),
+  (26, 13, 'Headset', 3, 90),
+  (27, 14, 'USB Hub', 4, 35),
+  (28, 15, 'Keyboard', 3, 80),
+  (29, 15, 'Docking Station', 4, 180),
+  (30, 15, 'Laptop', 1, 1200),
+  (31, 16, 'Keyboard', 1, 80),
+  (32, 16, 'Mouse', 2, 25),
+  (33, 17, 'Monitor', 1, 300),
+  (34, 17, 'Mouse', 3, 25),
+  (35, 17, 'USB Hub', 3, 35),
+  (36, 18, 'Laptop', 1, 1200),
+  (37, 19, 'Laptop', 1, 1200),
+  (38, 19, 'USB Hub', 3, 35),
+  (39, 20, 'Chair', 3, 250),
+  (40, 21, 'Chair', 3, 250),
+  (41, 21, 'USB Hub', 4, 35),
+  (42, 21, 'Webcam', 1, 60),
+  (43, 22, 'Chair', 1, 250),
+  (44, 22, 'Webcam', 3, 60),
+  (45, 22, 'Desk', 1, 450),
+  (46, 23, 'Monitor', 3, 300),
+  (47, 23, 'Desk', 1, 450),
+  (48, 23, 'Mouse', 2, 25),
+  (49, 24, 'Docking Station', 3, 180),
+  (50, 25, 'Mouse', 3, 25),
+  (51, 26, 'Keyboard', 3, 80),
+  (52, 27, 'Headset', 1, 90),
+  (53, 27, 'Docking Station', 1, 180),
+  (54, 27, 'Desk', 1, 450),
+  (55, 28, 'Docking Station', 2, 180),
+  (56, 28, 'Chair', 4, 250),
+  (57, 29, 'Docking Station', 1, 180),
+  (58, 29, 'Headset', 1, 90),
+  (59, 30, 'Mouse', 4, 25),
+  (60, 30, 'Monitor', 2, 300);
+`;
+
+/* Static description used by the schema browser (a test asserts it matches PRAGMA table_info). */
+const SCHEMA=[
+  {name:'departments',cols:[['id','INTEGER','pk'],['name','TEXT'],['location','TEXT']]},
+  {name:'employees',cols:[['id','INTEGER','pk'],['name','TEXT'],['department_id','INTEGER','fk','departments.id'],['manager_id','INTEGER','fk','employees.id'],['salary','INTEGER'],['hire_date','TEXT'],['title','TEXT']]},
+  {name:'customers',cols:[['id','INTEGER','pk'],['name','TEXT'],['city','TEXT'],['signup_date','TEXT']]},
+  {name:'orders',cols:[['id','INTEGER','pk'],['customer_id','INTEGER','fk','customers.id'],['order_date','TEXT'],['total','REAL'],['status','TEXT']]},
+  {name:'order_items',cols:[['id','INTEGER','pk'],['order_id','INTEGER','fk','orders.id'],['product','TEXT'],['quantity','INTEGER'],['unit_price','REAL']]}
+];
+
+const SQL_CHALLENGES=[
+  {id:'sql-1',short:'Filter rows',title:'Well-paid engineers',level:'easy',topic:'SELECT / WHERE',ordered:false,
+   task:'List the `name` and `salary` of every employee in the Engineering department (`department_id = 1`) who earns more than 100000.',
+   hint:'Put both conditions in the WHERE clause and join them with AND: `department_id = 1` and `salary > 100000`.',
+   solution:'SELECT name, salary\nFROM employees\nWHERE department_id = 1\n  AND salary > 100000;'},
+  {id:'sql-2',short:'Top earners',title:'The five highest salaries',level:'easy',topic:'ORDER BY / LIMIT',ordered:true,
+   task:'Show the `name` and `salary` of the 5 highest-paid employees, with the highest salary first.',
+   hint:'`ORDER BY salary DESC` sorts from high to low, and `LIMIT 5` keeps only the first five rows.',
+   solution:'SELECT name, salary\nFROM employees\nORDER BY salary DESC\nLIMIT 5;'},
+  {id:'sql-3',short:'Aggregates',title:'Delivered order totals',level:'easy',topic:'COUNT / SUM / AVG',ordered:false,
+   task:'For all orders with status `\'delivered\'`, return one row with three columns in this order: the number of orders, the sum of `total`, and the average `total`.',
+   hint:'Aggregate functions collapse many rows into one: `COUNT(*)`, `SUM(total)`, `AVG(total)`. Filter first with `WHERE status = \'delivered\'`.',
+   solution:'SELECT COUNT(*), SUM(total), AVG(total)\nFROM orders\nWHERE status = \'delivered\';'},
+  {id:'sql-4',short:'Group + HAVING',title:'Departments that pay well',level:'medium',topic:'GROUP BY + HAVING',ordered:false,
+   task:'For each department show its `department_id` and the average `salary`, but only for departments whose average salary is above 90000. Ignore employees who have no department (`department_id` is NULL). Rounding to 2 decimals is fine.',
+   hint:'WHERE filters individual rows before grouping (use it to drop the NULL departments). HAVING filters the groups after AVG has been computed.',
+   solution:'SELECT department_id, AVG(salary) AS avg_salary\nFROM employees\nWHERE department_id IS NOT NULL\nGROUP BY department_id\nHAVING AVG(salary) > 90000;'},
+  {id:'sql-5',short:'INNER JOIN',title:'Employees in Berlin',level:'medium',topic:'INNER JOIN',ordered:false,
+   task:'List each employee\'s `name` followed by the `name` of their department, for employees whose department is located in \'Berlin\'.',
+   hint:'Join the tables on the key: `FROM employees e JOIN departments d ON d.id = e.department_id`, then filter with `WHERE d.location = \'Berlin\'`.',
+   solution:'SELECT e.name, d.name AS department\nFROM employees e\nJOIN departments d ON d.id = e.department_id\nWHERE d.location = \'Berlin\';'},
+  {id:'sql-6',short:'LEFT JOIN',title:'Orders per customer',level:'medium',topic:'LEFT JOIN + NULLs',ordered:false,
+   task:'For every customer, including those who have never ordered, list the customer `name` and the number of orders they have placed. Customers with no orders must show 0.',
+   hint:'A LEFT JOIN keeps customers that have no matching order (their order columns are NULL). `COUNT(o.id)` skips NULLs so it gives 0 for them, whereas `COUNT(*)` would wrongly give 1.',
+   solution:'SELECT c.name, COUNT(o.id) AS order_count\nFROM customers c\nLEFT JOIN orders o ON o.customer_id = c.id\nGROUP BY c.id, c.name;'},
+  {id:'sql-7',short:'Self-join',title:'Who reports to whom',level:'medium',topic:'Self-join',ordered:false,
+   task:'List each employee\'s `name` together with the name of their manager. Employees without a manager must show the text \'No manager\'.',
+   hint:'Join the table to itself under two aliases, e.g. `employees e LEFT JOIN employees m ON m.id = e.manager_id`. Use `COALESCE(m.name, \'No manager\')` to replace the NULL.',
+   solution:'SELECT e.name AS employee, COALESCE(m.name, \'No manager\') AS manager\nFROM employees e\nLEFT JOIN employees m ON m.id = e.manager_id;'},
+  {id:'sql-8',short:'Subquery',title:'Big-ticket customers',level:'hard',topic:'Subquery',ordered:false,
+   task:'Find the `name` of every customer who has placed at least one order whose `total` is higher than the average order total across all orders. Each customer should appear once.',
+   hint:'Work inside-out: the innermost query is `SELECT AVG(total) FROM orders`. Use it in a subquery that returns the matching `customer_id` values, then select customers with `WHERE id IN (...)`.',
+   solution:'SELECT name\nFROM customers\nWHERE id IN (\n  SELECT customer_id\n  FROM orders\n  WHERE total > (SELECT AVG(total) FROM orders)\n);'},
+  {id:'sql-9',short:'CASE',title:'Order size buckets',level:'hard',topic:'CASE expression',ordered:false,
+   task:'Classify each order by its `total`: \'small\' when under 200, \'medium\' from 200 up to (but not including) 1000, and \'large\' for 1000 or more. Return the label and how many orders fall in each bucket (label first, then count).',
+   hint:'Write the label as `CASE WHEN total < 200 THEN \'small\' WHEN total < 1000 THEN \'medium\' ELSE \'large\' END`, give it an alias, and GROUP BY that alias.',
+   solution:'SELECT\n  CASE\n    WHEN total < 200 THEN \'small\'\n    WHEN total < 1000 THEN \'medium\'\n    ELSE \'large\'\n  END AS size,\n  COUNT(*) AS orders\nFROM orders\nGROUP BY size;'},
+  {id:'sql-10',short:'Window RANK',title:'Salary rank per department',level:'hard',topic:'Window function',ordered:false,
+   task:'Rank the employees who belong to a department by salary within their department (highest salary = rank 1). Return `department_id`, `name`, `salary` and the rank, in that order. Employees with equal salaries must share a rank (use RANK, not ROW_NUMBER). Leave out employees without a department.',
+   hint:'`RANK() OVER (PARTITION BY department_id ORDER BY salary DESC)` restarts the ranking for every department. Do not forget the `WHERE department_id IS NOT NULL` filter.',
+   solution:'SELECT department_id, name, salary,\n       RANK() OVER (\n         PARTITION BY department_id\n         ORDER BY salary DESC\n       ) AS salary_rank\nFROM employees\nWHERE department_id IS NOT NULL;'}
+];
+
+const SQL_CHEAT=[
+  {h:'Reading data',items:[['SELECT a, b FROM t','Pick columns from a table'],['SELECT DISTINCT city FROM customers','Remove duplicate rows'],['WHERE x > 5 AND y = \'a\'','Filter rows (AND, OR, NOT)'],['WHERE x IN (1, 2, 3)','Match any value in a list'],['WHERE name LIKE \'A%\'','Pattern match: % any text, _ one char'],['WHERE col IS NULL','Test for NULL (never use = NULL)'],['ORDER BY x DESC, y','Sort; default is ASC'],['LIMIT 10 OFFSET 20','Keep 10 rows after skipping 20']]},
+  {h:'Aggregating',items:[['COUNT(*)','Number of rows'],['COUNT(col)','Number of non-NULL values'],['SUM(x), AVG(x), MIN(x), MAX(x)','Totals over a group'],['GROUP BY dept','One output row per distinct value'],['HAVING COUNT(*) > 3','Filter groups after aggregating']]},
+  {h:'Joining',items:[['a JOIN b ON a.id = b.a_id','INNER JOIN: only matching rows'],['a LEFT JOIN b ON ...','Keep every row of a; b columns are NULL if no match'],['FROM employees e JOIN employees m ON m.id = e.manager_id','Self-join with two aliases']]},
+  {h:'Expressions',items:[['CASE WHEN x < 10 THEN \'low\' ELSE \'high\' END','If / else inside a query'],['COALESCE(a, \'n/a\')','First non-NULL value'],['ROUND(x, 2)','Round to 2 decimals'],['x || \' \' || y','Concatenate text'],['strftime(\'%Y\', order_date)','Extract the year from a date string']]},
+  {h:'Advanced',items:[['WHERE id IN (SELECT ...)','Subquery as a filter'],['WITH t AS (SELECT ...) SELECT * FROM t','Common table expression'],['RANK() OVER (PARTITION BY d ORDER BY s DESC)','Window function: rank within a group'],['ROW_NUMBER() OVER (ORDER BY x)','Number rows 1, 2, 3...'],['UNION / UNION ALL','Stack two result sets']]},
+  {h:'Changing data',items:[['INSERT INTO t (a, b) VALUES (1, \'x\')','Add a row'],['UPDATE t SET a = 2 WHERE id = 1','Change rows (always use WHERE!)'],['DELETE FROM t WHERE id = 1','Remove rows']]}
+];
+
+/* ==========================================================================
+   SQL: engine loading, statement runner, result comparison
+   ========================================================================== */
+const SQLJS_URL='https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/';
+const SQLJS_SRI='sha512-+6Q7hv5pGUBXOuHWw8OdQx3ac7DzM3oJhYqz7SHDku0yl9EBdMqegoPed4GsHRoNF/VQYK2LTYewAIEBrEf/3w==';
+const SQL_LOAD_TIMEOUT=25000;
+const SQL_SHOW_MAX=500;
+const sqlE={SQL:null,db:null,promise:null,expected:{},state:'idle'};
+
+/* Loads sql.js from cdnjs on demand. Resolves with the SQL namespace, rejects with an Error.
+   If window.initSqlJs already exists (e.g. injected by tests) the download is skipped. */
+function loadSqlEngine(){
+  if(sqlE.SQL) return Promise.resolve(sqlE.SQL);
+  if(sqlE.promise) return sqlE.promise;
+  sqlE.promise=new Promise((resolve,reject)=>{
+    let settled=false, timer=0, script=null;
+    const fail=err=>{ if(settled) return; settled=true; clearTimeout(timer); if(script) script.remove(); reject(err); };
+    const boot=()=>{
+      Promise.resolve().then(()=>window.initSqlJs({locateFile:f=>SQLJS_URL+f})).then(SQL=>{
+        if(settled) return; settled=true; clearTimeout(timer); resolve(SQL);
+      },err=>fail(err instanceof Error?err:new Error(String(err))));
+    };
+    timer=setTimeout(()=>fail(new Error('Timed out while downloading the SQL engine.')),SQL_LOAD_TIMEOUT);
+    if(typeof window.initSqlJs==='function'){ boot(); return; }
+    script=document.createElement('script');
+    script.src=SQLJS_URL+'sql-wasm.js'; script.integrity=SQLJS_SRI; script.crossOrigin='anonymous'; script.async=true;
+    script.onload=()=>{ if(typeof window.initSqlJs==='function') boot(); else fail(new Error('The SQL engine script loaded but did not start.')); };
+    script.onerror=()=>fail(new Error('Could not download the SQL engine.'));
+    document.head.appendChild(script);
+  }).then(SQL=>{ sqlE.SQL=SQL; return SQL; },err=>{ sqlE.promise=null; throw err; });
+  return sqlE.promise;
+}
+
+function freshDb(){ const db=new sqlE.SQL.Database(); db.exec(SEED_SQL); return db; }
+
+function isBlankSql(t){ return t.replace(/--[^\n]*/g,'').replace(/\/\*[\s\S]*?\*\//g,'').trim()===''; }
+function stmtVerb(t){
+  const m=/^\s*(?:(?:--[^\n]*\n|\/\*[\s\S]*?\*\/)\s*)*([a-z]+)/i.exec(t);
+  return m?m[1].toUpperCase():'';
+}
+
+/* Runs every statement in `sql`. Returns {last, notes, error, ms, count}.
+   last = {columns, values, total, truncated} of the LAST statement that returned columns. */
+function runStatements(db,sql,maxKeep){
+  const out={last:null,notes:[],error:null,ms:0,count:0};
+  const t0=(typeof performance!=='undefined'?performance:Date).now();
+  let cur=null;
+  try{
+    for(const st of db.iterateStatements(sql)){
+      cur=st;
+      const text=(st.getSQL()||'').trim();
+      if(isBlankSql(text)){ cur=null; continue; }
+      out.count++;
+      const cols=st.getColumnNames();
+      if(cols.length){
+        const rows=[]; let total=0;
+        while(st.step()){ total++; if(rows.length<maxKeep) rows.push(st.get()); }
+        out.last={columns:cols,values:rows,total:total,truncated:total>rows.length};
+        out.notes.push({n:out.count,verb:stmtVerb(text)||'SELECT',rows:total,isSelect:true});
+      }else{
+        st.step();
+        const verb=stmtVerb(text), dml=/^(INSERT|UPDATE|DELETE|REPLACE)$/.test(verb);
+        out.notes.push({n:out.count,verb:verb,changes:dml?db.getRowsModified():null,isSelect:false});
+      }
+      cur=null;
+    }
+  }catch(e){
+    if(cur){ try{ cur.free(); }catch(_){} }
+    out.error={message:String((e&&e.message)||e),n:cur?out.count:out.count+1};   /* n = 1-based number of the failing statement */
+  }
+  out.ms=(typeof performance!=='undefined'?performance:Date).now()-t0;
+  return out;
+}
+
+/* ---- result-set comparison for challenges ---- */
+const NUM_TOL=0.01;
+function cellEq(a,b){
+  if(a===null||b===null) return a===b;
+  if(typeof a==='number'&&typeof b==='number') return Math.abs(a-b)<=NUM_TOL;
+  return a===b;
+}
+function rowEq(x,y){ if(x.length!==y.length) return false; for(let i=0;i<x.length;i++) if(!cellEq(x[i],y[i])) return false; return true; }
+function fmtCell(v){ return v===null?'NULL':typeof v==='string'?"'"+v+"'":(v&&v.length!==undefined&&typeof v!=='string')?'[BLOB]':String(v); }
+function fmtRow(r){ const s=r.map(fmtCell).join(', '); return '('+(s.length>90?s.slice(0,87)+'...':s)+')'; }
+/* Returns the rows of `exp` that have no partner in `act` (multiset match, numeric tolerance). */
+function multisetDiff(act,exp){
+  const pool=act.slice(), missing=[];
+  exp.forEach(e=>{ const i=pool.findIndex(a=>rowEq(a,e)); if(i<0) missing.push(e); else pool.splice(i,1); });
+  return {missing:missing,extra:pool};
+}
+function compareResults(actual,expected,ordered){
+  const bad=(message,code)=>({ok:false,message:message,code:code});
+  if(!actual) return bad('Your query did not return a result set. Write a SELECT statement (Check uses the last SELECT in the editor).','no-result');
+  const ec=expected.columns.length, ac=actual.columns.length;
+  if(ac>ec) return bad('Your query returns '+plural(ac,'column')+' but the task needs '+ec+': remove the extra '+(ac-ec>1?'columns':'column')+'.','extra-columns');
+  if(ac<ec) return bad('Your query returns '+plural(ac,'column')+' but the task needs '+ec+': a column is missing.','missing-columns');
+  const er=expected.values.length, ar=actual.values.length;
+  if(ar!==er){
+    return bad('Wrong row count: your query returns '+plural(ar,'row')+' but the expected result has '+er+'. '+
+      (ar>er?'Check for a missing WHERE condition, DISTINCT/GROUP BY, or duplicate rows created by a join.':'A WHERE or JOIN condition is probably filtering out too many rows.'),'row-count');
+  }
+  const diff=multisetDiff(actual.values,expected.values);
+  if(!diff.missing.length) {
+    if(!ordered) return {ok:true,message:'Your result matches the expected result ('+plural(ar,'row')+').'};
+    for(let i=0;i<ar;i++) if(!rowEq(actual.values[i],expected.values[i]))
+      return bad('The right rows are there, but not in the required order. Check the ORDER BY column and direction (ASC/DESC).','order');
+    return {ok:true,message:'Your result matches the expected result ('+plural(ar,'row')+') in the right order.'};
+  }
+  const first=diff.extra[0];
+  return bad('Wrong values: '+diff.missing.length+' of '+plural(er,'expected row')+(diff.missing.length===1?' is':' are')+' missing from your result. '+
+    'For example, your row '+fmtRow(first)+' is not expected. Check your conditions and calculations (and the column order).','values');
+}
+
+/* ==========================================================================
+   SQL: UI
+   ========================================================================== */
+const DEFAULT_SQL='-- Explore the data, then try the challenges above.\nSELECT e.name, e.title, d.name AS department\nFROM employees e\nLEFT JOIN departments d ON d.id = e.department_id\nORDER BY e.name\nLIMIT 10;';
+let chUi={hint:false,solution:false};
+
+const sqlActiveChallenge=()=>SQL_CHALLENGES.find(c=>c.id===S.sqlActive)||null;
+const draftKey=()=>S.sqlActive||'free';
+
+function renderSchema(){
+  $('#schema').innerHTML=SCHEMA.map(t=>`<div class="tbl"><button type="button" class="tbl-btn" data-table="${esc(t.name)}" aria-label="Insert SELECT for table ${esc(t.name)}">${esc(t.name)}<small>${t.cols.length} cols</small></button><ul class="cols" aria-label="Columns of ${esc(t.name)}">${
+    t.cols.map(c=>`<li><span>${esc(c[0])}</span>${c[2]==='pk'?'<span class="pill pk" title="Primary key">PK</span>':''}${c[2]==='fk'?`<span class="pill" title="Foreign key: references ${esc(c[3])}">FK</span>`:''}<span class="ty">${esc(c[1])}${c[2]==='fk'?' &rarr; '+esc(c[3]):''}</span></li>`).join('')}</ul></div>`).join('');
+}
+function insertIntoEditor(text){
+  const ta=$('#sql-editor'), v=ta.value, s=ta.selectionStart==null?v.length:ta.selectionStart, e=ta.selectionEnd==null?v.length:ta.selectionEnd;
+  const pre=(s>0&&v[s-1]!=='\n')?'\n':'';
+  const ins=pre+text;
+  replaceRange(ta,s,e,ins);
+  ta.focus();
+}
+/* Replaces ta[s..e] with text. execCommand keeps the browser's undo stack; setRangeText is the fallback. */
+function replaceRange(ta,s,e,text){
+  ta.focus(); ta.setSelectionRange(s,e);
+  let ok=false;
+  try{ ok=!!(document.execCommand&&document.execCommand('insertText',false,text)); }catch(_){ ok=false; }
+  if(!ok){
+    ta.setRangeText(text,s,e,'end');
+    ta.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+}
+let trapTab=true;
+function indentSelection(outdent){
+  const ta=$('#sql-editor'), v=ta.value, s=ta.selectionStart, e=ta.selectionEnd;
+  const multi=v.slice(s,e).indexOf('\n')>=0;
+  if(!outdent&&!multi){ replaceRange(ta,s,e,'  '); return; }
+  const ls=v.lastIndexOf('\n',s-1)+1; let le=v.indexOf('\n',e); if(le<0) le=v.length;
+  const lines=v.slice(ls,le).split('\n'); let dFirst=0,dAll=0;
+  const out=lines.map((ln,i)=>{
+    if(!outdent){ if(i===0) dFirst=2; dAll+=2; return '  '+ln; }
+    const m=/^( {1,2}|\t)/.exec(ln), r=m?m[0].length:0;
+    if(i===0) dFirst=-r; dAll-=r; return ln.slice(r);
+  });
+  replaceRange(ta,ls,le,out.join('\n'));
+  ta.setSelectionRange(Math.max(ls,s+dFirst),e+dAll);
+}
+
+function sqlSetLoad(state,msg){
+  sqlE.state=state;
+  const host=$('#sql-load');
+  if(state==='loading'){
+    host.innerHTML=`<div class="notice"><span class="spinner" aria-hidden="true"></span><div class="nt"><strong>Loading the SQL engine...</strong>Downloading SQLite (sql.js, about 0.7 MB) from cdnjs. You only need to do this once per visit.</div></div>`;
+  }else if(state==='failed'){
+    host.innerHTML=verdictHtml('warn','The SQL engine could not be loaded',
+      `<p style="margin:2px 0 0">${esc(msg||'')} The SQL playground downloads sql.js from cdnjs the first time this tab opens, so it needs an internet connection. Check your connection and try again. The Regex tab works fully offline.</p><button type="button" class="btn primary sm" data-act="retry">Retry</button>`);
+  }else host.innerHTML='';
+  const ready=state==='ready';
+  $('#sql-run').disabled=!ready; $('#sql-reset').disabled=!ready;
+  $$('[data-act="check"]',$('#sql-ch-detail')).forEach(b=>b.disabled=!ready);
+}
+function sqlStart(){
+  sqlSetLoad('loading');
+  loadSqlEngine().then(()=>{
+    try{
+      sqlE.db=freshDb();
+      sqlE.expected={};
+      const tmp=freshDb();
+      try{ SQL_CHALLENGES.forEach(c=>{ const r=runStatements(tmp,c.solution,100000); sqlE.expected[c.id]=r.error?null:r.last; }); }
+      finally{ tmp.close(); }
+    }catch(err){ sqlSetLoad('failed','The database could not be created ('+((err&&err.message)||err)+').'); return; }
+    sqlSetLoad('ready');
+  }).catch(err=>sqlSetLoad('failed',(err&&err.message)||'Unknown error.'));
+}
+
+function tableHtml(res){
+  const numCol=res.columns.map((_,ci)=>{ let seen=false; for(const r of res.values){ const v=r[ci]; if(v===null) continue; if(typeof v!=='number') return false; seen=true; } return seen; });
+  let h='<table class="rs"><caption class="sr-only">Query result</caption><thead><tr>'+res.columns.map((c,i)=>`<th scope="col"${numCol[i]?' class="num"':''}>${esc(c)}</th>`).join('')+'</tr></thead><tbody>';
+  res.values.forEach(r=>{
+    h+='<tr>'+r.map((v,i)=>{
+      if(v===null) return '<td><span class="null">NULL</span></td>';
+      if(typeof v==='number') return `<td class="num">${esc(v)}</td>`;
+      if(typeof v!=='string'&&v&&v.length!==undefined) return `<td><span class="null">[BLOB ${v.length} bytes]</span></td>`;
+      return `<td${numCol[i]?' class="num"':''}>${esc(v)}</td>`;
+    }).join('')+'</tr>';
+  });
+  return h+'</tbody></table>';
+}
+function fmtMs(ms){ return ms<1?'<1 ms':ms<100?ms.toFixed(1)+' ms':Math.round(ms)+' ms'; }
+function renderSqlOutcome(out){
+  const status=$('#sql-status'), err=$('#sql-error'), msgs=$('#sql-msgs'), tw=$('#sql-table');
+  err.innerHTML=''; msgs.hidden=true; msgs.innerHTML='';
+  const noteLines=out.notes.filter(n=>out.count>1||!n.isSelect).map(n=>
+    n.isSelect?`Statement ${n.n} (${esc(n.verb)}) returned ${plural(n.rows,'row')}${n.n===out.notes.length&&out.last?' - shown below':' - only the last SELECT is shown'}.`
+    :`Statement ${n.n} (${esc(n.verb||'SQL')}) ran OK${n.changes!==null?': '+plural(n.changes,'row')+' changed':''}.`);
+  if(out.error){
+    err.innerHTML=verdictHtml('bad','SQL error'+(out.error.n>1?' in statement '+out.error.n:''),`<p style="margin:2px 0 0;font-family:var(--mono);font-size:12.5px">${esc(out.error.message)}</p>`);
+    status.innerHTML='<span class="muted">The query failed. Fix the error and run it again.</span>';
+    tw.hidden=true; tw.innerHTML='';
+    if(noteLines.length){ msgs.hidden=false; msgs.innerHTML=noteLines.map(l=>`<li>${l}</li>`).join(''); }
+    return;
+  }
+  if(out.last){
+    const r=out.last;
+    status.innerHTML=`<div class="res-meta"><strong>${plural(r.total,'row')}</strong><span>${plural(r.columns.length,'column')}</span><span>${fmtMs(out.ms)}</span>${r.truncated?`<span>Showing the first ${SQL_SHOW_MAX} rows</span>`:''}</div>`;
+    tw.hidden=false; tw.innerHTML=tableHtml(r);
+    if(!r.values.length){ status.innerHTML=`<div class="res-meta"><strong>0 rows</strong><span>${plural(r.columns.length,'column')}</span><span>${fmtMs(out.ms)}</span><span>The query ran but matched no rows.</span></div>`; }
+  }else{
+    tw.hidden=true; tw.innerHTML='';
+    status.innerHTML=`<div class="res-meta"><strong>${out.count?'Done':'Nothing to run'}</strong><span>${out.count?plural(out.count,'statement')+' executed, no result set to show':'The editor has no SQL statements'}</span>${out.count?`<span>${fmtMs(out.ms)}</span>`:''}</div>`;
+  }
+  if(noteLines.length){ msgs.hidden=false; msgs.innerHTML=noteLines.map(l=>`<li>${l}</li>`).join(''); }
+}
+function pushHistory(sql){
+  const t=sql.trim(); if(!t) return;
+  S.history=[t].concat(S.history.filter(h=>h!==t)).slice(0,10);
+  save(); renderHistory();
+}
+function renderHistory(){
+  const ul=$('#sql-hist');
+  ul.innerHTML=S.history.length?S.history.map((h,i)=>`<li><button type="button" data-i="${i}" title="${esc(h)}">${esc(h.replace(/\s+/g,' '))}</button></li>`).join(''):'<li class="muted">Queries you run will appear here (last 10).</li>';
+  $('#sql-hist-clear').hidden=!S.history.length;
+}
+function sqlRun(){
+  if(!sqlE.db){ toast('The SQL engine is not ready yet.',true); return; }
+  const sql=$('#sql-editor').value;
+  if(!sql.trim()){ renderSqlOutcome({last:null,notes:[],error:null,ms:0,count:0}); return; }
+  pushHistory(sql);
+  renderSqlOutcome(runStatements(sqlE.db,sql,SQL_SHOW_MAX));
+}
+function sqlResetDb(){
+  if(!sqlE.SQL) return;
+  try{ if(sqlE.db) sqlE.db.close(); }catch(e){}
+  sqlE.db=freshDb();
+  $('#sql-error').innerHTML=''; $('#sql-msgs').hidden=true; $('#sql-table').hidden=true; $('#sql-table').innerHTML='';
+  $('#sql-status').innerHTML='<span class="muted">Database reset: the sample data is back to its original state.</span>';
+  toast('Database reset to the original sample data');
+}
+
+function sqlSelectChallenge(id){
+  /* save the draft of the mode we are leaving */
+  S.drafts[draftKey()]=$('#sql-editor').value;
+  S.sqlActive=id&&SQL_CHALLENGES.some(c=>c.id===id)?id:null;
+  chUi={hint:false,solution:false};
+  const c=sqlActiveChallenge();
+  const d=S.drafts[draftKey()];
+  $('#sql-editor').value=typeof d==='string'?d:(c?'-- Challenge '+(SQL_CHALLENGES.indexOf(c)+1)+': '+c.title+'\n':DEFAULT_SQL);
+  save(); renderSqlChallenges();
+}
+function renderSqlChallenges(){
+  renderChips($('#sql-chips'),SQL_CHALLENGES,S.sqlDone,S.sqlActive,'Free query');
+  const solved=SQL_CHALLENGES.filter(c=>S.sqlDone[c.id]).length;
+  setProgress('sql',solved,SQL_CHALLENGES.length);
+  const host=$('#sql-ch-detail'), c=sqlActiveChallenge();
+  if(!c){ host.hidden=true; host.innerHTML=''; return; }
+  const idx=SQL_CHALLENGES.indexOf(c)+1;
+  host.hidden=false;
+  host.innerHTML=`<div class="ch-head"><h3>${idx}. ${esc(c.title)}</h3><span class="pill ${c.level}">${c.level[0].toUpperCase()+c.level.slice(1)}</span><span class="pill">${esc(c.topic)}</span>${S.sqlDone[c.id]?'<span class="pill easy">Solved</span>':''}</div>
+    <p>${fmtInline(c.task)}</p>
+    <p class="small">${c.ordered?'Row order matters for this challenge.':'Row order does not matter for this challenge.'}</p>
+    <div class="ch-actions">
+      <button type="button" class="btn success" data-act="check"${sqlE.state==='ready'?'':' disabled'}>Check my query</button>
+      <button type="button" class="btn" data-act="hint" aria-expanded="false">Show hint</button>
+      <button type="button" class="btn ghost" data-act="solution" aria-expanded="false">Show solution</button>
+    </div>
+    <div class="hint-box" id="sql-hint" hidden><strong>Hint:</strong> ${fmtInline(c.hint)}</div>
+    <div id="sql-solution" hidden><pre class="codeblock" tabindex="0">${esc(c.solution)}</pre><p class="small" style="margin-top:6px"><button type="button" class="btn sm" data-act="load">Copy into editor</button></p></div>
+    <div class="fb" id="sql-fb" role="status" aria-live="polite"></div>`;
+}
+function sqlFeedback(html){ $('#sql-fb').innerHTML=html; }
+function sqlCheck(){
+  const c=sqlActiveChallenge(); if(!c) return;
+  if(!sqlE.SQL||!sqlE.expected[c.id]){ sqlFeedback(verdictHtml('warn','Not ready','<p style="margin:2px 0 0">The SQL engine is not ready yet.</p>')); return; }
+  const sql=$('#sql-editor').value;
+  if(isBlankSql(sql)){ sqlFeedback(verdictHtml('warn','Write a query first','<p style="margin:2px 0 0">The editor is empty (or only has comments).</p>')); return; }
+  const db=freshDb(); let out;
+  try{ out=runStatements(db,sql,100000); }finally{ db.close(); }
+  if(out.error){ sqlFeedback(verdictHtml('bad','Your query has an error',`<p style="margin:2px 0 0;font-family:var(--mono);font-size:12.5px">${esc(out.error.message)}</p>`)); return; }
+  const res=compareResults(out.last,sqlE.expected[c.id],c.ordered);
+  if(res.ok){
+    const first=!S.sqlDone[c.id];
+    S.sqlDone[c.id]=true; saveNow();
+    renderChips($('#sql-chips'),SQL_CHALLENGES,S.sqlDone,S.sqlActive,'Free query');
+    setProgress('sql',SQL_CHALLENGES.filter(x=>S.sqlDone[x.id]).length,SQL_CHALLENGES.length);
+    sqlFeedback(verdictHtml('ok','Correct!',`<p style="margin:2px 0 0">${esc(res.message)} Check runs on a fresh copy of the data, so your edits never affect it.</p>`));
+    if(first) toast('Challenge solved');
+  }else{
+    sqlFeedback(verdictHtml('bad','Not quite yet',`<p style="margin:2px 0 0">${esc(res.message)}</p>`));
+  }
+}
+
+function initSql(){
+  renderSchema(); renderHistory();
+  $('#sql-cheat-grid').innerHTML=cheatHtml(SQL_CHEAT);
+  const ed=$('#sql-editor');
+  const d=S.drafts[draftKey()];
+  ed.value=typeof d==='string'?d:(sqlActiveChallenge()?'-- Challenge '+(SQL_CHALLENGES.indexOf(sqlActiveChallenge())+1)+': '+sqlActiveChallenge().title+'\n':DEFAULT_SQL);
+  ed.addEventListener('input',()=>{ S.drafts[draftKey()]=ed.value; save(); });
+  ed.addEventListener('focus',()=>{ trapTab=true; });
+  ed.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){ e.preventDefault(); sqlRun(); return; }
+    if(e.key==='Tab'&&!e.ctrlKey&&!e.altKey&&!e.metaKey){ if(trapTab){ e.preventDefault(); indentSelection(e.shiftKey); } return; }
+    if(e.key==='Escape'){ trapTab=false; return; }
+    if(['Shift','Control','Alt','Meta'].indexOf(e.key)<0) trapTab=true;
+  });
+  $('#sql-run').addEventListener('click',sqlRun);
+  $('#sql-reset').addEventListener('click',sqlResetDb);
+  $('#schema').addEventListener('click',e=>{
+    const b=e.target.closest('[data-table]'); if(!b) return;
+    insertIntoEditor('SELECT * FROM '+b.dataset.table+' LIMIT 10;');
+  });
+  $('#sql-hist').addEventListener('click',e=>{
+    const b=e.target.closest('[data-i]'); if(!b) return;
+    const h=S.history[+b.dataset.i]; if(typeof h!=='string') return;
+    ed.value=h; S.drafts[draftKey()]=h; save(); ed.focus();
+  });
+  $('#sql-hist-clear').addEventListener('click',()=>{ S.history=[]; save(); renderHistory(); });
+  $('#sql-chips').addEventListener('click',e=>{ const b=e.target.closest('.chip'); if(b) sqlSelectChallenge(b.dataset.id||null); });
+  $('#sql-ch-detail').addEventListener('click',e=>{
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    const c=sqlActiveChallenge(); if(!c) return;
+    if(b.dataset.act==='check') sqlCheck();
+    else if(b.dataset.act==='hint'){ chUi.hint=!chUi.hint; $('#sql-hint').hidden=!chUi.hint; b.textContent=chUi.hint?'Hide hint':'Show hint'; b.setAttribute('aria-expanded',String(chUi.hint)); }
+    else if(b.dataset.act==='solution'){
+      if(!chUi.solution && !window.confirm('Show the solution? You will learn more if you try the hint first.')) return;
+      chUi.solution=!chUi.solution; $('#sql-solution').hidden=!chUi.solution; b.textContent=chUi.solution?'Hide solution':'Show solution'; b.setAttribute('aria-expanded',String(chUi.solution));
+    }
+    else if(b.dataset.act==='load'){ ed.value=c.solution; S.drafts[draftKey()]=ed.value; save(); ed.focus(); toast('Solution copied into the editor'); }
+  });
+  $('#sql-load').addEventListener('click',e=>{ if(e.target.closest('[data-act="retry"]')) sqlStart(); });
+  renderSqlChallenges();
+  sqlSetLoad('idle');
+  $('#sql-run').disabled=true; $('#sql-reset').disabled=true;
+}
+
+/* ==========================================================================
+   Regex: safe execution (Web Worker with timeout)
+   ========================================================================== */
+/* regexJob is self-contained on purpose: it is stringified into the worker. */
+function regexJob(job){
+  var re, i, m;
+  if(job.type==='match'){
+    try{ re=new RegExp(job.pattern,job.flags); }catch(e){ return {ok:false,error:String((e&&e.message)||e)}; }
+    var text=job.text, matches=[], MAX=1000, truncated=false, global=re.global;
+    while((m=re.exec(text))!==null){
+      var groups=[];
+      for(i=1;i<m.length;i++) groups.push(m[i]===undefined?null:m[i]);
+      var named=null;
+      if(m.groups){ named=[]; for(var k in m.groups) named.push([k,m.groups[k]===undefined?null:m.groups[k]]); }
+      matches.push({index:m.index,text:m[0],groups:groups,named:named});
+      if(!global) break;
+      if(matches.length>=MAX){ truncated=true; break; }
+      if(m[0]===''){
+        var adv=1, c=text.charCodeAt(re.lastIndex);
+        if(re.unicode && c>=0xD800 && c<=0xDBFF) adv=2;
+        re.lastIndex+=adv;
+        if(re.lastIndex>text.length) break;
+      }
+    }
+    var replaced=null, replaceError=null;
+    try{ replaced=text.replace(new RegExp(job.pattern,job.flags),job.repl||''); }catch(e){ replaceError=String((e&&e.message)||e); }
+    return {ok:true,matches:matches,truncated:truncated,replaced:replaced,replaceError:replaceError};
+  }
+  if(job.type==='test'){
+    try{ new RegExp(job.pattern,job.flags); }catch(e){ return {ok:false,error:String((e&&e.message)||e)}; }
+    var flags=(job.flags||'').replace(/[gy]/g,'');
+    var src=job.mode==='full'?'^(?:'+job.pattern+')$':job.pattern;
+    try{ re=new RegExp(src,flags); }catch(e){ return {ok:false,error:String((e&&e.message)||e)}; }
+    var results=[];
+    for(i=0;i<job.cases.length;i++) results.push({s:job.cases[i].s,expect:job.cases[i].expect,got:re.test(job.cases[i].s)});
+    return {ok:true,results:results};
+  }
+  return {ok:false,error:'Unknown job'};
+}
+
+const RX_TIMEOUT=1500;
+let rxWorkerUrl=null;
+function rxWorkerSource(){
+  return 'self.onmessage=function(e){var r;try{r=('+regexJob.toString()+')(e.data);}catch(err){r={ok:false,error:String(err&&err.message||err)};}postMessage(r);};';
+}
+let rxWorkerBroken=false;
+function makeRxWorker(){
+  if(rxWorkerBroken||typeof Worker==='undefined'||typeof Blob==='undefined'||!window.URL||!URL.createObjectURL) return null;
+  try{
+    if(!rxWorkerUrl) rxWorkerUrl=URL.createObjectURL(new Blob([rxWorkerSource()],{type:'text/javascript'}));
+    return new Worker(rxWorkerUrl);
+  }catch(e){ return null; }
+}
+/* Last resort when workers are unavailable: refuse the classic nested-quantifier shapes, then run inline. */
+function rxInlineRun(job){
+  if(/\((?:[^()\\]|\\.)*[+*](?:[^()\\]|\\.)*\)\s*(?:[+*]|\{\d)/.test(job.pattern)) return {ok:false,timeout:true,inline:true};
+  return regexJob(job);
+}
+function runRegexJob(job){
+  return new Promise(resolve=>{
+    const w=makeRxWorker();
+    if(!w){ resolve(rxInlineRun(job)); return; }
+    let done=false, timer=0;
+    const finish=r=>{ if(done) return; done=true; clearTimeout(timer); try{ w.terminate(); }catch(e){} resolve(r); };
+    timer=setTimeout(()=>finish({ok:false,timeout:true}),RX_TIMEOUT);
+    w.onmessage=e=>finish(e.data);
+    w.onerror=e=>{ if(e&&e.preventDefault) e.preventDefault(); rxWorkerBroken=true; finish(rxInlineRun(job)); };   /* worker could not start: guarded inline fallback from now on */
+    try{ w.postMessage(job); }catch(e){ finish({ok:false,error:String(e)}); }
+  });
+}
+const TIMEOUT_MSG='This pattern is too slow (catastrophic backtracking). It ran for more than 1.5 seconds on this text, so it was stopped. Nested quantifiers such as (a+)+ or (.*)* on text that almost matches are the usual cause; make the inner part more specific.';
+
+/* ==========================================================================
+   Regex: tokenizer / parser + plain-English explainer (no libraries)
+   ========================================================================== */
+function parseRegex(src){
+  let i=0; const n=src.length; let groupCount=0, budget=3000; const groupNames=[];
+  const spent=()=>{ if(--budget<0) throw new Error('pattern too complex to explain'); };
+
+  function parseAlt(depth){
+    const start=i, branches=[parseSeq(depth)];
+    while(src[i]==='|'){ i++; branches.push(parseSeq(depth)); }
+    return branches.length===1?branches[0]:{type:'alt',branches:branches,start:start,end:i};
+  }
+  function parseSeq(depth){
+    const start=i, items=[];
+    while(i<n && src[i]!=='|' && !(src[i]===')'&&depth>0)){ spent(); items.push(parseTerm(depth)); }
+    return {type:'seq',items:items,start:start,end:i};
+  }
+  function parseQuant(){
+    const c=src[i]; let min,max;
+    if(c==='*'){ min=0; max=Infinity; i++; }
+    else if(c==='+'){ min=1; max=Infinity; i++; }
+    else if(c==='?'){ min=0; max=1; i++; }
+    else if(c==='{'){
+      const m=/^\{(\d+)(?:(,)(\d*))?\}/.exec(src.slice(i,i+40));
+      if(!m) return null;
+      min=+m[1]; max=m[2]?(m[3]===''?Infinity:+m[3]):min; i+=m[0].length;
+    }else return null;
+    let lazy=false; if(src[i]==='?'){ lazy=true; i++; }
+    return {min:min,max:max,lazy:lazy};
+  }
+  function parseTerm(depth){
+    const start=i, atom=parseAtom(depth);
+    if(atom.type==='unknown') return atom;
+    const q=parseQuant();
+    if(q) return {type:'quant',min:q.min,max:q.max,lazy:q.lazy,child:atom,start:start,end:i};
+    return atom;
+  }
+  function codePointAt(){ const cp=src.codePointAt(i); const ch=String.fromCodePoint(cp); i+=ch.length; return ch; }
+  function parseAtom(depth){
+    const start=i, c=src[i];
+    if(c==='.'){ i++; return {type:'any',start:start,end:i}; }
+    if(c==='^'){ i++; return {type:'bol',start:start,end:i}; }
+    if(c==='$'){ i++; return {type:'eol',start:start,end:i}; }
+    if(c==='\\') return parseEscape(false);
+    if(c==='[') return parseClass();
+    if(c==='(') return parseGroup(depth);
+    if(c===')'){ i++; return {type:'unknown',note:'unmatched closing parenthesis',start:start,end:i}; }
+    if(c==='*'||c==='+'||c==='?'){ i++; return {type:'unknown',note:'nothing to repeat here',start:start,end:i}; }
+    if(c==='{'){
+      const m=/^\{\d+(?:,\d*)?\}/.exec(src.slice(i,i+40));
+      if(m){ i+=m[0].length; return {type:'unknown',note:'nothing to repeat here',start:start,end:i}; }
+    }
+    return {type:'char',ch:codePointAt(),start:start,end:i};
+  }
+  function parseEscape(inClass){
+    const start=i; i++;                                   /* skip the backslash */
+    if(i>=n) return {type:'unknown',note:'pattern ends with a lone backslash',start:start,end:i};
+    const c=src[i++];
+    const mk=o=>Object.assign({start:start,end:i},o);
+    if('dDwWsS'.indexOf(c)>=0) return mk({type:'esc',kind:c});
+    if(c==='b') return inClass?mk({type:'char',ch:'\b',label:'backspace'}):mk({type:'wordb'});
+    if(c==='B'&&!inClass) return mk({type:'nwordb'});
+    if(c==='n') return mk({type:'char',ch:'\n'});
+    if(c==='r') return mk({type:'char',ch:'\r'});
+    if(c==='t') return mk({type:'char',ch:'\t'});
+    if(c==='f') return mk({type:'char',ch:'\f'});
+    if(c==='v') return mk({type:'char',ch:'\v'});
+    if(c==='0'&&!/[0-9]/.test(src[i]||'')) return mk({type:'char',ch:'\0',label:'the NUL character'});
+    if(/[1-9]/.test(c)&&!inClass){
+      let num=c; while(/[0-9]/.test(src[i]||'')) num+=src[i++];
+      return mk({type:'backref',num:+num});
+    }
+    if(c==='k'&&src[i]==='<'){
+      const j=src.indexOf('>',i);
+      if(j>i){ const name=src.slice(i+1,j); i=j+1; return mk({type:'backref',name:name}); }
+    }
+    if(c==='x'&&/^[0-9a-fA-F]{2}/.test(src.slice(i,i+2))){ const h=src.slice(i,i+2); i+=2; return mk({type:'char',ch:String.fromCharCode(parseInt(h,16)),hex:'U+00'+h.toUpperCase()}); }
+    if(c==='u'){
+      let m=/^\{([0-9a-fA-F]{1,6})\}/.exec(src.slice(i,i+9));
+      if(m){ i+=m[0].length; const cp=parseInt(m[1],16); if(cp<=0x10FFFF) return mk({type:'char',ch:String.fromCodePoint(cp),hex:'U+'+m[1].toUpperCase()}); }
+      m=/^[0-9a-fA-F]{4}/.exec(src.slice(i,i+4));
+      if(m){ i+=4; return mk({type:'char',ch:String.fromCharCode(parseInt(m[0],16)),hex:'U+'+m[0].toUpperCase()}); }
+    }
+    if((c==='p'||c==='P')&&src[i]==='{'){
+      const j=src.indexOf('}',i);
+      if(j>i){ const name=src.slice(i+1,j); i=j+1; return mk({type:'prop',neg:c==='P',name:name}); }
+    }
+    if(c==='c'&&/[A-Za-z]/.test(src[i]||'')){ const l=src[i++]; return mk({type:'ctrl',letter:l.toUpperCase()}); }
+    i=start+1; const ch=codePointAt();                    /* any other escaped character is that literal */
+    return {type:'char',ch:ch,escaped:true,start:start,end:i};
+  }
+  function parseClass(){
+    const start=i; i++;
+    let neg=false; if(src[i]==='^'){ neg=true; i++; }
+    const items=[];
+    const readItem=()=>{ if(src[i]==='\\') return parseEscape(true); return {type:'char',ch:codePointAt()}; };
+    while(i<n && src[i]!==']'){
+      spent();
+      const a=readItem();
+      if(a.type==='char' && src[i]==='-' && i+1<n && src[i+1]!==']'){
+        const save=i; i++;
+        const b=readItem();
+        if(b.type==='char'){ items.push({type:'range',from:a.ch,to:b.ch}); continue; }
+        i=save;                                           /* "a-\d": treat the dash literally */
+      }
+      items.push(a);
+    }
+    if(i>=n) return {type:'unknown',note:'unterminated character class (missing ])',start:start,end:n};
+    i++;
+    return {type:'class',neg:neg,items:items,start:start,end:i};
+  }
+  function parseGroup(depth){
+    const start=i; i++;
+    let kind='capture', name=null, number=null, m;
+    if(src[i]==='?'){
+      const rest=src.slice(i,i+40);
+      if(rest.indexOf('?:')===0){ kind='noncap'; i+=2; }
+      else if(rest.indexOf('?=')===0){ kind='lookahead'; i+=2; }
+      else if(rest.indexOf('?!')===0){ kind='neglookahead'; i+=2; }
+      else if(rest.indexOf('?<=')===0){ kind='lookbehind'; i+=3; }
+      else if(rest.indexOf('?<!')===0){ kind='neglookbehind'; i+=3; }
+      else if((m=/^\?<([A-Za-z_$][\w$]*)>/.exec(rest))){ kind='named'; name=m[1]; i+=m[0].length; }
+      else if((m=/^\?([a-zA-Z-]*):/.exec(rest))){ kind='modifiers'; name=m[1]; i+=m[0].length; }
+      else { kind='unsupported'; i+=1; }
+    }
+    if(kind==='capture'||kind==='named'){ number=++groupCount; groupNames[number]=name; }
+    const body=parseAlt(depth+1);
+    let closed=false; if(src[i]===')'){ i++; closed=true; }
+    return {type:'group',kind:kind,name:name,number:number,body:body,closed:closed,start:start,end:i};
+  }
+
+  const ast=parseAlt(0);
+  /* a stray ")" at depth 0 stops parseSeq only when depth>0, so nothing can remain here */
+  return {ast:ast,groupCount:groupCount,groupNames:groupNames};
+}
+
+/* ---- describing the AST ---- */
+const CHAR_NAMES={' ':'a space','\t':'a tab','\n':'a newline','\r':'a carriage return','\f':'a form feed','\v':'a vertical tab','\0':'the NUL character','\b':'backspace'};
+function showCh(ch){
+  if(CHAR_NAMES[ch]) return CHAR_NAMES[ch];
+  const cp=ch.codePointAt(0);
+  if(cp<32||cp===127||cp===0xA0) return 'U+'+cp.toString(16).toUpperCase().padStart(4,'0');
+  return '“'+ch+'”';
+}
+const ESC_DESC={d:'digit (0-9)',D:'any character that is not a digit',w:'word character (letter, digit or underscore)',W:'any character that is not a word character',s:'whitespace character (space, tab, newline...)',S:'any character that is not whitespace'};
+function classItemText(it){
+  if(it.type==='range') return showCh(it.from)+' to '+showCh(it.to);
+  if(it.type==='esc') return ESC_DESC[it.kind];
+  if(it.type==='char') return it.label||showCh(it.ch);
+  if(it.type==='prop') return (it.neg?'not ':'')+'Unicode property '+'“'+it.name+'”';
+  if(it.type==='backref') return 'the character with code '+it.num;
+  return '(not explained)';
+}
+function quantPhrase(q){
+  const a=q.min, b=q.max; let t;
+  if(a===0&&b===Infinity) t='zero or more';
+  else if(a===1&&b===Infinity) t='one or more';
+  else if(a===0&&b===1) t='optionally (zero or one)';
+  else if(b===Infinity) t=a+' or more';
+  else if(a===b) t='exactly '+a;
+  else t='between '+a+' and '+b;
+  return t+(q.lazy?' (lazy: as few as possible)':'');
+}
+function leafText(nd,ctx){
+  switch(nd.type){
+    case 'char': return nd.label?nd.label:(CHAR_NAMES[nd.ch]||('the character '+showCh(nd.ch)+(nd.hex?' ('+nd.hex+')':'')));
+    case 'any': return ctx.flags.indexOf('s')>=0?'any character (including newlines)':'any character except a newline';
+    case 'esc': return ESC_DESC[nd.kind];
+    case 'class': {
+      if(nd.items.length===0) return nd.neg?'any character (including newlines)':'nothing (an empty class never matches)';
+      return (nd.neg?'any character except: ':'any one of: ')+nd.items.map(classItemText).join(', ');
+    }
+    case 'bol': return ctx.flags.indexOf('m')>=0?'start of a line':'start of the string';
+    case 'eol': return ctx.flags.indexOf('m')>=0?'end of a line':'end of the string';
+    case 'wordb': return 'word boundary (between a word character and a non-word character)';
+    case 'nwordb': return 'not at a word boundary';
+    case 'backref':
+      if(nd.name!==undefined) return 'the same text as the group named “'+nd.name+'” (backreference)';
+      return nd.num<=ctx.groupCount?'the same text that group '+nd.num+' matched (backreference)':'backreference \\'+nd.num+' (there is no group '+nd.num+')';
+    case 'prop': return (nd.neg?'a character without':'a character with')+' the Unicode property “'+nd.name+'”';
+    case 'ctrl': return 'control character Ctrl+'+nd.letter;
+    case 'unknown': return '(not explained: '+nd.note+')';
+  }
+  return null;
+}
+function rowOf(text,nd,children,unk){ return {text:text,s:nd.start,e:nd.end,children:children||[],unk:!!unk}; }
+function inlineRow(row){                                /* header + a single childless child => one line */
+  if(row.children.length===0){ row.text+=' (empty)'; }
+  else if(row.children.length===1&&row.children[0].children.length===0){ row.text+=' '+row.children[0].text; row.children=[]; }
+  return row;
+}
+function describeBody(body,ctx){ return body.type==='alt'?[describeNode(body,ctx)]:describeSeq(body,ctx); }
+function describeNode(nd,ctx){
+  if(--ctx.budget<0) throw new Error('too complex');
+  if(nd.type==='alt'){
+    const row=rowOf('one of '+nd.branches.length+' alternatives:',nd,[]);
+    nd.branches.forEach((br,bi)=>{
+      const kids=describeSeq(br,ctx);
+      const r=rowOf('alternative '+(bi+1)+':',br.items.length?{start:br.start,end:br.end}:{start:br.start,end:br.start},kids);
+      row.children.push(inlineRow(r));
+    });
+    return row;
+  }
+  if(nd.type==='seq'){ const kids=describeSeq(nd,ctx); return rowOf('sequence:',nd,kids); }
+  if(nd.type==='group'){
+    const closedNote=nd.closed?'':', missing closing parenthesis';
+    let head;
+    switch(nd.kind){
+      case 'capture': head='Group '+nd.number+' (capturing'+closedNote+'):'; break;
+      case 'named': head='Group '+nd.number+' “'+nd.name+'” (capturing, named'+closedNote+'):'; break;
+      case 'noncap': head='Non-capturing group'+(nd.closed?'':' (missing closing parenthesis)')+':'; break;
+      case 'lookahead': head='Followed by (lookahead, not part of the match)'+(nd.closed?'':' (missing closing parenthesis)')+':'; break;
+      case 'neglookahead': head='Not followed by (negative lookahead)'+(nd.closed?'':' (missing closing parenthesis)')+':'; break;
+      case 'lookbehind': head='Preceded by (lookbehind, not part of the match)'+(nd.closed?'':' (missing closing parenthesis)')+':'; break;
+      case 'neglookbehind': head='Not preceded by (negative lookbehind)'+(nd.closed?'':' (missing closing parenthesis)')+':'; break;
+      case 'modifiers': head='Group with inline flags “'+nd.name+'” (not explained):'; break;
+      default: head='Group with unsupported syntax (not explained):';
+    }
+    const row=rowOf(head,nd,describeBody(nd.body,ctx),nd.kind==='modifiers'||nd.kind==='unsupported');
+    return inlineRow(row);
+  }
+  if(nd.type==='quant'){
+    const q=quantPhrase(nd), leaf=leafText(nd.child,ctx);
+    if(leaf!==null) return rowOf(q+' of: '+leaf,nd,[],nd.child.type==='unknown');
+    return rowOf(q+' of:',nd,[describeNode(nd.child,ctx)]);
+  }
+  const t=leafText(nd,ctx);
+  return rowOf(t===null?'(not explained)':t,nd,[],t===null||nd.type==='unknown');
+}
+const mergeable=it=>it.type==='char'&&!it.label&&!it.hex&&(!CHAR_NAMES[it.ch]||it.ch===' ');
+function describeSeq(seq,ctx){
+  const rows=[]; const items=seq.items;
+  for(let k=0;k<items.length;k++){
+    const it=items[k];
+    if(mergeable(it)){
+      /* merge a run of plain literal characters into one row */
+      let j=k, txt='';
+      while(j<items.length && mergeable(items[j])){ txt+=items[j].ch; j++; }
+      if(j-k>=2){
+        rows.push(rowOf('the text \u201C'+txt+'\u201D',{start:items[k].start,end:items[j-1].end}));
+        k=j-1; continue;
+      }
+    }
+    rows.push(describeNode(it,ctx));
+  }
+  return rows;
+}
+/* Public entry: never throws. Returns {rows, groupNames, note?}. */
+function explainRegex(src,flags){
+  if(src==='') return {rows:[],groupNames:[],empty:true};
+  try{
+    const p=parseRegex(src);
+    const ctx={flags:flags||'',groupCount:p.groupCount,budget:5000};
+    return {rows:describeBody(p.ast,ctx),groupNames:p.groupNames};
+  }catch(e){
+    return {rows:[{text:'(not explained)',s:0,e:src.length,children:[],unk:true}],groupNames:[],failed:true};
+  }
+}
+
+/* ==========================================================================
+   Regex: data (flags, common patterns, challenges, cheat sheet)
+   ========================================================================== */
+const RX_FLAGS=[
+  ['g','global','Global: find every match, not just the first'],
+  ['i','ignore case','Ignore case: a matches A'],
+  ['m','multiline','Multiline: ^ and $ match at the start and end of every line'],
+  ['s','dotAll','Dot-all: . also matches newline characters'],
+  ['u','unicode','Unicode: full Unicode support and stricter syntax'],
+  ['y','sticky','Sticky: match only at the exact current position']
+];
+const RX_LIB=[
+  {id:'email',name:'Email address',pattern:'^[\\w.+-]+@[\\w-]+(?:\\.[\\w-]+)+$',flags:'gm',
+   text:'ada@example.com\nfirst.last+tag@mail.co.uk\nmissing-at-sign.com\ntwo@@signs.com\nuser@localhost',
+   caveat:'Real email validation is more complex (RFC 5322 allows quoted names and unusual characters). The only real test is sending a confirmation email.'},
+  {id:'url',name:'URL (http/https)',pattern:'https?:\\/\\/(?:www\\.)?[\\w-]+(?:\\.[\\w-]+)+(?:[\\/?#]\\S*)?',flags:'gi',
+   text:'Docs live at https://developer.mozilla.org/en-US/docs/Web/JavaScript and the old site was http://example.com.\nSearch: https://www.google.com/search?q=regex#top\nNot links: ftp://files.example.com, www.example.com, just words.',
+   caveat:'Simplified: no ports, IP hosts or international domain names. Use new URL(text) for real validation.'},
+  {id:'phone',name:'Phone (North American)',pattern:'^\\(?\\d{3}\\)?[-. ]?\\d{3}[-. ]?\\d{4}$',flags:'gm',
+   text:'555-123-4567\n(555) 123-4567\n555.123.4567\n5551234567\n55-1234-567\n+44 20 7946 0958',
+   caveat:'Phone formats differ a lot between countries. Store digits only, or use a dedicated library.'},
+  {id:'date',name:'ISO date (YYYY-MM-DD)',pattern:'^\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])$',flags:'gm',
+   text:'2024-02-29\n1999-12-31\n2024-13-01\n2024-00-10\n24-05-06\n2024-1-5\n2023-02-31',
+   caveat:'Checks the shape and ranges only, so 2023-02-31 still matches. Parse it with Date to see whether the day exists.'},
+  {id:'hex',name:'Hex color',pattern:'#(?:[0-9a-f]{3}){1,2}\\b',flags:'gi',
+   text:'Colors: #fff, #FF5733, #0a0 and #12345 (5 digits, invalid), #abcd (4 digits), #GGG is not hex.',
+   caveat:'Covers #rgb and #rrggbb only, not the 4 and 8 digit forms that include alpha.'},
+  {id:'ipv4',name:'IPv4 address',pattern:'\\b(?:(?:25[0-5]|2[0-4]\\d|1?\\d?\\d)\\.){3}(?:25[0-5]|2[0-4]\\d|1?\\d?\\d)\\b',flags:'g',
+   text:'Servers: 192.168.1.1, 10.0.0.255 and 8.8.8.8.\nInvalid: 256.1.1.1 and 1.2.3 and 999.999.999.999.',
+   caveat:'Only checks the format (it also accepts leading zeros such as 001). It does not say the address is reachable.'},
+  {id:'password',name:'Password strength',pattern:'^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).{8,}$',flags:'gm',
+   text:'Passw0rd!\nweakpass\nNoDigits!!\nSh0rt!\nC0rrect-Horse-Battery',
+   caveat:'Composition rules are a weak measure of strength; length matters more. Use a strength estimator and check for breached passwords.'},
+  {id:'slug',name:'URL slug',pattern:'^[a-z0-9]+(?:-[a-z0-9]+)*$',flags:'gm',
+   text:'hello-world\nregex-101\nHello-World\ntrailing-dash-\ndouble--dash\nunder_score',
+   caveat:'ASCII only: accented letters such as the e in cafe with an accent are rejected.'}
+];
+
+const RX_CHALLENGES=[
+  {id:'rx-1',short:'ZIP code',title:'Five-digit ZIP code',level:'easy',mode:'full',flags:'',
+   task:'Match a US ZIP code: exactly five digits.',
+   match:['12345','00501','90210'],nomatch:['1234','123456','abcde','12 345','1234a'],
+   solution:'\\d{5}'},
+  {id:'rx-2',short:'Whole word',title:'The word "cat"',level:'easy',mode:'search',flags:'i',
+   task:'Match strings that contain the word cat as a whole word, in any letter case. Words that merely contain the letters (like concatenate) must not match.',
+   match:['The cat sat','Cat!','my cat, my rules','cat'],nomatch:['concatenate','category','a scatter of dogs','dog'],
+   solution:'\\bcat\\b'},
+  {id:'rx-3',short:'Hex color',title:'CSS hex color',level:'easy',mode:'full',flags:'i',
+   task:'Match a CSS hex color: a # followed by exactly 3 or exactly 6 hexadecimal digits (upper or lower case).',
+   match:['#fff','#A1B2C3','#0f0','#00ff7F'],nomatch:['fff','#ffff','#12345g','#12','#1234567'],
+   solution:'#(?:[0-9a-f]{3}){1,2}'},
+  {id:'rx-4',short:'24h time',title:'Time of day (HH:MM)',level:'medium',mode:'full',flags:'',
+   task:'Match a 24-hour time written HH:MM with two digits each: hours 00-23, minutes 00-59.',
+   match:['00:00','09:30','12:05','19:59','23:59'],nomatch:['24:00','9:30','12:60','12:5','7pm','23:599'],
+   solution:'(?:[01]\\d|2[0-3]):[0-5]\\d'},
+  {id:'rx-5',short:'Repeated word',title:'Doubled word',level:'medium',mode:'search',flags:'i',
+   task:'Match strings that contain the same word twice in a row (like "the the"), ignoring case. Use a backreference.',
+   match:['this is is a test','Paris in the the spring','The the cat','no no no'],nomatch:['this is a test','The theory','bookkeeper','one two three'],
+   solution:'\\b(\\w+)\\s+\\1\\b'},
+  {id:'rx-6',short:'Simple email',title:'Simple email address',level:'medium',mode:'full',flags:'i',
+   task:'Match local@domain.tld. The local part may use letters, digits and . _ + -; the domain has one or more dot-separated labels (letters, digits, hyphens); the last label (the TLD) has at least 2 letters.',
+   match:['ada@example.com','a.b+tag@mail.co.uk','x_y@sub-domain.org'],nomatch:['@example.com','ada@','ada@example','ada@example.c','ada example@x.com','ada@@x.com'],
+   solution:'[\\w.+-]+@[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.[a-z]{2,}'},
+  {id:'rx-7',short:'Password',title:'Password rules',level:'hard',mode:'full',flags:'',
+   task:'Match passwords that are at least 8 characters long and contain at least one lowercase letter, one uppercase letter and one digit. Hint: several lookaheads at the start.',
+   match:['Passw0rdOK','aB3defgh','Zz9Zz9Zz9','my Sup3r pass'],nomatch:['password1','PASSWORD1','Pass1','Password','abcdefgh','12345678'],
+   solution:'(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}'},
+  {id:'rx-8',short:'Dollar price',title:'Dollar price',level:'hard',mode:'full',flags:'',
+   task:'Match a dollar amount: a $ sign, then digits (optionally with commas as thousands separators in groups of exactly three), then optionally a decimal point with exactly two digits.',
+   match:['$5','$12.50','$1,234','$1,234,567.89','$0.99'],nomatch:['5','$1,23','$12.5','$1234,567','$.99','$1,2345'],
+   solution:'\\$(?:\\d{1,3}(?:,\\d{3})*|\\d+)(?:\\.\\d{2})?'}
+];
+
+const RX_CHEAT=[
+  {h:'Characters',items:[['.','Any character except a newline'],['\\d  \\w  \\s','Digit, word character, whitespace'],['\\D  \\W  \\S','The opposites of the above'],['[abc]','Any one of a, b or c'],['[^abc]','Any character except a, b, c'],['[a-z0-9]','A range of characters'],['\\.  \\(  \\\\','Escape a special character to match it literally']]},
+  {h:'Quantifiers',items:[['*','Zero or more'],['+','One or more'],['?','Zero or one (optional)'],['{3}','Exactly 3'],['{2,}','2 or more'],['{2,5}','Between 2 and 5'],['*?  +?  ??','Lazy versions: match as little as possible']]},
+  {h:'Anchors',items:[['^','Start of the string (or line with m)'],['$','End of the string (or line with m)'],['\\b','Word boundary'],['\\B','Not a word boundary']]},
+  {h:'Groups',items:[['(abc)','Capturing group, numbered from 1'],['(?<year>\\d{4})','Named capturing group'],['(?:abc)','Non-capturing group'],['a|b','Alternation: a or b'],['\\1','Backreference to group 1'],['\\k<year>','Backreference to a named group']]},
+  {h:'Lookaround',items:[['a(?=b)','a followed by b'],['a(?!b)','a not followed by b'],['(?<=b)a','a preceded by b'],['(?<!b)a','a not preceded by b']]},
+  {h:'In replacements',items:[['$1','Text captured by group 1'],['$<name>','Text captured by a named group'],['$&','The whole match'],['$$','A literal dollar sign']]}
+];
+
+/* ==========================================================================
+   Regex: UI
+   ========================================================================== */
+const cap1=t=>t.charAt(0).toUpperCase()+t.slice(1);
+let rxSeq=0, rxTimer=0, rxNames=[], rxPatNow='';
+
+function currentFlags(){ return $$('#rx-flags .flag').filter(b=>b.getAttribute('aria-pressed')==='true').map(b=>b.dataset.f).join(''); }
+function renderFlags(flags){
+  $('#rx-flags').innerHTML=RX_FLAGS.map(f=>`<button type="button" class="flag" data-f="${f[0]}" aria-pressed="${flags.indexOf(f[0])>=0}" title="${esc(f[2])}" aria-label="${esc(f[0]+' flag, '+f[1]+': '+f[2].split(': ')[1])}">${f[0]}</button>`).join('');
+}
+function rowText(t){ return esc(cap1(t)).replace(/“([^”]*)”/g,'<code>$1</code>'); }
+function rowHtml(r){
+  return `<li><div class="row${r.unk?' unk':''}" tabindex="0" data-s="${r.s}" data-e="${r.e}">${rowText(r.text)}</div>${r.children.length?'<ul>'+r.children.map(rowHtml).join('')+'</ul>':''}</li>`;
+}
+function setSrc(s,e){
+  const p=rxPatNow, el=$('#rx-src');
+  if(!p){ el.innerHTML='<span class="muted">(empty pattern)</span>'; return; }
+  el.innerHTML=(s==null)?esc(p):esc(p.slice(0,s))+(e>s?'<mark>'+esc(p.slice(s,e))+'</mark>':'')+esc(p.slice(e));
+}
+function renderExplainer(pat,flags){
+  rxPatNow=pat;
+  const ex=explainRegex(pat,flags), host=$('#rx-exp');
+  rxNames=ex.groupNames||[];
+  host.innerHTML=ex.empty?'<p class="muted" style="margin:0">Type a pattern to see it explained here.</p>':'<ul>'+ex.rows.map(rowHtml).join('')+'</ul>';
+  setSrc();
+}
+function groupLabel(i){ return rxNames[i]?'Group '+i+' “'+rxNames[i]+'”':'Group '+i; }
+function valHtml(v){ return v===null?'<span class="null">undefined</span>':v===''?'<span class="null">(empty)</span>':esc(v); }
+
+function renderHighlight(text,matches){
+  let html='', pos=0;
+  matches.forEach((m,i)=>{
+    if(m.index<pos) return;
+    html+=esc(text.slice(pos,m.index));
+    if(m.text==='') html+=`<span class="m-empty" title="Empty match at index ${m.index}"></span>`;
+    else html+=`<mark class="${i%2?'m-b':'m-a'}" title="Match ${i+1}">${esc(m.text)}</mark>`;
+    pos=m.index+m.text.length;
+  });
+  return html+esc(text.slice(pos));
+}
+function renderMatchList(matches){
+  const shown=matches.slice(0,100);
+  let h=shown.map((m,i)=>{
+    let g='';
+    if(m.groups.length){
+      g='<dl class="gr">'+m.groups.map((v,gi)=>`<dt>${esc(groupLabel(gi+1))}</dt><dd>${valHtml(v)}</dd>`).join('')+'</dl>';
+    }
+    if(m.named&&m.named.length&&!rxNames.some(Boolean)){
+      g+='<dl class="gr">'+m.named.map(nv=>`<dt>${esc(nv[0])}</dt><dd>${valHtml(nv[1])}</dd>`).join('')+'</dl>';
+    }
+    return `<li><div class="mh"><span class="mn">#${i+1}</span><code>${m.text===''?'(empty match)':esc(m.text)}</code><span class="muted">index ${m.index}${m.text.length?'-'+(m.index+m.text.length):''}, length ${m.text.length}</span></div>${g}</li>`;
+  }).join('');
+  if(matches.length>shown.length) h+=`<li class="muted">... and ${matches.length-shown.length} more matches (list limited to ${shown.length}).</li>`;
+  return h;
+}
+function rxSetError(html){
+  $('#rx-error').innerHTML=html||'';
+  const bad=!!html;
+  $('#rx-pat-box').classList.toggle('bad',bad);
+  $('#rx-pat').setAttribute('aria-invalid',String(bad));
+}
+function renderRxPlain(text,count,msg){
+  $('#rx-hl').innerHTML=text===''?'<span class="muted">(empty test string)</span>':esc(text);
+  $('#rx-list').innerHTML='';
+  $('#rx-count').textContent=count;
+  $('#rx-rep-out').textContent=msg;
+}
+function renderRxResult(r,text,flags){
+  if(r.timeout){
+    rxSetError(verdictHtml('warn','Pattern too slow',`<p style="margin:2px 0 0">${esc(TIMEOUT_MSG)}</p>`));
+    renderRxPlain(text,'Stopped: pattern too slow','(stopped)'); return;
+  }
+  if(!r.ok){
+    rxSetError(verdictHtml('bad','Invalid pattern',`<p style="margin:2px 0 0;font-family:var(--mono);font-size:12.5px">${esc(r.error)}</p>`));
+    renderRxPlain(text,'Invalid pattern','(fix the pattern first)'); return;
+  }
+  rxSetError('');
+  const n=r.matches.length;
+  let count=n===0?'No matches':r.truncated?n+'+ matches (first '+n+' shown)':plural(n,'match','matches');
+  if(n>0&&flags.indexOf('g')<0&&flags.indexOf('y')<0) count+=' (first only: add the g flag for all)';
+  $('#rx-count').textContent=count;
+  $('#rx-hl').innerHTML=text===''?'<span class="muted">(empty test string)</span>':renderHighlight(text,r.matches);
+  $('#rx-list').innerHTML=n?renderMatchList(r.matches):'<li class="muted">No matches to list.</li>';
+  $('#rx-rep-out').textContent=r.replaceError?'Replace failed: '+r.replaceError:r.replaced;
+}
+async function rxUpdate(){
+  const pat=$('#rx-pat').value, text=$('#rx-text').value, repl=$('#rx-repl').value, flags=currentFlags();
+  S.rx={pattern:pat,flags:flags,text:text,repl:repl}; save();
+  $('#rx-fl-show').textContent=flags;
+  renderExplainer(pat,flags);
+  const seq=++rxSeq;
+  if(pat===''){
+    rxSetError('');
+    renderRxPlain(text,'Type a pattern to start',text);
+    return;
+  }
+  const r=await runRegexJob({type:'match',pattern:pat,flags:flags,text:text,repl:repl});
+  if(seq!==rxSeq) return;
+  renderRxResult(r,text,flags);
+}
+function rxSchedule(){ clearTimeout(rxTimer); rxTimer=setTimeout(rxUpdate,120); }
+function rxRefresh(){ clearTimeout(rxTimer); return rxUpdate(); }
+
+function renderLib(){
+  $('#rx-lib').innerHTML=RX_LIB.map(p=>`<div class="lib-item"><h3>${esc(p.name)}<button type="button" class="btn sm" data-lib="${esc(p.id)}" aria-label="Load ${esc(p.name)} pattern into the tester">Load</button></h3><code>/${esc(p.pattern)}/${esc(p.flags)}</code><p>${esc(p.caveat)}</p></div>`).join('');
+}
+function rxLoad(pattern,flags,text,toastMsg){
+  $('#rx-pat').value=pattern; $('#rx-text').value=text;
+  $$('#rx-flags .flag').forEach(b=>b.setAttribute('aria-pressed',String(flags.indexOf(b.dataset.f)>=0)));
+  rxRefresh();
+  const box=$('#rx-in-title');
+  if(box&&box.scrollIntoView) box.scrollIntoView({block:'start'});
+  $('#rx-pat').focus();
+  if(toastMsg) toast(toastMsg);
+}
+
+/* ---- regex challenges ---- */
+let rxcUi={results:null,solution:false};
+const rxActiveChallenge=()=>RX_CHALLENGES.find(c=>c.id===S.rxActive)||null;
+function rxcCaseList(c,kind){
+  const list=kind==='match'?c.match:c.nomatch;
+  return list.map(s=>{
+    let cls='',flag='';
+    if(rxcUi.results){
+      const r=rxcUi.results.find(x=>x.s===s&&x.expect===(kind==='match'));
+      if(r){ const okc=r.got===r.expect; cls=okc?'ok':'bad'; flag=okc?`${ic('check',12)} OK`:`${ic('x',12)} ${r.expect?'should match':'should NOT match'}`; }
+    }
+    return `<li class="${cls}"><code>${s===''?'(empty string)':esc(s)}</code>${flag?`<span class="flag-txt">${flag}</span>`:''}</li>`;
+  }).join('');
+}
+function renderRxChallenges(){
+  renderChips($('#rx-chips'),RX_CHALLENGES,S.rxDone,S.rxActive,null);
+  setProgress('rx',RX_CHALLENGES.filter(c=>S.rxDone[c.id]).length,RX_CHALLENGES.length);
+  const host=$('#rx-ch-detail'), c=rxActiveChallenge();
+  if(!c){
+    host.hidden=false;
+    host.innerHTML='<p class="muted" style="margin:0">Choose a challenge above to begin.</p>';
+    return;
+  }
+  const idx=RX_CHALLENGES.indexOf(c)+1;
+  host.hidden=false;
+  host.innerHTML=`<div class="ch-head"><h3>${idx}. ${esc(c.title)}</h3><span class="pill ${c.level}">${cap1(c.level)}</span>${S.rxDone[c.id]?'<span class="pill easy">Solved</span>':''}</div>
+    <p>${fmtInline(c.task)}</p>
+    <p class="small"><strong>${c.mode==='full'?'Whole-string match':'Search'}:</strong> ${c.mode==='full'?'the pattern must match the entire string (your pattern is wrapped in <code>^(?: ... )$</code> for you).':'the pattern may match anywhere inside the string.'} Flags: <code>${c.flags||'none'}</code> (fixed).</p>
+    <div class="cases">
+      <div class="case-col"><h4>Should match</h4><ul id="rxc-match" aria-label="Strings that should match">${rxcCaseList(c,'match')}</ul></div>
+      <div class="case-col"><h4>Should NOT match</h4><ul id="rxc-nomatch" aria-label="Strings that should not match">${rxcCaseList(c,'nomatch')}</ul></div>
+    </div>
+    <div class="fld"><label for="rxc-pat">Your pattern</label>
+      <div class="rx-input"><div class="rx-pat"><span class="rx-slash" aria-hidden="true">/</span><input id="rxc-pat" type="text" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" placeholder="write your pattern"><span class="rx-slash" aria-hidden="true">/</span><span class="rx-fl" aria-hidden="true">${esc(c.flags)}</span></div>
+      <button type="button" class="btn success" data-act="check">Check</button></div></div>
+    <div class="ch-actions"><button type="button" class="btn" data-act="tester">Open in tester</button><button type="button" class="btn ghost" data-act="solution" aria-expanded="false">Show solution</button></div>
+    <div id="rxc-solution" hidden><pre class="codeblock" tabindex="0">/${esc(c.solution)}/${esc(c.flags)}</pre></div>
+    <div class="fb" id="rxc-fb" role="status" aria-live="polite"></div>`;
+  const inp=$('#rxc-pat',host); inp.value=typeof S.rxDrafts[c.id]==='string'?S.rxDrafts[c.id]:'';
+  inp.addEventListener('input',()=>{ S.rxDrafts[c.id]=inp.value; save(); });
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); rxcCheck(); } });
+}
+function rxcFeedback(html){ const el=$('#rxc-fb'); if(el) el.innerHTML=html; }
+async function rxcCheck(){
+  const c=rxActiveChallenge(); if(!c) return;
+  const pat=$('#rxc-pat').value;
+  if(!pat){ rxcFeedback(verdictHtml('warn','Type a pattern first','')); return; }
+  const cases=c.match.map(s=>({s:s,expect:true})).concat(c.nomatch.map(s=>({s:s,expect:false})));
+  const r=await runRegexJob({type:'test',pattern:pat,flags:c.flags,mode:c.mode,cases:cases});
+  if(rxActiveChallenge()!==c) return;
+  if(r.timeout){ rxcUi.results=null; refreshRxCases(c); rxcFeedback(verdictHtml('warn','Pattern too slow',`<p style="margin:2px 0 0">${esc(TIMEOUT_MSG)}</p>`)); return; }
+  if(!r.ok){ rxcUi.results=null; refreshRxCases(c); rxcFeedback(verdictHtml('bad','Invalid pattern',`<p style="margin:2px 0 0;font-family:var(--mono);font-size:12.5px">${esc(r.error)}</p>`)); return; }
+  rxcUi.results=r.results; refreshRxCases(c);
+  const wrong=r.results.filter(x=>x.got!==x.expect);
+  if(!wrong.length){
+    const first=!S.rxDone[c.id];
+    S.rxDone[c.id]=true; saveNow();
+    renderChips($('#rx-chips'),RX_CHALLENGES,S.rxDone,S.rxActive,null);
+    setProgress('rx',RX_CHALLENGES.filter(x=>S.rxDone[x.id]).length,RX_CHALLENGES.length);
+    rxcFeedback(verdictHtml('ok','All '+r.results.length+' tests pass',''));
+    if(first) toast('Challenge solved');
+  }else{
+    const items=wrong.slice(0,8).map(x=>`<li><code>${x.s===''?'(empty string)':esc(x.s)}</code> ${x.expect?'should match but does not':'should NOT match but does'}</li>`).join('');
+    rxcFeedback(verdictHtml('bad',plural(wrong.length,'test')+' wrong (of '+r.results.length+')',`<ul style="margin:4px 0 0;padding-left:18px">${items}</ul>${wrong.length>8?`<p class="small">... and ${wrong.length-8} more.</p>`:''}`));
+  }
+}
+function refreshRxCases(c){
+  const a=$('#rxc-match'), b=$('#rxc-nomatch');
+  if(a) a.innerHTML=rxcCaseList(c,'match'); if(b) b.innerHTML=rxcCaseList(c,'nomatch');
+}
+function rxSelectChallenge(id){
+  S.rxActive=id&&RX_CHALLENGES.some(c=>c.id===id)?id:null;
+  rxcUi={results:null,solution:false};
+  save(); renderRxChallenges();
+}
+
+function initRegex(){
+  renderFlags(S.rx.flags);
+  $('#rx-pat').value=S.rx.pattern; $('#rx-text').value=S.rx.text; $('#rx-repl').value=S.rx.repl;
+  renderLib();
+  $('#rx-cheat-grid').innerHTML=cheatHtml(RX_CHEAT);
+  $('#rx-pat').addEventListener('input',rxSchedule);
+  $('#rx-text').addEventListener('input',rxSchedule);
+  $('#rx-repl').addEventListener('input',rxSchedule);
+  $('#rx-flags').addEventListener('click',e=>{
+    const b=e.target.closest('.flag'); if(!b) return;
+    b.setAttribute('aria-pressed',String(b.getAttribute('aria-pressed')!=='true'));
+    rxRefresh();
+  });
+  const exp=$('#rx-exp');
+  const rowOf1=t=>t&&t.closest?t.closest('.row'):null;
+  const hl=e=>{ const r=rowOf1(e.target); if(r) setSrc(+r.dataset.s,+r.dataset.e); else setSrc(); };
+  exp.addEventListener('mouseover',hl);
+  exp.addEventListener('focusin',hl);
+  exp.addEventListener('mouseleave',()=>setSrc());
+  exp.addEventListener('focusout',()=>setSrc());
+  $('#rx-lib').addEventListener('click',e=>{
+    const b=e.target.closest('[data-lib]'); if(!b) return;
+    const p=RX_LIB.find(x=>x.id===b.dataset.lib); if(p) rxLoad(p.pattern,p.flags,p.text,'Loaded: '+p.name);
+  });
+  $('#rx-chips').addEventListener('click',e=>{ const b=e.target.closest('.chip'); if(b) rxSelectChallenge(b.dataset.id||null); });
+  $('#rx-ch-detail').addEventListener('click',e=>{
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    const c=rxActiveChallenge(); if(!c) return;
+    if(b.dataset.act==='check') rxcCheck();
+    else if(b.dataset.act==='solution'){
+      if(!rxcUi.solution && !window.confirm('Show the solution? You will learn more if you try a bit longer first.')) return;
+      rxcUi.solution=!rxcUi.solution; $('#rxc-solution').hidden=!rxcUi.solution;
+      b.textContent=rxcUi.solution?'Hide solution':'Show solution'; b.setAttribute('aria-expanded',String(rxcUi.solution));
+    }else if(b.dataset.act==='tester'){
+      const pat=$('#rxc-pat').value;
+      if(!pat){ toast('Type a pattern first',true); return; }
+      const full=c.mode==='full'?'^(?:'+pat+')$':pat;
+      rxLoad(full,c.flags.replace(/[gy]/g,'')+'gm',c.match.concat(c.nomatch).join('\n'),'Loaded your pattern with all test strings');
+    }
+  });
+  renderRxChallenges();
+}
+
+/* ==========================================================================
+   Boot
+   ========================================================================== */
+(function init(){
+  $('#logo').innerHTML=ic('code',18);
+  applyTheme();
+  $('#theme-btn').addEventListener('click',toggleTheme);
+  initTabs();
+  initSql();
+  initRegex();
+  window.addEventListener('pagehide',saveNow);
+  let start=S.tab;
+  const h=(location.hash||'').toLowerCase();
+  if(h==='#regex'||h==='#rx') start='regex'; else if(h==='#sql') start='sql';
+  setTab(start);
+})();
+</script>
+<script src="levelup-nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,3893 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>React Lab - Levelup</title>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f4f5f8; --panel:#ffffff; --panel-2:#f1f3f7; --border:#e1e4ea; --text:#1a1e27; --muted:#667085;
+  --accent:#4f46e5; --accent-h:#4338ca; --accent-soft:#eceeff; --on-accent:#ffffff;
+  --good:#137a4b; --good-bg:#e5f6ed; --bad:#c0362c; --bad-bg:#fdecea; --warn:#9a5b06; --warn-bg:#fff3de;
+  --code-bg:#fbfbfd; --gutter:#f1f3f7; --shadow:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.06);
+  --mono: ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+    --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+    --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+    --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0d1117; --panel:#161b22; --panel-2:#1c232c; --border:#2a323d; --text:#e6e9ee; --muted:#93a0b0;
+  --accent:#8b8ff8; --accent-h:#a3a6fa; --accent-soft:#23264a; --on-accent:#0d1117;
+  --good:#4cc38a; --good-bg:#12291f; --bad:#f0857c; --bad-bg:#33191a; --warn:#f0b35a; --warn-bg:#33270f;
+  --code-bg:#12171e; --gutter:#171d25; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 16px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{min-height:100vh;background:var(--bg);color:var(--text);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono)}
+code{font-family:var(--mono);font-size:.9em;background:var(--panel-2);border:1px solid var(--border);border-radius:5px;padding:1px 5px;overflow-wrap:anywhere}
+.sr-only{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---- header (same as bigo.html) ---- */
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:8px 16px;min-height:56px;background:var(--panel);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--accent);color:var(--on-accent)}
+.brand-name{font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.spacer{flex:1}
+.nav{display:flex;gap:2px;min-width:0;overflow-x:auto;scrollbar-width:thin;margin-left:8px}
+.nav a{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;color:var(--muted);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap}
+.nav a:hover{background:var(--panel-2);color:var(--text)}
+.nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+
+/* ---- shared controls (same as index.html) ---- */
+.btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel);font-weight:600;font-size:13px;white-space:nowrap;transition:background .15s,border-color .15s,box-shadow .15s}
+.btn:hover:not(:disabled){background:var(--panel-2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover:not(:disabled){background:var(--accent-h);border-color:var(--accent-h)}
+.btn.success{background:var(--good);border-color:var(--good);color:#fff}
+.btn.danger{color:var(--bad)}
+.btn.sm{height:28px;padding:0 10px;font-size:12px}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover:not(:disabled){background:var(--panel-2)}
+.icon-btn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);transition:background .15s,color .15s}
+.icon-btn:hover{background:var(--panel-2);color:var(--text)}
+.kbd{font-family:var(--mono);font-size:10px;opacity:.75;border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:2px}
+.input,.select,.textarea{width:100%;border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:7px 10px;min-height:34px;transition:border-color .15s,box-shadow .15s}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.pill{display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:99px;font-size:11px;font-weight:600;background:var(--panel-2);color:var(--muted)}
+.pill.react{background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--good-bg);color:var(--good)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+.tabs{display:flex;gap:2px;flex-wrap:wrap}
+.tab{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-weight:600;font-size:13px}
+.tab:hover{background:var(--panel-2);color:var(--text)}
+.tab[aria-selected="true"]{background:var(--accent-soft);color:var(--accent)}
+.tab .count{font-size:11px;background:var(--panel-2);color:var(--muted);border-radius:99px;padding:0 6px}
+.tab[aria-selected="true"] .count{background:var(--panel);color:var(--accent)}
+.seg{display:inline-flex;flex-wrap:wrap;padding:3px;border-radius:9px;background:var(--panel-2);border:1px solid var(--border);gap:2px}
+.seg button{border:0;background:transparent;border-radius:7px;padding:5px 12px;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button:hover{color:var(--text)}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--accent);box-shadow:var(--shadow)}
+.bar{height:6px;background:var(--panel-2);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--good);border-radius:99px;transition:width .3s}
+.log{display:flex;gap:8px;padding:6px 10px;border-radius:8px;font:12.5px/1.5 var(--mono);border:1px solid transparent;margin-bottom:4px}
+.log pre{margin:0;white-space:pre-wrap;word-break:break-word;font:inherit}
+.log-log,.log-info,.log-debug{background:var(--panel-2)}
+.log-warn{background:var(--warn-bg);color:var(--warn)}
+.log-error{background:var(--bad-bg);color:var(--bad)}
+.log-result{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.log-meta{color:var(--muted);padding-left:2px}
+.spinner{width:12px;height:12px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--accent);animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---- layout ---- */
+.layout{display:grid;grid-template-columns:288px minmax(0,1fr);align-items:start}
+.sidebar{position:sticky;top:56px;height:calc(100vh - 56px);height:calc(100dvh - 56px);overflow:auto;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column}
+.side-top{padding:14px 14px 10px;display:grid;gap:8px}
+.side-top h2{margin:0;font-size:14px}
+.progress-row{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.lessons{list-style:none;margin:0;padding:4px 8px 8px;display:grid;gap:2px}
+.litem{position:relative;display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 10px;border:1px solid transparent;border-radius:9px;background:transparent;transition:background .12s}
+.litem:hover{background:var(--panel-2)}
+.litem[aria-pressed="true"]{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)}
+.lnum{flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);font-size:11px;font-weight:700;color:var(--muted)}
+.lnum.done{background:var(--good);border-color:var(--good);color:#fff}
+.lmain{display:grid;gap:1px;min-width:0}
+.ltitle{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lmeta{font-size:11.5px;color:var(--text);opacity:.8}
+.side-foot{margin-top:auto;padding:10px 14px 14px}
+.content{min-width:0;padding:16px;display:grid;gap:16px;max-width:1320px;width:100%;margin:0 auto}
+.content:focus{outline:none}
+.content>*{min-width:0}
+.sec{padding:18px 20px}
+.sec h2{margin:0 0 8px;font-size:16px;letter-spacing:-.01em}
+.sec p{margin:0 0 10px}
+.lesson-h{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.lesson-h h1{margin:0;font-size:22px;line-height:1.25;letter-spacing:-.01em}
+.lesson-h .tags{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.lesson-h .pager{margin-left:auto;display:flex;gap:6px}
+.lesson-h .pill:not(.react){color:var(--text)}
+.analogy{display:flex;gap:10px;margin:12px 0 0;padding:10px 12px;border-radius:10px;background:var(--accent-soft);color:var(--text)}
+.analogy b{color:var(--accent);white-space:nowrap}
+
+/* ---- lab ---- */
+.lab{padding:0;overflow:hidden}
+.lab-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--border)}
+.lab-head h2{margin:0;font-size:16px}
+.lab-desc{padding:12px 16px;border-bottom:1px solid var(--border);display:grid;gap:8px;background:var(--panel)}
+.lab-desc p{margin:0}
+.lab-desc .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.symptom{display:flex;gap:8px;padding:8px 10px;border-radius:8px;background:var(--bad-bg);color:var(--text)}
+.symptom b{color:var(--bad);white-space:nowrap}
+.hintbox{padding:8px 10px;border-radius:8px;background:var(--warn-bg)}
+.hintbox b{color:var(--warn)}
+.solbox{border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.solbox-h{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--panel-2);border-bottom:1px solid var(--border);font-weight:600;font-size:12px}
+.codeblock{margin:0;padding:10px 12px;background:var(--code-bg);font:12.5px/1.6 var(--mono);overflow:auto;white-space:pre;tab-size:2;max-height:280px}
+.lab-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0}
+.ed-pane,.out-pane{min-width:0;display:flex;flex-direction:column}
+.ed-pane{border-right:1px solid var(--border)}
+.pane-h{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);min-height:48px;flex-wrap:wrap}
+.file{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13px}
+.tools{display:flex;align-items:center;gap:6px;margin-left:auto;flex-wrap:wrap}
+.editor{--fs:13px;display:flex;height:470px;background:var(--code-bg);overflow:hidden;font:var(--fs)/1.6 var(--mono)}
+.gutter{margin:0;flex:none;min-width:46px;padding:12px 10px 24px 8px;text-align:right;color:var(--muted);background:var(--gutter);border-right:1px solid var(--border);overflow:hidden;user-select:none;font:inherit;opacity:.9}
+.code{flex:1;min-width:0;border:0;outline:none;resize:none;background:transparent;color:var(--text);padding:12px 14px;white-space:pre;overflow:auto;tab-size:2;font:inherit}
+.editor:focus-within{box-shadow:inset 0 0 0 2px var(--accent)}
+.ed-hint{margin:0;padding:6px 12px;font-size:12px;color:var(--muted);border-top:1px solid var(--border)}
+.opts{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid var(--border)}
+.switch{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13px;cursor:pointer}
+.switch input{width:16px;height:16px;accent-color:var(--accent);margin:0}
+.status{margin-left:auto;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.preview{position:relative;height:210px;background:#fff;border-bottom:1px solid var(--border)}
+.preview iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#fff}
+.pv-state{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:16px;background:var(--panel);color:var(--muted)}
+.pv-state strong{display:block;color:var(--text);margin-bottom:4px}
+.pv-state.bad strong{color:var(--bad)}
+.pv-state .btn{margin-top:10px}
+.out-tabs{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border)}
+.panels{position:relative;height:250px}
+.panel{position:absolute;inset:0;overflow:auto;padding:10px 12px}
+.note{margin:0 0 8px;padding:8px 10px;border-radius:8px;background:var(--panel-2);font-size:12.5px;color:var(--text)}
+.note b{color:var(--text)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}
+.chip{display:inline-flex;gap:5px;align-items:center;padding:1px 8px;border-radius:99px;border:1px solid var(--border);background:var(--panel);font-size:12px}
+.chip b{font-family:var(--mono);font-weight:600}
+.chip i{font-style:normal;font-weight:700;color:var(--accent)}
+.commit{margin:0 0 8px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.commit-h{padding:3px 10px;background:var(--panel-2);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text)}
+.rl{display:flex;gap:8px;align-items:baseline;padding:4px 10px;font-size:12.5px;border-top:1px solid var(--border)}
+.rl:first-of-type{border-top:0}
+.rl b{font-family:var(--mono);font-weight:600;white-space:nowrap}
+.rl .cnt{font-family:var(--mono);color:var(--accent);font-weight:700;white-space:nowrap}
+.rl .why{color:var(--muted);min-width:0;overflow-wrap:anywhere}
+.tag{display:inline-block;padding:0 6px;border-radius:99px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;background:var(--panel-2);color:var(--text)}
+.tag.mount{background:var(--good-bg);color:var(--good)}
+.tag.state{background:var(--accent-soft);color:var(--accent)}
+.tag.context{background:var(--warn-bg);color:var(--warn)}
+.tag.props,.tag.parent{background:var(--panel-2);color:var(--text)}
+.ev{display:flex;gap:8px;align-items:baseline;padding:3px 6px;font:12.5px/1.5 var(--mono);border-radius:6px}
+.ev:nth-child(odd){background:var(--panel-2)}
+.ev .n{color:var(--text);min-width:2.2em;text-align:right}
+.ev .k{font-weight:700;min-width:6.5em}
+.ev.setup .k{color:var(--good)}
+.ev.cleanup .k{color:var(--warn)}
+.ev.mount .k{color:var(--accent)}
+.ev.unmount .k{color:var(--bad)}
+.ev.render{color:var(--text)}
+.ev.render .k{font-weight:400}
+.ev>span{min-width:0;overflow-wrap:anywhere}
+.ev .d{color:var(--text)}
+.summary{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;margin-bottom:10px;border:1px solid var(--border);background:var(--panel-2)}
+.summary.ok{background:var(--good-bg);border-color:transparent;color:var(--good)}
+.summary.bad{background:var(--bad-bg);border-color:transparent;color:var(--bad)}
+.summary strong{font-size:14px;white-space:nowrap}
+.summary .bar{flex:1;background:rgba(127,127,127,.2)}
+.summary.bad .bar>i{background:var(--bad)}
+.tcase{border:1px solid var(--border);border-radius:10px;padding:8px 12px;margin-bottom:8px;background:var(--panel)}
+.tcase.pass{border-left:4px solid var(--good)}
+.tcase.fail{border-left:4px solid var(--bad)}
+.tcase.running{border-left:4px solid var(--accent)}
+.tcase-h{display:flex;align-items:center;gap:8px}
+.tname{font-weight:600}
+.tbadge{font-size:12px;font-weight:600;padding:1px 8px;border-radius:99px;margin-left:auto}
+.tbadge.pass{background:var(--good-bg);color:var(--good)}
+.tbadge.fail{background:var(--bad-bg);color:var(--bad)}
+.tbadge.running{background:var(--accent-soft);color:var(--accent)}
+.terr{margin:6px 0 0;font:12.5px/1.5 var(--mono);color:var(--bad);white-space:pre-wrap;word-break:break-word}
+.placeholder{padding:18px;text-align:center;color:var(--muted)}
+.placeholder strong{display:block;color:var(--text);margin-bottom:4px}
+
+/* ---- recap + quiz ---- */
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.two h3{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.two ul{margin:0;padding-left:20px}
+.two li{margin:4px 0}
+.mistake{border:1px solid var(--border);border-left:4px solid var(--bad);border-radius:8px;padding:8px 10px;margin-bottom:8px}
+.mistake p{margin:4px 0 0!important;color:var(--muted)}
+.quiz-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.quiz-h h2{margin:0}
+.score{font-weight:700}
+.q{margin:0 0 16px;padding:0;border:0;min-width:0}
+.q legend{padding:0;font-weight:600;margin-bottom:8px}
+.qopts{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+.qopt{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel);font-weight:500}
+.qopt:hover:not([aria-disabled="true"]){background:var(--panel-2)}
+.qopt[aria-disabled="true"]{cursor:default}
+.qopt.right{border-color:var(--good);background:var(--good-bg);color:var(--good)}
+.qopt.wrong{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+.qopt .mark{font-size:11px;font-weight:700;white-space:nowrap}
+.q-fb{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--panel-2);font-size:13px}
+.q-fb:empty{display:none}
+.q-fb b{margin-right:4px}
+
+/* ---- dialog + toast (same as index.html) ---- */
+.overlay{position:fixed;inset:0;background:rgba(10,12,18,.55);display:grid;place-items:center;padding:16px;z-index:50;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.dialog{width:min(720px,100%);max-height:calc(100dvh - 32px);display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden}
+.dialog.narrow{width:min(420px,100%)}
+.dialog-h{display:flex;align-items:center;padding:14px 16px 14px 20px;border-bottom:1px solid var(--border)}
+.dialog-h h2{margin:0;font-size:16px}
+.dialog-b{padding:16px 20px;overflow:auto}
+.dialog-f{display:flex;gap:8px;justify-content:flex-end;align-items:center;padding:12px 20px;border-top:1px solid var(--border);background:var(--panel-2)}
+#toasts{position:fixed;right:16px;bottom:16px;display:grid;gap:8px;z-index:60}
+.toast{background:var(--text);color:var(--bg);padding:10px 14px;border-radius:10px;box-shadow:var(--shadow);font-weight:600;font-size:13px;animation:fade .2s;max-width:340px}
+.toast.bad{background:var(--bad);color:#fff}
+
+@media (max-width:1000px){
+  .lab-grid{grid-template-columns:minmax(0,1fr)}
+  .ed-pane{border-right:0;border-bottom:1px solid var(--border)}
+  .editor{height:340px}
+  .btn .kbd{display:none}
+  .two{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:820px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .sidebar{position:static;height:auto;border-right:0;border-bottom:1px solid var(--border);overflow:visible}
+  .side-top{padding:10px 16px 6px}
+  .lessons{display:flex;overflow-x:auto;padding:4px 12px 10px;gap:6px;scrollbar-width:thin}
+  .litem{width:auto;flex:none;border-color:var(--border);padding:6px 10px}
+  .lmeta{display:none}
+  .lessons>li{flex:none}
+  .side-foot{margin-top:0;padding:0 16px 10px}
+}
+@media (max-width:720px){
+  .topbar{flex-wrap:wrap;padding:8px 16px 6px}
+  .nav{order:5;width:100%;margin-left:0;padding-bottom:2px}
+}
+@media (max-width:560px){
+  .content{padding:16px}
+  .sec{padding:14px}
+  .lab-head,.lab-desc{padding:10px 12px}
+  .lesson-h h1{font-size:19px}
+  .status{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" id="logo"></span>
+    <span class="brand-name">Levelup</span>
+  </div>
+  <nav class="nav" aria-label="Levelup pages" data-levelup-nav></nav>
+  <div class="spacer"></div>
+  <button class="icon-btn" id="theme-btn" aria-label="Toggle light/dark theme"></button>
+</header>
+
+<div class="layout">
+  <aside class="sidebar" aria-label="Lessons">
+    <div class="side-top">
+      <h2>React hooks lab</h2>
+      <div class="progress-row"><span id="prog-text">0% complete</span><span id="prog-detail"></span></div>
+      <div class="bar" id="prog-bar" role="progressbar" aria-label="Overall progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i style="width:0%"></i></div>
+    </div>
+    <ol class="lessons" id="lessons"></ol>
+    <div class="side-foot"><button class="btn sm ghost" id="reset-progress">Reset progress</button></div>
+  </aside>
+
+  <main class="content" id="content" tabindex="-1">
+    <section class="card sec" aria-labelledby="lesson-title" id="lesson-head"></section>
+
+    <section class="card lab" aria-labelledby="lab-h">
+      <div class="lab-head">
+        <h2 id="lab-h">Lab</h2>
+        <div class="seg" id="modes" role="group" aria-label="Lab mode"></div>
+      </div>
+      <div class="lab-desc" id="lab-desc"></div>
+      <div class="lab-grid">
+        <div class="ed-pane">
+          <div class="pane-h">
+            <span class="file" id="file-label"></span>
+            <div class="tools">
+              <button class="btn sm ghost" id="reset-code" title="Reset this code to the starter"></button>
+              <button class="btn primary" id="run-btn" title="Run (Ctrl/Cmd + Enter)"></button>
+              <button class="btn" id="test-btn" title="Run tests (Ctrl/Cmd + Shift + Enter)" hidden></button>
+            </div>
+          </div>
+          <div class="editor" id="editor">
+            <pre class="gutter" id="gutter" aria-hidden="true">1</pre>
+            <textarea class="code" id="code" spellcheck="false" wrap="off" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Code editor" aria-describedby="ed-hint"></textarea>
+          </div>
+          <p class="ed-hint" id="ed-hint">Tab indents. Press Esc, then Tab, to leave the editor. <span class="kbd">Ctrl/Cmd</span>+<span class="kbd">Enter</span> runs.</p>
+        </div>
+        <div class="out-pane">
+          <div class="opts">
+            <label class="switch"><input type="checkbox" id="opt-renders"> Show renders</label>
+            <label class="switch"><input type="checkbox" id="opt-strict"> StrictMode</label>
+            <span class="status" id="status"></span>
+          </div>
+          <div class="preview" id="preview">
+            <div id="preview-host"></div>
+            <div class="pv-state" id="pv-state"></div>
+          </div>
+          <div class="out-tabs"><div class="tabs" id="tabs" role="tablist" aria-label="Output"></div></div>
+          <div class="panels">
+            <div class="panel" id="panel-console" role="tabpanel"></div>
+            <div class="panel" id="panel-renders" role="tabpanel" hidden></div>
+            <div class="panel" id="panel-effects" role="tabpanel" hidden></div>
+            <div class="panel" id="panel-tests" role="tabpanel" hidden></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card sec" aria-labelledby="recap-h" id="recap"></section>
+    <section class="card sec" aria-labelledby="quiz-h" id="quiz"></section>
+  </main>
+</div>
+<div id="modal-root"></div>
+<div id="toasts"></div>
+<div class="sr-only" id="live" aria-live="polite" role="status"></div>
+
+<script>
+'use strict';
+/* ==========================================================================
+   Helpers shared with the sandbox frame (injected via toString)
+   ========================================================================== */
+function ser(v){
+  if(v===undefined) return 'undefined';
+  if(typeof v==='function') return v.toString();
+  if(typeof v==='symbol') return v.toString();
+  if(typeof v==='bigint') return v+'n';
+  if(typeof v==='number') return Object.is(v,-0)?'-0':String(v);
+  try{
+    var s=JSON.stringify(v,function(k,x){
+      if(typeof x==='bigint') return x+'n';
+      if(typeof x==='function') return '[Function]';
+      if(typeof x==='symbol') return x.toString();
+      if(typeof x==='number' && !isFinite(x)) return String(x);
+      if(x instanceof Error) return x.name+': '+x.message;
+      if(x instanceof Map) return {'[Map]':Array.from(x)};
+      if(x instanceof Set) return {'[Set]':Array.from(x)};
+      return x;
+    });
+    return s===undefined?String(v):s;
+  }catch(e){ return /circular/i.test(String(e&&e.message))?'[Circular]':String(v); }
+}
+function emsg(e){ return e&&e.name&&e.message!==undefined ? e.name+': '+e.message : String(e); }
+function fmt(v){ return typeof v==='string'?v:(v instanceof Error?emsg(v):ser(v)); }
+function eq(a,b){
+  if(a===b||Object.is(a,b)) return true;
+  if(typeof a!=='object'||typeof b!=='object'||!a||!b) return false;
+  if(Array.isArray(a)!==Array.isArray(b)) return false;
+  var ka=Object.keys(a), kb=Object.keys(b);
+  if(ka.length!==kb.length) return false;
+  return ka.every(function(k){ return Object.prototype.hasOwnProperty.call(b,k)&&eq(a[k],b[k]); });
+}
+const SHARED_SRC=[ser,emsg,fmt,eq].map(String).join('\n');
+
+/* ==========================================================================
+   React sandbox: runs inside a sandboxed iframe (sandbox="allow-scripts", no
+   same-origin) and talks to the page only through postMessage.
+   Instrumentation added on top of the proven index.html sandbox:
+     - render counting + "why did it render" inference (wrapped components)
+     - render flashes (overlay, never touches the student's DOM)
+     - effect timeline (instrumented useEffect / useLayoutEffect + mount/unmount)
+     - active timer / listener counting (for leak tests)
+   ========================================================================== */
+function frameMain(){
+  var post=function(m){ try{ parent.postMessage(m,'*'); }catch(e){} };
+  if(typeof React==='undefined'||typeof ReactDOM==='undefined'||typeof Babel==='undefined'){ post({t:'loadfail'}); return; }
+  var win=window;
+  var oST=win.setTimeout, oCT=win.clearTimeout, oSI=win.setInterval, oCI=win.clearInterval;
+  var oWAdd=win.addEventListener, oWRem=win.removeEventListener, oDAdd=document.addEventListener, oDRem=document.removeEventListener;
+  var later=function(fn,ms){ return oST.call(win,fn,ms||0); };
+  var reduced=false;
+  try{ reduced=!!(win.matchMedia&&win.matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){}
+  var h=React.createElement;
+  var AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
+  var now=function(){ return (win.performance&&performance.now)?performance.now():Date.now(); };
+
+  /* ---------- console forwarding (printf-style formatting, tidy component stacks) ---------- */
+  var capture=null, muted=false;
+  function tidy(s){
+    var n=0;
+    return s.replace(/\n\s+(?:in|at) ([^\s(]+)[^\n]*/g,function(m,name){ n++; return n<=4?'\n   in <'+name+'>':''; }).replace(/\s+$/,'');
+  }
+  function fmtArgs(args){
+    var a=Array.prototype.slice.call(args), first=a[0];
+    if(typeof first==='string' && a.length>1 && /%[sdifoOjc]/.test(first)){
+      var i=1;
+      first=first.replace(/%([sdifoOjc%])/g,function(m,c){
+        if(c==='%') return '%';
+        if(i>=a.length) return m;
+        var v=a[i++];
+        if(c==='c') return '';
+        if(c==='s') return typeof v==='string'?v:fmt(v);
+        if(c==='d'||c==='i') return String(parseInt(v,10));
+        if(c==='f') return String(parseFloat(v));
+        return fmt(v);
+      });
+      a=[first].concat(a.slice(i));
+    }
+    return tidy(a.map(fmt).join(' '));
+  }
+  ['log','info','warn','error','debug'].forEach(function(level){
+    console[level]=function(){
+      var text=fmtArgs(arguments);
+      if(capture) capture.push({level:level,text:text});
+      if(!muted) post({t:'log',level:level,text:text});
+    };
+  });
+  var lastErr={text:'',at:0};
+  win.addEventListener('error',function(e){
+    var text=(e.error&&e.error.message)?emsg(e.error):String(e.message);
+    var t=Date.now();
+    if(text===lastErr.text&&t-lastErr.at<200) return;      // React dev re-throws render errors: log once
+    lastErr={text:text,at:t};
+    if(capture) capture.push({level:'error',text:text});
+    if(!muted) post({t:'log',level:'error',text:text});
+  });
+  win.addEventListener('unhandledrejection',function(e){
+    var text='Unhandled promise rejection: '+(e.reason&&e.reason.message||e.reason);
+    if(capture) capture.push({level:'error',text:text});
+    if(!muted) post({t:'log',level:'error',text:text});
+  });
+
+  /* ---------- tracking of timers / window+document listeners (leak detection) ---------- */
+  var TR={iv:{},to:{},ls:[]};
+  win.setInterval=function(fn){
+    var id=oSI.apply(win,arguments);
+    if(typeof fn==='function') TR.iv[id]=1;
+    return id;
+  };
+  win.clearInterval=function(id){ delete TR.iv[id]; return oCI.call(win,id); };
+  win.setTimeout=function(fn){
+    var a=Array.prototype.slice.call(arguments), id;
+    if(typeof fn==='function'){ a[0]=function(){ delete TR.to[id]; return fn.apply(this,arguments); }; }
+    id=oST.apply(win,a);
+    if(typeof fn==='function') TR.to[id]=1;
+    return id;
+  };
+  win.clearTimeout=function(id){ delete TR.to[id]; return oCT.call(win,id); };
+  var IGNORE_LS={message:1,error:1,unhandledrejection:1,selectionchange:1};
+  function trackTarget(t,add,rem){
+    t.addEventListener=function(type,fn){
+      if(!IGNORE_LS[type]&&fn) TR.ls.push({t:t,type:type,fn:fn});
+      return add.apply(t,arguments);
+    };
+    t.removeEventListener=function(type,fn){
+      for(var i=TR.ls.length-1;i>=0;i--){ if(TR.ls[i].t===t&&TR.ls[i].type===type&&TR.ls[i].fn===fn){ TR.ls.splice(i,1); break; } }
+      return rem.apply(t,arguments);
+    };
+  }
+  trackTarget(win,oWAdd,oWRem);
+  trackTarget(document,oDAdd,oDRem);
+  function counts(){ return {intervals:Object.keys(TR.iv).length,timeouts:Object.keys(TR.to).length,listeners:TR.ls.length}; }
+  function clearTracked(){
+    Object.keys(TR.iv).forEach(function(id){ oCI.call(win,+id); }); TR.iv={};
+    Object.keys(TR.to).forEach(function(id){ oCT.call(win,+id); }); TR.to={};
+    TR.ls.slice().forEach(function(l){ try{ l.t.removeEventListener(l.type,l.fn); }catch(e){} }); TR.ls=[];
+  }
+
+  /* ---------- instrumentation state ---------- */
+  var IN=null, CUR=null;
+  var PALETTE=['#b42318','#0b5fcc','#6d28d9','#0f766e','#8a4b00','#a21caf'];
+  function resetInstr(flash){
+    if(IN&&IN.sendT) oCT.call(win,IN.sendT);
+    if(IN&&IN.fbT) oCT.call(win,IN.fbT);
+    IN={flash:flash!==false&&!reduced,strict:false,test:false,quiet:false,seq:0,rseq:0,idn:0,commitNo:0,nameCount:{},totals:{},
+        committed:[],events:[],evBuf:[],rlBuf:[],sendT:null,fbT:null,capped:false,colors:{},ncolor:0};
+  }
+  resetInstr(true);
+  function sendNow(){
+    IN.sendT=null;
+    if(IN.test||(!IN.evBuf.length&&!IN.rlBuf.length)) return;
+    var m={t:'instr',events:IN.evBuf,renders:IN.rlBuf,totals:IN.totals};
+    IN.evBuf=[]; IN.rlBuf=[];
+    post(m);
+  }
+  function sendSoon(){ if(IN.test||IN.sendT) return; IN.sendT=later(sendNow,30); }
+  function labelOf(inst){ return inst.idx>1?inst.name+' #'+inst.idx:inst.name; }
+  function evLog(o){
+    if(IN.quiet) return;
+    if(IN.events.length>=600){
+      if(!IN.capped){ IN.capped=true; var t={seq:++IN.seq,ev:'note',comp:'',label:'Timeline truncated after 600 events'}; IN.events.push(t); IN.evBuf.push(t); sendSoon(); }
+      return;
+    }
+    o.seq=++IN.seq; IN.events.push(o); IN.evBuf.push(o); sendSoon();
+  }
+  function short(s,n){ s=String(s); return s.length>n?s.slice(0,n-1)+'…':s; }
+  function depTxt(deps){
+    if(deps===undefined) return '(no array: runs after every render)';
+    if(!Array.isArray(deps)) return String(deps);
+    return '['+deps.map(function(d){ return short(typeof d==='function'?'ƒ':ser(d),26); }).join(', ')+']';
+  }
+
+  /* ---------- wrapped hooks (globals for student code) ---------- */
+  var OWNER=(React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED||{}).ReactCurrentOwner;
+  var ParentCtx=React.createContext(0);
+  var wrapCache=new WeakMap(), fiberCalls=new WeakMap();
+  function useStateW(){ var r=React.useState.apply(React,arguments); if(CUR) CUR.hooks.push(r[0]); return r; }
+  function useReducerW(){ var r=React.useReducer.apply(React,arguments); if(CUR) CUR.hooks.push(r[0]); return r; }
+  function useContextW(c){ var v=React.useContext(c); if(CUR) CUR.ctxs.push(v); return v; }
+  function mkEffect(real,kind){
+    return function(fn,deps,opt){
+      var inst=CUR, idx=inst?inst.fx++:0;
+      var label=typeof opt==='string'?opt:(opt&&opt.label)||('effect #'+(idx+1));
+      var dt=depTxt(deps);
+      return real.call(React,function(){
+        evLog({ev:'setup',comp:inst?labelOf(inst):'',label:label,kind:kind,deps:dt,note:inst&&inst.sim?'strict':''});
+        var cleanup=fn.apply(this,arguments);
+        if(typeof cleanup==='function'){
+          return function(){
+            evLog({ev:'cleanup',comp:inst?labelOf(inst):'',label:label,kind:kind,deps:dt,note:inst&&inst.sim?'strict':''});
+            return cleanup.apply(this,arguments);
+          };
+        }
+        return cleanup;
+      },deps);
+    };
+  }
+  var useEffectW=mkEffect(React.useEffect,'effect'), useLayoutEffectW=mkEffect(React.useLayoutEffect,'layout');
+  function memoW(fn,cmp){ return React.memo(typeof fn==='function'&&!isClass(fn)?wrap(fn):fn,cmp); }
+  function forwardRefW(fn){ return React.forwardRef(typeof fn==='function'?wrap(fn):fn); }
+  function isClass(f){ return !!(f&&f.prototype&&f.prototype.isReactComponent); }
+  function createElementW(type){
+    var a=Array.prototype.slice.call(arguments);
+    if(typeof type==='function'&&!isClass(type)) a[0]=wrap(type);
+    return h.apply(React,a);
+  }
+  var R2=Object.create(React);
+  R2.createElement=createElementW; R2.memo=memoW; R2.forwardRef=forwardRefW;
+  R2.useState=useStateW; R2.useReducer=useReducerW; R2.useContext=useContextW;
+  R2.useEffect=useEffectW; R2.useLayoutEffect=useLayoutEffectW;
+  Object.assign(win,{
+    useState:useStateW,useReducer:useReducerW,useContext:useContextW,useEffect:useEffectW,useLayoutEffect:useLayoutEffectW,
+    useRef:React.useRef,useMemo:React.useMemo,useCallback:React.useCallback,useId:React.useId,useImperativeHandle:React.useImperativeHandle,
+    useTransition:React.useTransition,useDeferredValue:React.useDeferredValue,
+    createContext:React.createContext,Fragment:React.Fragment,StrictMode:React.StrictMode,memo:memoW,forwardRef:forwardRefW,
+    Children:React.Children,cloneElement:React.cloneElement,isValidElement:React.isValidElement,createRef:React.createRef
+  });
+
+  /* ---------- component wrapper: counts renders, records props/state/context, emits events ---------- */
+  function newInst(name){
+    return {id:++IN.idn,name:name,idx:0,parentId:0,props:null,hooks:[],ctxs:[],fx:0,rendered:false,calls:0,lastCalls:0,rseq:0,
+            fiber:null,prev:null,commits:0,mounts:0,mountedAt:0,callsAtMount:0,sim:false};
+  }
+  function wrap(fn){
+    var w=wrapCache.get(fn);
+    if(w) return w;
+    w=function(props,ref){
+      var st=React.useRef(null);            // throws outside a real render (React probes components to build stacks)
+      var parentId=React.useContext(ParentCtx);
+      var inst=st.current;
+      if(!inst) inst=st.current=newInst(w.__label||fn.displayName||fn.name||'Anonymous');
+      inst.parentId=parentId; inst.props=props; inst.hooks=[]; inst.ctxs=[]; inst.fx=0;
+      inst.rendered=true; inst.calls++; inst.rseq=++IN.rseq;
+      inst.fiber=(OWNER&&OWNER.current)||null;
+      if(inst.fiber) fiberCalls.set(inst.fiber,(fiberCalls.get(inst.fiber)||0)+1);
+      evLog({ev:'render',comp:labelOf(inst),label:'',kind:'render',deps:'',note:''});
+      var prev=CUR, out;
+      CUR=inst;
+      try{ out=fn.apply(this,arguments); }finally{ CUR=prev; }
+      React.useLayoutEffect(function(){ onCommit(inst); });
+      React.useLayoutEffect(function(){ onMount(inst); return function(){ onUnmount(inst); }; },[]);
+      return h(ParentCtx.Provider,{value:inst.id},out);
+    };
+    try{ Object.defineProperty(w,'name',{value:fn.displayName||fn.name||'Anonymous'}); }catch(e){}
+    w.displayName=fn.displayName||fn.name||'Anonymous';
+    Object.keys(fn).forEach(function(k){ try{ w[k]=fn[k]; }catch(e){} });
+    w.__w=true;
+    wrapCache.set(fn,w);
+    return w;
+  }
+  function onCommit(inst){
+    if(!inst.rendered) return;             // StrictMode re-runs layout effects without rendering
+    inst.rendered=false;
+    IN.committed.push(inst);
+    if(!IN.fbT) IN.fbT=later(function(){ IN.fbT=null; flushPass(); },0);
+  }
+  function onMount(inst){
+    inst.mounts++;
+    if(!inst.idx){ inst.idx=(IN.nameCount[inst.name]=(IN.nameCount[inst.name]||0)+1); inst.mountedAt=now(); inst.callsAtMount=inst.calls; }
+    var again=inst.mounts>1;
+    evLog({ev:'mount',comp:labelOf(inst),label:'',kind:'component',deps:'',note:again?'strict':''});
+    if(again){ later(function(){ inst.sim=false; },0); }
+  }
+  function onUnmount(inst){
+    var simulated=IN.strict&&inst.mounts===1&&inst.calls===inst.callsAtMount&&(now()-inst.mountedAt)<400;
+    if(simulated) inst.sim=true;
+    evLog({ev:'unmount',comp:labelOf(inst),label:'',kind:'component',deps:'',note:simulated?'strict':''});
+  }
+
+  /* ---------- "why did it render?" (inferred from props / state / context / parent) ---------- */
+  function sameContent(a,b){
+    try{
+      if(typeof a==='function'&&typeof b==='function') return String(a)===String(b);
+      if(a&&b&&typeof a==='object'&&typeof b==='object'){ if(a.$$typeof||b.$$typeof) return false; return eq(a,b); }
+    }catch(e){}
+    return false;
+  }
+  function explain(inst,ids){
+    if(!inst.prev) return {kind:'mount',text:'mounted (first render)'};
+    var p=inst.prev, a=p.props||{}, b=inst.props||{}, keys={}, changed=[], fresh=[], parts=[];
+    Object.keys(a).forEach(function(k){ keys[k]=1; }); Object.keys(b).forEach(function(k){ keys[k]=1; });
+    Object.keys(keys).forEach(function(k){
+      if(!Object.is(a[k],b[k])) (sameContent(a[k],b[k])?fresh:changed).push(k);
+    });
+    var st=[]; for(var i=0;i<Math.max(p.hooks.length,inst.hooks.length);i++){ if(!Object.is(p.hooks[i],inst.hooks[i])) st.push('#'+(i+1)); }
+    var cx=false; for(var j=0;j<Math.max(p.ctxs.length,inst.ctxs.length);j++){ if(!Object.is(p.ctxs[j],inst.ctxs[j])) cx=true; }
+    var parentRendered=!!(inst.parentId&&ids[inst.parentId]);
+    var kind='other';
+    if(st.length){ parts.push('own state changed (hook '+st.join(', ')+')'); kind='state'; }
+    if(cx){ parts.push('context value changed'); if(kind==='other') kind='context'; }
+    if(changed.length){ parts.push('props changed: '+changed.join(', ')); if(kind==='other') kind='props'; }
+    if(fresh.length){ parts.push('new object/function each render (same content): '+fresh.join(', ')); if(kind==='other') kind='props'; }
+    if(!parts.length){
+      if(parentRendered){ parts.push('parent re-rendered (props identical, but the component is not memoised)'); kind='parent'; }
+      else{ parts.push('re-rendered with no visible input change (e.g. setState with an equal value, or forced update)'); }
+    }else if(parentRendered&&(changed.length||fresh.length)&&!st.length&&!cx){ parts.push('parent re-rendered'); }
+    return {kind:kind,text:parts.join('; ')};
+  }
+  function flushPass(){
+    if(!IN.committed.length) return;
+    var list=IN.committed; IN.committed=[];
+    var ids={}, uniq=[];
+    list.forEach(function(i){ if(!ids[i.id]){ ids[i.id]=1; uniq.push(i); } });
+    uniq.sort(function(x,y){ return x.rseq-y.rseq; });
+    IN.commitNo++;
+    var entries=[];
+    uniq.forEach(function(inst){
+      var ex=explain(inst,ids);
+      inst.commits++; IN.totals[inst.name]=(IN.totals[inst.name]||0)+1;
+      var calls=(inst.fiber&&fiberCalls.get(inst.fiber))||(inst.calls-inst.lastCalls)||1;
+      if(inst.fiber) fiberCalls.delete(inst.fiber);
+      entries.push({label:labelOf(inst),name:inst.name,n:inst.commits,kind:ex.kind,reason:ex.text,calls:calls});
+      inst.lastCalls=inst.calls;
+      inst.prev={props:inst.props,hooks:inst.hooks,ctxs:inst.ctxs};
+    });
+    if(entries.length>40){ var extra=entries.length-40; entries=entries.slice(0,40); entries.push({label:'+'+extra+' more',name:'',n:0,kind:'other',reason:extra+' more components rendered in this commit',calls:1}); }
+    if(!IN.quiet && IN.rlBuf.length<400){ IN.rlBuf.push({c:IN.commitNo,entries:entries}); sendSoon(); }
+    if(IN.flash&&!IN.test&&!IN.quiet) doFlash(uniq);
+  }
+
+  /* ---------- flashes: overlay layer outside #root, so the student's layout is never touched ---------- */
+  function hostNodes(f){
+    var out=[];
+    if(!f) return out;
+    (function walk(x,d){
+      for(;x&&out.length<8&&d<60;x=x.sibling){
+        if(x.tag===5||x.tag===6) out.push(x.stateNode);
+        else if(x.tag!==4&&x.child) walk(x.child,d+1);
+      }
+    })(f.child,0);
+    return out;
+  }
+  function layer(){
+    var l=document.getElementById('__renders');
+    if(!l){ l=document.createElement('div'); l.id='__renders'; l.setAttribute('aria-hidden','true'); document.body.appendChild(l); }
+    return l;
+  }
+  function colorFor(name){
+    if(!IN.colors[name]) IN.colors[name]=PALETTE[IN.ncolor++%PALETTE.length];
+    return IN.colors[name];
+  }
+  function rectOf(n){
+    try{
+      if(n.nodeType===3){ var r=document.createRange(); r.selectNodeContents(n); return r.getBoundingClientRect(); }
+      return n.getBoundingClientRect();
+    }catch(e){ return null; }
+  }
+  function doFlash(list){
+    if(reduced) return;
+    var L=layer(), slots={}, budget=60;
+    list.forEach(function(inst){
+      var color=colorFor(inst.name), label=labelOf(inst)+' ×'+inst.commits;
+      hostNodes(inst.fiber).forEach(function(n){
+        if(budget<=0) return;
+        var r=rectOf(n);
+        if(!r||(!r.width&&!r.height)) return;
+        budget--;
+        var key=Math.round(r.left)+':'+Math.round(r.top), slot=slots[key]||0; slots[key]=slot+1;
+        var box=document.createElement('div');
+        box.className='__fl'; box.style.cssText='left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px;height:'+r.height+'px;outline-color:'+color;
+        var b=document.createElement('span');
+        b.className='__fb'; b.textContent=label; b.style.cssText='background:'+color+';top:'+(slot*15)+'px';
+        box.appendChild(b); L.appendChild(box);
+        later(function(){ if(box.parentNode) box.parentNode.removeChild(box); },1100);
+      });
+    });
+  }
+
+  /* ---------- error boundary + compile ---------- */
+  class Boundary extends React.Component{
+    constructor(p){ super(p); this.state={err:null}; }
+    static getDerivedStateFromError(err){ return {err:err}; }
+    render(){ return this.state.err ? h('pre',{className:'__err'},'Render error: '+this.state.err.message+'\n(caught by an error boundary)') : this.props.children; }
+  }
+  var blank=function(m){ return m.replace(/[^\n]/g,''); };
+  function transform(code){
+    code=String(code)
+      .replace(/^\s*import\s[^;]*?from\s*['"][^'"]+['"];?/gm,blank)
+      .replace(/export\s+default\s+(?=(?:async\s+)?(?:function|class)\s+[A-Za-z_$])/g,'')
+      .replace(/export\s+default\s+/g,'const __default = ')
+      .replace(/^\s*export\s+(?=(?:const|let|var|function|class|async)\b)/gm,'');
+    try{ return Babel.transform(code,{presets:['react']}).code; }
+    catch(e){ throw new SyntaxError(String(e.message).split('\n')[0].replace(/^unknown:\s*/,'')); }
+  }
+  function instantiate(out,name){
+    var names={}, re=/^(?:const|let|var|function|class)\s+([A-Z][A-Za-z0-9_$]*)/gm, m;
+    while((m=re.exec(out))) names[m[1]]=1;
+    var scope=Object.keys(names).map(function(k){ return k+':(typeof '+k+'!=="undefined"?'+k+':undefined)'; }).join(',');
+    var fn=new Function('React',out+'\n;return {comp:(typeof '+name+'!=="undefined" ? '+name+' : (typeof __default!=="undefined" ? __default : undefined)),scope:{'+scope+'}};');
+    var res=fn(R2), Comp=res.comp;
+    Object.keys(res.scope).forEach(function(k){
+      var v=res.scope[k];
+      if(v&&typeof v==='object'){ var inner=v.type||v.render; if(inner&&inner.__w&&!inner.__label&&/^Anonymous$/.test(inner.displayName||'')) inner.__label=k; }
+    });
+    if(!Comp) throw new Error('Component "'+name+'" was not found. Define it like: function '+name+'() { return <div/>; }');
+    return Comp;
+  }
+  function mountApp(Comp,el,strict){
+    var root=ReactDOM.createRoot(el);
+    var app=R2.createElement(Comp);
+    var tree=h(Boundary,null,app);
+    if(strict) tree=h(React.StrictMode,null,tree);
+    var top=h(React.Profiler,{id:'lab',onRender:function(){ flushPass(); }},tree);
+    ReactDOM.flushSync(function(){ root.render(top); });
+    return root;
+  }
+  function unmountRoot(root){ try{ if(root) ReactDOM.flushSync(function(){ root.unmount(); }); }catch(x){} }
+
+  /* ---------- test API (same as index.html, plus render / effect / timer inspection) ---------- */
+  function makeApi(container,getRoot){
+    var norm=function(s){ return String(s).replace(/\s+/g,' ').trim(); };
+    var own=function(el){ return norm(Array.prototype.filter.call(el.childNodes,function(n){ return n.nodeType===3; }).map(function(n){ return n.textContent; }).join('')); };
+    var all=function(){ return Array.prototype.slice.call(container.querySelectorAll('*')); };
+    var match=function(val,pat,exact){
+      if(pat instanceof RegExp){ pat.lastIndex=0; return pat.test(val); }
+      return exact===false ? val.toLowerCase().indexOf(String(pat).toLowerCase())>=0 : val===String(pat);
+    };
+    var labelText=function(el){
+      var l=el.id?container.querySelector('label[for="'+el.id+'"]'):null;
+      if(!l) l=el.closest('label');
+      return l?norm(l.textContent):'';
+    };
+    var roleOf=function(el){
+      var r=el.getAttribute('role'); if(r) return r;
+      var t=el.tagName.toLowerCase();
+      if(t==='a') return el.hasAttribute('href')?'link':null;
+      if(t==='button') return 'button';
+      if(/^h[1-6]$/.test(t)) return 'heading';
+      var map={ul:'list',ol:'list',li:'listitem',select:'combobox',textarea:'textbox',img:'img',form:'form',nav:'navigation',table:'table',tr:'row',main:'main',header:'banner',footer:'contentinfo'};
+      if(map[t]) return map[t];
+      if(t==='input'){ var ty=(el.type||'text').toLowerCase();
+        if(ty==='checkbox'||ty==='radio') return ty;
+        if(ty==='button'||ty==='submit'||ty==='reset') return 'button';
+        return 'textbox'; }
+      return null;
+    };
+    var nameOf=function(el){
+      var ty=(el.type||'').toLowerCase();
+      return norm(el.getAttribute('aria-label')||labelText(el)||(el.tagName==='INPUT'&&(ty==='button'||ty==='submit'||ty==='reset')?el.value:'')||el.textContent||el.getAttribute('placeholder')||'');
+    };
+    var finders={
+      Text:function(p,o){ return all().filter(function(el){ return match(own(el),p,o&&o.exact); }); },
+      Role:function(p,o){ return all().filter(function(el){ return roleOf(el)===p&&(!o||o.name===undefined||match(nameOf(el),o.name,o.exact)); }); },
+      TestId:function(p){ return all().filter(function(el){ return el.hasAttribute('data-testid')&&match(el.getAttribute('data-testid'),p); }); },
+      PlaceholderText:function(p,o){ return all().filter(function(el){ return el.hasAttribute('placeholder')&&match(el.getAttribute('placeholder'),p,o&&o.exact); }); },
+      LabelText:function(p,o){ return all().filter(function(el){ if(!/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return false; var lt=labelText(el), al=el.getAttribute('aria-label'); return (lt&&match(lt,p,o&&o.exact))||(al&&match(al,p,o&&o.exact)); }); },
+      DisplayValue:function(p){ return all().filter(function(el){ return /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)&&match(String(el.value),p); }); }
+    };
+    var desc=function(kind,p,o){ return kind+' '+(p instanceof RegExp?String(p):JSON.stringify(p))+(o&&o.name!==undefined?' with name '+(o.name instanceof RegExp?String(o.name):JSON.stringify(o.name)):''); };
+    var dom=function(){ var s=container.innerHTML; return '\n\nCurrent DOM:\n'+(s.length>400?s.slice(0,400)+'...':s||'(empty)'); };
+    var sleep=function(ms){ return new Promise(function(r){ later(r,ms); }); };
+    var waitFor=async function(fn,o){
+      o=o||{}; var end=Date.now()+(o.timeout||1500), iv=o.interval||25, last;
+      for(;;){
+        try{ return await fn(); }catch(e){ last=e; if(Date.now()>end) throw last; await sleep(iv); }
+      }
+    };
+    var screen={};
+    Object.keys(finders).forEach(function(k){
+      var find=finders[k];
+      screen['queryAllBy'+k]=find;
+      screen['getAllBy'+k]=function(p,o){ var r=find(p,o); if(!r.length) throw new Error('Unable to find an element by '+desc(k,p,o)+dom()); return r; };
+      screen['queryBy'+k]=function(p,o){ var r=find(p,o); if(r.length>1) throw new Error('Found multiple elements by '+desc(k,p,o)+' ('+r.length+'). Use getAllBy'+k+' instead.'); return r[0]||null; };
+      screen['getBy'+k]=function(p,o){ var r=find(p,o); if(!r.length) throw new Error('Unable to find an element by '+desc(k,p,o)+dom()); if(r.length>1) throw new Error('Found multiple elements by '+desc(k,p,o)+' ('+r.length+'). Use getAllBy'+k+' instead.'); return r[0]; };
+      screen['findBy'+k]=function(p,o){ return waitFor(function(){ return screen['getBy'+k](p,o); }); };
+      screen['findAllBy'+k]=function(p,o){ return waitFor(function(){ return screen['getAllBy'+k](p,o); }); };
+    });
+
+    var fire=function(el,ev){ if(!el||!el.dispatchEvent) throw new Error('fireEvent target is '+el); ReactDOM.flushSync(function(){ el.dispatchEvent(ev); }); };
+    var setValue=function(el,v){
+      var proto=el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:el.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype;
+      Object.getOwnPropertyDescriptor(proto,'value').set.call(el,v);
+    };
+    var mouse=function(type){ return function(el,init){ fire(el,new MouseEvent(type,Object.assign({bubbles:true,cancelable:true},init))); }; };
+    var key=function(type){ return function(el,init){ fire(el,new KeyboardEvent(type,Object.assign({bubbles:true,cancelable:true},init))); }; };
+    var change=function(el,init){
+      var t=(init&&init.target)||{};
+      if('checked' in t){ if(el.checked!==t.checked) mouse('click')(el); return; }
+      if('value' in t) setValue(el,t.value);
+      fire(el,new Event(el.tagName==='SELECT'?'change':'input',{bubbles:true}));
+    };
+    var fireEvent={
+      click:mouse('click'), dblClick:mouse('dblclick'), mouseOver:mouse('mouseover'), mouseEnter:mouse('mouseover'), mouseDown:mouse('mousedown'), mouseUp:mouse('mouseup'),
+      change:change, input:change, keyDown:key('keydown'), keyUp:key('keyup'),
+      submit:function(el){ fire(el,new Event('submit',{bubbles:true,cancelable:true})); },
+      focus:function(el){ el.focus(); }, blur:function(el){ el.blur(); }
+    };
+    var userType=function(el,text){
+      if(!el) throw new Error('userType target is '+el);
+      String(text).split('').forEach(function(ch){ setValue(el,el.value+ch); fire(el,new Event('input',{bubbles:true})); });
+    };
+
+    var show=function(v){
+      if(v instanceof Element){ var t=norm(v.textContent); return '<'+v.tagName.toLowerCase()+'>'+(t?' "'+(t.length>40?t.slice(0,40)+'...':t)+'"':''); }
+      return ser(v);
+    };
+    var matchers={
+      toBe:function(a,e){ return [Object.is(a,e),'to be '+show(e)]; },
+      toEqual:function(a,e){ return [eq(a,e),'to equal '+show(e)]; },
+      toStrictEqual:function(a,e){ return [eq(a,e),'to strictly equal '+show(e)]; },
+      toBeTruthy:function(a){ return [!!a,'to be truthy']; },
+      toBeFalsy:function(a){ return [!a,'to be falsy']; },
+      toBeNull:function(a){ return [a===null,'to be null']; },
+      toBeUndefined:function(a){ return [a===undefined,'to be undefined']; },
+      toBeDefined:function(a){ return [a!==undefined,'to be defined']; },
+      toBeGreaterThan:function(a,n){ return [a>n,'to be greater than '+n]; },
+      toBeGreaterThanOrEqual:function(a,n){ return [a>=n,'to be at least '+n]; },
+      toBeLessThan:function(a,n){ return [a<n,'to be less than '+n]; },
+      toBeLessThanOrEqual:function(a,n){ return [a<=n,'to be at most '+n]; },
+      toContain:function(a,x){ return [typeof a==='string'?a.indexOf(x)>=0:Array.from(a).indexOf(x)>=0,'to contain '+show(x)]; },
+      toHaveLength:function(a,n){ return [a!=null&&a.length===n,'to have length '+n+' (received '+(a&&a.length)+')']; },
+      toMatch:function(a,re){ re.lastIndex=0; return [typeof re==='string'?String(a).indexOf(re)>=0:re.test(a),'to match '+String(re)]; },
+      toInclude:function(a,x){ return [String(a).indexOf(x)>=0,'to include '+show(x)]; },
+      toBeInTheDocument:function(a){ return [a instanceof Element&&document.body.contains(a),'to be in the document']; },
+      toHaveTextContent:function(a,t){ var c=a?norm(a.textContent):''; return [t instanceof RegExp?t.test(c):c.indexOf(String(t))>=0,'to have text content '+show(t)+' (received '+show(c)+')']; },
+      toHaveValue:function(a,v){ return [a&&(typeof v==='number'?Number(a.value)===v:a.value===v),'to have value '+show(v)+' (received '+show(a&&a.value)+')']; },
+      toBeDisabled:function(a){ return [!!(a&&a.disabled),'to be disabled']; },
+      toBeEnabled:function(a){ return [!!(a&&!a.disabled),'to be enabled']; },
+      toBeChecked:function(a){ return [!!(a&&a.checked),'to be checked']; },
+      toHaveAttribute:function(a,n,v){ return [!!a&&a.hasAttribute(n)&&(v===undefined||a.getAttribute(n)===String(v)),'to have attribute '+n+(v===undefined?'':'='+show(v))]; },
+      toHaveClass:function(a){ var names=Array.prototype.slice.call(arguments,1); return [!!a&&names.every(function(c){ return a.classList.contains(c); }),'to have class '+names.join(' ')]; },
+      toThrow:function(a){ var threw=false; try{ a(); }catch(e){ threw=true; } return [threw,'to throw']; }
+    };
+    var expect=function(actual,note){
+      var build=function(neg){
+        var o={};
+        Object.keys(matchers).forEach(function(k){
+          o[k]=function(){
+            var r=matchers[k].apply(null,[actual].concat(Array.prototype.slice.call(arguments)));
+            if(neg?r[0]:!r[0]) throw new Error((note?note+': ':'')+'Expected '+show(actual)+(neg?' not ':' ')+r[1]);
+          };
+        });
+        return o;
+      };
+      var r=build(false); r.not=build(true); return r;
+    };
+    var extra={
+      sleep:sleep,
+      renders:function(name){ return IN.totals[name]||0; },
+      effects:function(label){ return IN.events.filter(function(e){ return (e.ev==='setup'||e.ev==='cleanup'||e.ev==='mount'||e.ev==='unmount')&&(!label||e.label===label||e.comp===label); }); },
+      timers:counts,
+      logs:function(){ return (capture||[]).slice(); },
+      unmount:function(){ var r=getRoot(); unmountRoot(r); }
+    };
+    return {screen:screen,fireEvent:fireEvent,userType:userType,waitFor:waitFor,expect:expect,extra:extra};
+  }
+
+  /* ---------- message loop ---------- */
+  var root=null, rootEl=function(){ return document.getElementById('root'); };
+  function teardown(){
+    IN.quiet=true;
+    unmountRoot(root); root=null;
+    clearTracked();
+    IN.quiet=false;
+    rootEl().textContent='';
+    var l=document.getElementById('__renders'); if(l) l.textContent='';
+  }
+  function showErr(err){
+    var el=rootEl(); el.textContent='';
+    var pre=document.createElement('pre'); pre.className='__err'; pre.textContent=emsg(err); el.appendChild(pre);
+  }
+  win.addEventListener('message',async function(e){
+    if(e.source!==parent) return;
+    var m=e.data; if(!m||!m.t) return;
+    if(m.t==='run'){
+      capture=null; muted=false;
+      try{
+        teardown();
+        resetInstr(m.flash);
+        IN.strict=!!m.strict;
+        var out=transform(m.code), Comp=instantiate(out,m.name);
+        var el=rootEl();
+        root=mountApp(Comp,el,IN.strict);
+        flushPass();
+        sendNow();
+        var bad=el.querySelector('.__err');
+        if(bad) post({t:'error',id:m.id,message:bad.textContent});
+        else post({t:'rendered',id:m.id});
+      }catch(err){ showErr(err); post({t:'error',id:m.id,message:emsg(err)}); }
+    }else if(m.t==='flash'){
+      IN.flash=!!m.on&&!reduced;
+      if(!IN.flash){ var l=document.getElementById('__renders'); if(l) l.textContent=''; }
+    }else if(m.t==='test'){
+      teardown();
+      var out2;
+      try{ out2=transform(m.code); instantiate(out2,m.name); }catch(err){ post({t:'fatal',message:emsg(err)}); return; }
+      muted=true;
+      for(var i=0;i<m.tests.length;i++){
+        post({t:'start',i:i});
+        var t0=performance.now(), r=null, res, c=document.createElement('div'), api=null;
+        c.className='__t'; document.body.appendChild(c);
+        capture=[]; resetInstr(false); IN.test=true; IN.strict=!!m.tests[i].strict;
+        var holder={root:null};
+        try{
+          var Comp2=instantiate(out2,m.name);
+          holder.root=r=mountApp(Comp2,c,IN.strict);
+          flushPass();
+          var bad2=c.querySelector('.__err'); if(bad2) throw new Error(bad2.textContent);
+          api=makeApi(c,function(){ var x=holder.root; holder.root=null; return x; });
+          var ex=api.extra;
+          await new AsyncFunction('screen','fireEvent','userType','waitFor','expect','container','React','sleep','renders','effects','timers','logs','unmount',m.tests[i].script)(
+            api.screen,api.fireEvent,api.userType,api.waitFor,api.expect,c,React,ex.sleep,ex.renders,ex.effects,ex.timers,ex.logs,ex.unmount);
+          res={i:i,pass:true};
+        }catch(err){ res={i:i,pass:false,error:emsg(err)}; }
+        unmountRoot(holder.root);
+        clearTracked();
+        c.remove();
+        capture=null; IN.test=false;
+        res.t='result'; res.ms=Math.round(performance.now()-t0);
+        post(res);
+      }
+      muted=false; rootEl().textContent='';
+      post({t:'done'});
+    }
+  });
+  post({t:'ready',reduced:reduced});
+}
+const FRAME_CSS='body{margin:0;padding:16px;font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#111;background:#fff}'
+  +'.__err{margin:0;padding:12px 14px;border-radius:8px;background:#fdecea;color:#b42318;white-space:pre-wrap;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace}'
+  +'.__t{position:fixed;left:-99999px;top:0;width:800px}'
+  +'#__renders{position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;overflow:hidden;z-index:2147483647}'
+  +'.__fl{position:absolute;box-sizing:border-box;outline:2px solid #b42318;outline-offset:-1px;animation:__fade 1s ease-out forwards}'
+  +'.__fb{position:absolute;left:0;padding:0 5px;height:14px;line-height:14px;font:700 10px/14px ui-monospace,Menlo,Consolas,monospace;color:#fff;white-space:nowrap;border-radius:0 0 4px 0}'
+  +'@keyframes __fade{0%{opacity:1}70%{opacity:1}100%{opacity:0}}'
+  +'@media (prefers-reduced-motion:reduce){#__renders{display:none}}';
+const CDN={
+  react:'https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.development.js',
+  dom:'https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.development.js',
+  babel:'https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js'
+};
+/* Build the srcdoc safely: neutralise any closing-script or html-comment opener inside the injected JS. */
+function buildFrameSrc(){
+  const js=(SHARED_SRC+'\n('+frameMain+')();').replace(/<\/script/gi,'<\\/script').replace(/<!\x2d\x2d/g,'<\\!--');
+  return '<!doctype html><html><head><meta charset="utf-8"><style>'+FRAME_CSS+'</style></head><body><div id="root"></div>'
+    +['react','dom','babel'].map(function(k){ return '<script src="'+CDN[k]+'"><\/script>'; }).join('')
+    +'<script>'+js+'<\/script></body></html>';
+}
+
+/* ==========================================================================
+   Lesson content. Code strings are plain template literals (no backticks or
+   dollar-brace inside the sample code). Test scripts run inside the sandbox with:
+   screen, fireEvent, userType, waitFor, expect, container, React, sleep,
+   renders(name), effects(label), timers(), logs(), unmount()
+   ========================================================================== */
+const LESSONS=[];
+
+LESSONS.push({
+  id:'usestate', title:'useState', tag:'State',
+  intro:'State is a component\'s memory: a value React keeps between renders. Calling `setCount` does not change the variable you are holding; it asks React to render again, and that next render sees the new value. Several updates inside one event are **batched** into a single re-render. When the new value depends on the old one, pass a function (`setCount(c => c + 1)`), and if the starting value is expensive to compute, pass a function to `useState` so it runs only once.',
+  analogy:'State is a sticky note on the fridge. Each time you walk into the kitchen (a render) you read the note once and carry that reading around. Writing a new note (`setState`) does not change what you already read; you see it on your next visit.',
+  variants:[
+    {id:'batching', label:'Batching & updates', tab:'console', note:'Click "+3 (direct)" then "+3 (functional)". The direct version adds only 1 because all three calls read the same old count.', code:`function App() {
+  const [count, setCount] = useState(0);
+
+  function addThreeDirect() {
+    setCount(count + 1);
+    setCount(count + 1);
+    setCount(count + 1); // each call reads the SAME old count
+  }
+  function addThreeFunctional() {
+    setCount(c => c + 1);
+    setCount(c => c + 1);
+    setCount(c => c + 1); // each call receives the latest value
+  }
+
+  console.log('render with count =', count);
+  return (
+    <div>
+      <h2>Count: {count}</h2>
+      <button onClick={addThreeDirect}>+3 (direct)</button>{' '}
+      <button onClick={addThreeFunctional}>+3 (functional)</button>{' '}
+      <button onClick={() => setCount(0)}>Reset</button>
+    </div>
+  );
+}
+`},
+    {id:'lazy', label:'Lazy initial state', tab:'console', note:'Open the Console tab and click "Re-render". The eager call runs on every render; the lazy one only on the first.', code:`function expensiveStart() {
+  console.log('expensiveStart() ran');
+  return 42;
+}
+
+function App() {
+  const [eager] = useState(expensiveStart());       // runs on EVERY render
+  const [lazy] = useState(() => expensiveStart());  // runs only on the first render
+  const [tick, setTick] = useState(0);
+
+  return (
+    <div>
+      <p>eager = {eager}, lazy = {lazy}</p>
+      <button onClick={() => setTick(tick + 1)}>Re-render ({tick})</button>
+    </div>
+  );
+}
+`},
+    {id:'objects', label:'Objects & own state', tab:'renders', note:'Click "Birthday" (the parent re-renders, so its children do too) and then a counter (only that counter re-renders).', code:`function Badge({ name }) {
+  return <strong>{name}</strong>;
+}
+
+function Counter({ label }) {
+  const [n, setN] = useState(0);
+  return <button onClick={() => setN(n + 1)}>{label}: {n}</button>;
+}
+
+function App() {
+  const [user, setUser] = useState({ name: 'Ada', age: 36 });
+  return (
+    <div>
+      <p><Badge name={user.name} /> is {user.age}</p>
+      <button onClick={() => setUser({ ...user, age: user.age + 1 })}>Birthday</button>{' '}
+      <Counter label="Counter A" />{' '}
+      <Counter label="Counter B" />
+    </div>
+  );
+}
+`}
+  ],
+  takeaways:[
+    'State is a snapshot: inside one render, `count` never changes, even right after you call `setCount`.',
+    'React batches updates from one event into a single re-render (React 18 batches everywhere, including timers and promises).',
+    'Use the functional form `setX(prev => ...)` whenever the new value depends on the previous one.',
+    'Never mutate objects or arrays in state. Build a new copy with spread, `map` or `filter`.',
+    'Do not store what you can compute. Derive it while rendering instead of keeping a second copy in state.'
+  ],
+  mistakes:[
+    {bad:'`items.push(x); setItems(items);`', why:'The array is the same object, so React sees no change and skips the update. Use `setItems([...items, x])`.'},
+    {bad:'`const [total, setTotal] = useState(items.length)`', why:'This copy goes out of date the moment `items` changes. Compute `items.length` during render.'}
+  ],
+  quiz:[
+    {q:'`count` is 0. A click handler calls `setCount(count + 1)` three times. What is `count` after the next render?', opts:['3','0','1','It throws an error'], a:2, why:'All three calls read the same snapshot (count is 0), so each asks for 0 + 1. Use `setCount(c => c + 1)` to add three.'},
+    {q:'Which is the correct way to change one field of an object held in state?', opts:['`user.age = 37; setUser(user)`','`setUser({ ...user, age: 37 })`','`setUser(user.age = 37)`','`user.setAge(37)`'], a:1, why:'React compares by reference. A new object (a copy with the change) tells React that something changed.'},
+    {q:'What does `useState(() => expensive())` do differently from `useState(expensive())`?', opts:['It skips calling `expensive` on renders after the first','It makes `expensive` run asynchronously','It memoises `expensive` across components','Nothing, they are identical'], a:0, why:'Passing a function makes it a lazy initializer that React calls only on the first render. The eager form calls `expensive()` on every render and throws the result away.'},
+    {q:'In an event handler you call `setCount(5)` and then `console.log(count)`. What is logged?', opts:['5','undefined','The next render\'s value','The old value'], a:3, why:'State is a snapshot of the current render. The new value only shows up in the next render.'}
+  ],
+  challenges:[
+    {id:'us-batch', title:'"Add 3" only adds 1',
+     symptom:'The button is meant to add 3 to the count, but each click only adds 1.',
+     hint:'All three `setCount(count + 1)` calls read the same `count`. Pass an updater function instead, so each call receives the latest value.',
+     starter:`function App() {
+  const [count, setCount] = useState(0);
+
+  function addThree() {
+    setCount(count + 1);
+    setCount(count + 1);
+    setCount(count + 1);
+  }
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={addThree}>Add 3</button>
+    </div>
+  );
+}
+`,
+     solution:`function App() {
+  const [count, setCount] = useState(0);
+
+  function addThree() {
+    setCount(c => c + 1);
+    setCount(c => c + 1);
+    setCount(c => c + 1);
+  }
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={addThree}>Add 3</button>
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'starts at 0', script:`expect(screen.getByText('Count: 0')).toBeInTheDocument();`},
+      {name:'one click adds three', script:`fireEvent.click(screen.getByRole('button',{name:'Add 3'}));
+expect(screen.getByText('Count: 3')).toBeInTheDocument();`},
+      {name:'two clicks make six', script:`const b = screen.getByRole('button',{name:'Add 3'});
+fireEvent.click(b); fireEvent.click(b);
+expect(screen.getByText('Count: 6')).toBeInTheDocument();`}
+     ]},
+    {id:'us-mutate', title:'The list never grows',
+     symptom:'Clicking "Add apple" should append an item, but nothing appears on screen.',
+     hint:'`push` changes the existing array, and `setItems(items)` passes the very same array back. Give React a new array: `[...items, newItem]`.',
+     starter:`function App() {
+  const [items, setItems] = useState(['Milk']);
+
+  function addApple() {
+    items.push('Apple ' + items.length);
+    setItems(items);
+  }
+
+  return (
+    <div>
+      <button onClick={addApple}>Add apple</button>
+      <ul>
+        {items.map(item => <li key={item}>{item}</li>)}
+      </ul>
+    </div>
+  );
+}
+`,
+     solution:`function App() {
+  const [items, setItems] = useState(['Milk']);
+
+  function addApple() {
+    setItems([...items, 'Apple ' + items.length]);
+  }
+
+  return (
+    <div>
+      <button onClick={addApple}>Add apple</button>
+      <ul>
+        {items.map(item => <li key={item}>{item}</li>)}
+      </ul>
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'shows the first item', script:`expect(screen.getAllByRole('listitem')).toHaveLength(1);
+expect(screen.getByText('Milk')).toBeInTheDocument();`},
+      {name:'one click adds an item', script:`fireEvent.click(screen.getByRole('button',{name:'Add apple'}));
+expect(screen.getAllByRole('listitem')).toHaveLength(2);`},
+      {name:'two clicks keep the old items', script:`const b = screen.getByRole('button',{name:'Add apple'});
+fireEvent.click(b); fireEvent.click(b);
+expect(screen.getAllByRole('listitem')).toHaveLength(3);
+expect(screen.getByText('Milk')).toBeInTheDocument();`}
+     ]},
+    {id:'us-derived', title:'The total gets out of sync',
+     symptom:'After removing a task the list shrinks, but "Total" still shows the old number.',
+     hint:'`total` is a second copy of something you can calculate. Delete that state and use `tasks.length` while rendering.',
+     starter:`function App() {
+  const [tasks, setTasks] = useState(['Write', 'Test', 'Ship']);
+  const [total, setTotal] = useState(tasks.length);
+
+  function remove(name) {
+    setTasks(tasks.filter(t => t !== name));
+  }
+
+  return (
+    <div>
+      <p>Total: {total}</p>
+      <ul>
+        {tasks.map(t => (
+          <li key={t}>
+            {t} <button onClick={() => remove(t)}>Remove {t}</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+`,
+     solution:`function App() {
+  const [tasks, setTasks] = useState(['Write', 'Test', 'Ship']);
+  const total = tasks.length; // derived, not stored
+
+  function remove(name) {
+    setTasks(tasks.filter(t => t !== name));
+  }
+
+  return (
+    <div>
+      <p>Total: {total}</p>
+      <ul>
+        {tasks.map(t => (
+          <li key={t}>
+            {t} <button onClick={() => remove(t)}>Remove {t}</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'starts with three tasks', script:`expect(screen.getByText('Total: 3')).toBeInTheDocument();
+expect(screen.getAllByRole('listitem')).toHaveLength(3);`},
+      {name:'removing a task lowers the total', script:`fireEvent.click(screen.getByRole('button',{name:'Remove Test'}));
+expect(screen.getAllByRole('listitem')).toHaveLength(2);
+expect(screen.getByText('Total: 2')).toBeInTheDocument();`},
+      {name:'removing all tasks shows zero', script:`fireEvent.click(screen.getByRole('button',{name:'Remove Write'}));
+fireEvent.click(screen.getByRole('button',{name:'Remove Test'}));
+fireEvent.click(screen.getByRole('button',{name:'Remove Ship'}));
+expect(screen.getByText('Total: 0')).toBeInTheDocument();`}
+     ]}
+  ]
+});
+
+LESSONS.push({
+  id:'useeffect', title:'useEffect', tag:'Effects',
+  intro:'`useEffect` runs code **after** React has updated the screen. Use it to synchronise with things outside React: timers, subscriptions, network requests. The dependency array says when to re-run: `[]` means once after mount, `[id]` means after mount and whenever `id` changes, and no array means after every render. The function you return is the **cleanup**; React runs it before the next run of the effect and when the component unmounts. In development, `<StrictMode>` deliberately mounts, unmounts and mounts again to prove your cleanup works, so effects appear to fire twice.',
+  analogy:'An effect is a magazine subscription. When you move house (the dependencies change) you must cancel the old delivery (cleanup) before signing up at the new address (setup). Forget to cancel and the magazines pile up at two addresses.',
+  variants:[
+    {id:'timer', label:'Timer with cleanup', tab:'effects', note:'Unmount the clock and watch the timeline: cleanup runs before the unmount finishes. Turn on StrictMode and re-run to see setup, cleanup, setup on mount.', code:`function Clock() {
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    console.log('start timer');
+    const id = setInterval(() => setSeconds(s => s + 1), 1000);
+    return () => {
+      console.log('stop timer'); // cleanup
+      clearInterval(id);
+    };
+  }, [], 'timer'); // [] = set up once after mount
+
+  return <p>Seconds: {seconds}</p>;
+}
+
+function App() {
+  const [show, setShow] = useState(true);
+  return (
+    <div>
+      <button onClick={() => setShow(!show)}>{show ? 'Unmount' : 'Mount'} clock</button>
+      {show && <Clock />}
+    </div>
+  );
+}
+`},
+    {id:'deps', label:'Dependencies', tab:'effects', note:'Click the count button, then type in the name box. Watch which effects run: no array = every render, [] = once, [name] = only when name changes.', code:`function App() {
+  const [count, setCount] = useState(0);
+  const [name, setName] = useState('Ada');
+
+  useEffect(() => { console.log('A: every render'); }, undefined, 'A every render');
+  useEffect(() => { console.log('B: once'); }, [], 'B once');
+  useEffect(() => { console.log('C: name = ' + name); }, [name], 'C [name]');
+
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>count {count}</button>{' '}
+      <input aria-label="Name" value={name} onChange={e => setName(e.target.value)} />
+    </div>
+  );
+}
+`},
+    {id:'fetch', label:'Fetch pattern', tab:'effects', note:'Click User 1 then quickly User 2. User 1 is slow, but the "ignore" flag set by the cleanup stops its late answer from overwriting User 2.', code:`const USERS = { 1: 'Ada Lovelace', 2: 'Grace Hopper', 3: 'Alan Turing' };
+
+function fakeFetchUser(id) {
+  // pretend network: user 1 is slow
+  return new Promise(resolve =>
+    setTimeout(() => resolve({ id, name: USERS[id] }), id === 1 ? 900 : 200)
+  );
+}
+
+function Profile({ id }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    let ignore = false; // guards against out-of-order answers
+    setUser(null);
+    fakeFetchUser(id).then(u => { if (!ignore) setUser(u); });
+    return () => { ignore = true; }; // runs before the next effect
+  }, [id], 'fetch user');
+
+  return <p>{user ? user.name : 'Loading...'}</p>;
+}
+
+function App() {
+  const [id, setId] = useState(1);
+  return (
+    <div>
+      {[1, 2, 3].map(n => (
+        <button key={n} onClick={() => setId(n)}>User {n}</button>
+      ))}
+      <Profile id={id} />
+    </div>
+  );
+}
+`}
+  ],
+  takeaways:[
+    'Effects synchronise your component with something outside React. If you are not syncing, you probably do not need one.',
+    'An effect runs after the screen is painted (`useLayoutEffect` runs just before paint).',
+    'List every reactive value the effect uses in the dependency array. `[]` means "only after mount".',
+    'Return a cleanup for timers, subscriptions, listeners and "ignore" flags on async work.',
+    'StrictMode (development only) runs setup, cleanup, setup once on mount to expose missing cleanups.'
+  ],
+  mistakes:[
+    {bad:'Leaving a variable out of the dependency array to "stop the effect re-running".', why:'The effect keeps using the old value (a stale closure). Fix the cause (use an updater function, move logic) instead of hiding the dependency.'},
+    {bad:'`setInterval(...)` inside an effect with no cleanup.', why:'The timer keeps running after unmount, and in StrictMode you end up with two of them. Always `clearInterval` in the cleanup.'}
+  ],
+  quiz:[
+    {q:'You want an effect to run exactly once, after the first render. Which dependency array do you pass?', opts:['`[]`','No array at all','`[undefined]`','`[true]`'], a:0, why:'An empty array has no values that could change, so the effect runs after mount and never again (until unmount).'},
+    {q:'What does the function returned from an effect do?', opts:['It runs before every render','It runs on the server only','It runs before the effect re-runs and when the component unmounts','It runs once after the effect finishes'], a:2, why:'That returned function is the cleanup. React calls it to undo the previous run before running the effect again, and on unmount.'},
+    {q:'In development your effect runs twice on mount. What is the most likely reason?', opts:['A bug in React','`<StrictMode>` re-mounts components once to check your cleanup','The dependency array is empty','The browser caches the effect'], a:1, why:'StrictMode simulates unmount then mount (setup, cleanup, setup) in development only. If that breaks your app, a cleanup is missing.'},
+    {q:'An effect reads `userId` (a prop) but has the dependency array `[]`. What is the likely symptom?', opts:['React throws an error','The effect runs on every render','The effect never runs','It keeps using the first `userId` and ignores later changes'], a:3, why:'The closure was created with the first value and the effect never re-runs, so it acts on stale data.'}
+  ],
+  challenges:[
+    {id:'ue-stale', title:'The counter stops at 1',
+     symptom:'A timer should count up every 100 ms, but "Ticks" gets to 1 and stays there.',
+     hint:'The interval callback captured `ticks` from the first render, when it was 0. Use the updater form `setTicks(t => t + 1)`.',
+     starter:`function App() {
+  const [ticks, setTicks] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setTicks(ticks + 1); // 'ticks' is 0 forever inside this closure
+    }, 100); // 100 ms so the tests are quick
+    return () => clearInterval(id);
+  }, []);
+
+  return <p>Ticks: {ticks}</p>;
+}
+`,
+     solution:`function App() {
+  const [ticks, setTicks] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setTicks(t => t + 1); // always the latest value
+    }, 100); // 100 ms so the tests are quick
+    return () => clearInterval(id);
+  }, []);
+
+  return <p>Ticks: {ticks}</p>;
+}
+`,
+     tests:[
+      {name:'starts at 0', script:`expect(screen.getByText('Ticks: 0')).toBeInTheDocument();`},
+      {name:'keeps counting past 3', script:`await waitFor(() => expect(screen.getByText(/Ticks: [3-9]/)).toBeInTheDocument(), {timeout: 1800});`},
+      {name:'stops the timer when unmounted', script:`unmount();
+expect(timers().intervals).toBe(0);`}
+     ]},
+    {id:'ue-cleanup', title:'The hidden clock keeps ticking',
+     symptom:'After you hide the clock its timer is still running in the background (a leak). In StrictMode there are even two timers.',
+     hint:'Store the id returned by `setInterval` and return a cleanup function from the effect that calls `clearInterval(id)`.',
+     starter:`function Clock() {
+  const [n, setN] = useState(0);
+
+  useEffect(() => {
+    setInterval(() => setN(c => c + 1), 100);
+  }, []);
+
+  return <p>Clock: {n}</p>;
+}
+
+function App() {
+  const [show, setShow] = useState(true);
+  return (
+    <div>
+      <button onClick={() => setShow(false)}>Hide clock</button>
+      {show && <Clock />}
+    </div>
+  );
+}
+`,
+     solution:`function Clock() {
+  const [n, setN] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setN(c => c + 1), 100);
+    return () => clearInterval(id);
+  }, []);
+
+  return <p>Clock: {n}</p>;
+}
+
+function App() {
+  const [show, setShow] = useState(true);
+  return (
+    <div>
+      <button onClick={() => setShow(false)}>Hide clock</button>
+      {show && <Clock />}
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'the clock ticks while visible', script:`await waitFor(() => expect(screen.getByText(/Clock: [2-9]/)).toBeInTheDocument(), {timeout: 1800});`},
+      {name:'hiding the clock stops its timer', script:`expect(timers().intervals).toBe(1);
+fireEvent.click(screen.getByRole('button',{name:'Hide clock'}));
+expect(screen.queryByText(/Clock:/)).toBeNull();
+expect(timers().intervals).toBe(0);`},
+      {name:'StrictMode leaves exactly one timer', strict:true, script:`await sleep(20);
+expect(timers().intervals).toBe(1);`}
+     ]},
+    {id:'ue-deps', title:'Next user shows the old name',
+     symptom:'Clicking "Next user" changes the id but the profile keeps showing the first user. (When you fix that, watch out for slow answers arriving late.)',
+     hint:'List `id` in the dependency array. Then add an `ignore` flag that the cleanup sets, so an answer for an old id is thrown away.',
+     starter:`const NAMES = { 1: 'Ada', 2: 'Grace' };
+
+function loadName(id) {
+  // user 1 answers slowly, user 2 quickly
+  return new Promise(resolve => setTimeout(() => resolve(NAMES[id]), id === 1 ? 150 : 20));
+}
+
+function Profile({ id }) {
+  const [name, setName] = useState('...');
+
+  useEffect(() => {
+    loadName(id).then(setName);
+  }, []); // 'id' is used inside but not listed
+
+  return <h2>{name}</h2>;
+}
+
+function App() {
+  const [id, setId] = useState(1);
+  return (
+    <div>
+      <button onClick={() => setId(2)}>Next user</button>
+      <Profile id={id} />
+    </div>
+  );
+}
+`,
+     solution:`const NAMES = { 1: 'Ada', 2: 'Grace' };
+
+function loadName(id) {
+  // user 1 answers slowly, user 2 quickly
+  return new Promise(resolve => setTimeout(() => resolve(NAMES[id]), id === 1 ? 150 : 20));
+}
+
+function Profile({ id }) {
+  const [name, setName] = useState('...');
+
+  useEffect(() => {
+    let ignore = false;
+    loadName(id).then(n => { if (!ignore) setName(n); });
+    return () => { ignore = true; };
+  }, [id]);
+
+  return <h2>{name}</h2>;
+}
+
+function App() {
+  const [id, setId] = useState(1);
+  return (
+    <div>
+      <button onClick={() => setId(2)}>Next user</button>
+      <Profile id={id} />
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'loads the first user', script:`await screen.findByText('Ada');`},
+      {name:'shows the next user after the click', script:`await screen.findByText('Ada');
+fireEvent.click(screen.getByRole('button',{name:'Next user'}));
+await screen.findByText('Grace');`},
+      {name:'a slow old answer never overwrites the new one', script:`fireEvent.click(screen.getByRole('button',{name:'Next user'}));
+await screen.findByText('Grace');
+await sleep(300);
+expect(screen.getByRole('heading')).toHaveTextContent('Grace');`}
+     ]}
+  ]
+});
+
+LESSONS.push({
+  id:'useref', title:'useRef', tag:'Refs',
+  intro:'A ref is a box, `{ current: ... }`, that React keeps for the whole life of the component. Changing `ref.current` does **not** cause a re-render, which makes it ideal for values the screen does not display: timer ids, the previous value of something, "has this already happened?" flags. The other classic use is a **DOM ref**: write `ref={inputRef}` and after the component mounts, `inputRef.current` is the real DOM element, so you can call `.focus()`. Read and write `ref.current` inside event handlers and effects, not while rendering.',
+  analogy:'A ref is a sticky note on your desk, while state is the whiteboard on the wall. Scribbling on the sticky note does not make the whole office look up; the whiteboard is what everyone sees. Use the note for private bookkeeping and the whiteboard for anything people must see.',
+  variants:[
+    {id:'dom', label:'DOM ref', tab:'preview', note:'The button reaches the real <input> through the ref. No state and no re-render is involved.', code:`function App() {
+  const inputRef = useRef(null);
+
+  return (
+    <div>
+      <input ref={inputRef} placeholder="Type here" aria-label="Demo input" />{' '}
+      <button onClick={() => inputRef.current.focus()}>Focus the input</button>
+    </div>
+  );
+}
+`},
+    {id:'instance', label:'Timer id & render count', tab:'renders', note:'Start and Stop use a ref for the interval id. The render count is also a ref: changing it never re-renders by itself.', code:`function App() {
+  const [seconds, setSeconds] = useState(0);
+  const timerId = useRef(null);
+  const renders = useRef(0);
+  renders.current += 1; // changing a ref never triggers a render
+
+  function start() {
+    if (timerId.current) return; // already running
+    timerId.current = setInterval(() => setSeconds(s => s + 1), 500);
+  }
+  function stop() {
+    clearInterval(timerId.current);
+    timerId.current = null;
+  }
+  useEffect(() => stop, []); // stop on unmount
+
+  return (
+    <div>
+      <p>Seconds: {seconds} (this component has rendered {renders.current} times)</p>
+      <button onClick={start}>Start</button>{' '}
+      <button onClick={stop}>Stop</button>
+    </div>
+  );
+}
+`},
+    {id:'refstate', label:'Ref vs state', tab:'renders', note:'Click "ref +1": the console shows the ref changing, but the screen does not. Click "state +1": the render also shows the latest ref value.', code:`function App() {
+  const clicksRef = useRef(0);
+  const [clicksState, setClicksState] = useState(0);
+
+  return (
+    <div>
+      <button onClick={() => {
+        clicksRef.current += 1;
+        console.log('ref is now', clicksRef.current);
+      }}>ref +1</button>{' '}
+      <button onClick={() => setClicksState(clicksState + 1)}>state +1</button>
+      <p>Shown ref: {clicksRef.current} | state: {clicksState}</p>
+    </div>
+  );
+}
+`}
+  ],
+  takeaways:[
+    '`useRef(initial)` returns the same `{ current }` object on every render.',
+    'Writing to `ref.current` does not re-render. If the screen must change, use state.',
+    'Refs are the right home for timer ids, previous values, and other "instance variables".',
+    'A DOM ref is filled in after the component mounts, so use it in effects or handlers, never during render.',
+    'A plain `let` inside a component is recreated on every render and cannot remember anything.'
+  ],
+  mistakes:[
+    {bad:'Showing `ref.current` in the JSX and expecting the text to update.', why:'Nothing tells React to render again. Use `useState` for anything the user must see.'},
+    {bad:'`let timer = null;` inside the component to remember an interval id.', why:'Every render creates a fresh `timer`, so a later handler cannot find the id. Keep it in a ref.'}
+  ],
+  quiz:[
+    {q:'What happens when you assign a new value to `ref.current`?', opts:['The component re-renders','Nothing is re-rendered','The effects re-run','React throws a warning'], a:1, why:'Refs are outside React\'s render cycle. That is exactly why they are cheap for bookkeeping.'},
+    {q:'For `<input ref={inputRef} />`, when is `inputRef.current` the DOM node?', opts:['During the first render','Only in class components','After the component has mounted (in effects and handlers)','Before the JSX is created'], a:2, why:'React fills the ref while committing. During the first render the input does not exist yet, so `current` is still null.'},
+    {q:'Where should you keep the id returned by `setInterval` so a Stop button can cancel it?', opts:['In a `let` variable in the component body','In a ref','In a comment','In the dependency array'], a:1, why:'A ref survives re-renders and can be changed without causing one. A plain variable is reset on every render.'},
+    {q:'Which value should be state rather than a ref?', opts:['A timeout id','The previous props','A counter that is displayed on screen','A flag that says "already sent analytics"'], a:2, why:'If the user must see the change, React has to be told to render, so use state.'}
+  ],
+  challenges:[
+    {id:'ur-display', title:'The counter never changes on screen',
+     symptom:'Clicking "Add" does nothing visible, even though the number is being incremented internally.',
+     hint:'A ref change does not trigger a render. The value is displayed, so it belongs in state.',
+     starter:`function App() {
+  const count = useRef(0);
+
+  function add() {
+    count.current += 1;
+  }
+
+  return (
+    <div>
+      <p>Count: {count.current}</p>
+      <button onClick={add}>Add</button>
+    </div>
+  );
+}
+`,
+     solution:`function App() {
+  const [count, setCount] = useState(0);
+
+  function add() {
+    setCount(c => c + 1);
+  }
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={add}>Add</button>
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'starts at 0', script:`expect(screen.getByText('Count: 0')).toBeInTheDocument();`},
+      {name:'one click shows 1', script:`fireEvent.click(screen.getByRole('button',{name:'Add'}));
+expect(screen.getByText('Count: 1')).toBeInTheDocument();`},
+      {name:'three clicks show 3', script:`const b = screen.getByRole('button',{name:'Add'});
+fireEvent.click(b); fireEvent.click(b); fireEvent.click(b);
+expect(screen.getByText('Count: 3')).toBeInTheDocument();`}
+     ]},
+    {id:'ur-timer', title:'Stop cannot stop the timer',
+     symptom:'After pressing Start, the Stop button does not stop the counting. Pressing Start twice also makes two timers.',
+     hint:'`let timer` is recreated every render. Keep the interval id in a ref (`const timer = useRef(null)`), and ignore Start if a timer is already running.',
+     starter:`function App() {
+  const [n, setN] = useState(0);
+  let timer = null; // recreated on every render!
+
+  function start() {
+    timer = setInterval(() => setN(c => c + 1), 50);
+  }
+  function stop() {
+    clearInterval(timer);
+  }
+
+  return (
+    <div>
+      <p>Ticks: {n}</p>
+      <button onClick={start}>Start</button>
+      <button onClick={stop}>Stop</button>
+    </div>
+  );
+}
+`,
+     solution:`function App() {
+  const [n, setN] = useState(0);
+  const timer = useRef(null);
+
+  function start() {
+    if (timer.current) return; // already running
+    timer.current = setInterval(() => setN(c => c + 1), 50);
+  }
+  function stop() {
+    clearInterval(timer.current);
+    timer.current = null;
+  }
+
+  return (
+    <div>
+      <p>Ticks: {n}</p>
+      <button onClick={start}>Start</button>
+      <button onClick={stop}>Stop</button>
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'counts while running', script:`fireEvent.click(screen.getByRole('button',{name:'Start'}));
+await waitFor(() => expect(screen.getByText(/Ticks: [2-9]/)).toBeInTheDocument(), {timeout: 1500});
+fireEvent.click(screen.getByRole('button',{name:'Stop'}));`},
+      {name:'Stop really stops the timer', script:`fireEvent.click(screen.getByRole('button',{name:'Start'}));
+await waitFor(() => expect(screen.getByText(/Ticks: [2-9]/)).toBeInTheDocument(), {timeout: 1500});
+fireEvent.click(screen.getByRole('button',{name:'Stop'}));
+expect(timers().intervals).toBe(0);
+const before = container.textContent;
+await sleep(200);
+expect(container.textContent).toBe(before);`},
+      {name:'pressing Start twice creates only one timer', script:`const start = screen.getByRole('button',{name:'Start'});
+fireEvent.click(start); fireEvent.click(start);
+expect(timers().intervals).toBe(1);`}
+     ]},
+    {id:'ur-focus', title:'Focusing the input crashes the page',
+     symptom:'The page shows a render error: Cannot read properties of null (reading \'focus\').',
+     hint:'While the component is rendering, the input is not in the DOM yet, so `inputRef.current` is null. Call `focus()` inside a `useEffect`.',
+     starter:`function App() {
+  const inputRef = useRef(null);
+  inputRef.current.focus(); // runs while rendering
+
+  return <input ref={inputRef} aria-label="Search" placeholder="Search..." />;
+}
+`,
+     solution:`function App() {
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus(); // the DOM node exists after mount
+  }, []);
+
+  return <input ref={inputRef} aria-label="Search" placeholder="Search..." />;
+}
+`,
+     tests:[
+      {name:'renders the input', script:`expect(screen.getByLabelText('Search')).toBeInTheDocument();`},
+      {name:'the input is focused after mount', script:`const input = screen.getByLabelText('Search');
+await waitFor(() => expect(document.activeElement).toBe(input));`},
+      {name:'typing works', script:`const input = screen.getByLabelText('Search');
+userType(input, 'abc');
+expect(input).toHaveValue('abc');`}
+     ]}
+  ]
+});
+
+LESSONS.push({
+  id:'usememo', title:'useMemo & useCallback', tag:'Performance',
+  intro:'`useMemo` remembers the **result** of a calculation between renders and only recomputes when its dependencies change; `useCallback` remembers a **function** (it is `useMemo(() => fn)`). React creates every object and function literal again on each render, so a fresh `{}` or `() => {}` is never `===` the previous one. That only matters when something compares by reference: a `React.memo` child, a hook dependency array, or a context value. Treat both hooks as optimisations rather than correctness tools: use them when a calculation is really expensive or a stable reference is needed.',
+  analogy:'`useMemo` is keeping a photocopy of a finished form: if none of the inputs changed, take the copy from the drawer instead of filling it in again. `useCallback` is keeping the same rubber stamp instead of carving a new one each morning, so the guard at the door recognises it.',
+  variants:[
+    {id:'memo', label:'useMemo (expensive)', tab:'console', note:'Toggle the theme: with useMemo the expensive function does not run again. Change n and it does.', code:`function slowSquare(n) {
+  console.log('computing square of', n);
+  let junk = 0;
+  for (let i = 0; i < 1000000; i++) junk += i % 7; // pretend to be slow
+  return n * n;
+}
+
+function App() {
+  const [n, setN] = useState(5);
+  const [dark, setDark] = useState(false);
+  const result = useMemo(() => slowSquare(n), [n]);
+
+  return (
+    <div style={{ background: dark ? '#222' : '#eee', color: dark ? '#fff' : '#000', padding: 8 }}>
+      <p>{n} squared is {result}</p>
+      <button onClick={() => setN(n + 1)}>n + 1</button>{' '}
+      <button onClick={() => setDark(!dark)}>Toggle theme</button>
+    </div>
+  );
+}
+`},
+    {id:'callback', label:'memo + useCallback', tab:'renders', note:'Click "Parent clicks". The Stable child skips re-rendering (memo + stable callback); the Sloppy child re-renders every time because its callback is new.', code:`const Stable = memo(function Stable({ onPing }) {
+  return <button onClick={onPing}>Ping (stable callback)</button>;
+});
+const Sloppy = memo(function Sloppy({ onPing }) {
+  return <button onClick={onPing}>Ping (inline callback)</button>;
+});
+
+function App() {
+  const [count, setCount] = useState(0);
+  const stablePing = useCallback(() => console.log('ping'), []);
+
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>Parent clicks: {count}</button>
+      <p>
+        <Stable onPing={stablePing} />{' '}
+        <Sloppy onPing={() => console.log('ping')} />
+      </p>
+    </div>
+  );
+}
+`},
+    {id:'objdep', label:'Object dependency', tab:'effects', note:'Click "Rerender". The effect with the inline object runs every time; the memoised one only when page changes.', code:`function Results({ page }) {
+  const inline = { page, size: 10 };                          // new object every render
+  const stable = useMemo(() => ({ page, size: 10 }), [page]); // new only when page changes
+
+  useEffect(() => { console.log('inline dep ran'); }, [inline], 'inline dep');
+  useEffect(() => { console.log('memoised dep ran'); }, [stable], 'memoised dep');
+
+  return <p>Page {page}</p>;
+}
+
+function App() {
+  const [page, setPage] = useState(1);
+  const [n, setN] = useState(0);
+  return (
+    <div>
+      <button onClick={() => setN(n + 1)}>Rerender ({n})</button>{' '}
+      <button onClick={() => setPage(page + 1)}>Next page</button>
+      <Results page={page} />
+    </div>
+  );
+}
+`}
+  ],
+  takeaways:[
+    '`useMemo(() => value, deps)` caches a computed value; `useCallback(fn, deps)` caches the function itself.',
+    'Objects, arrays and functions created in render are new every time, so `===` says they changed.',
+    '`React.memo` only helps if the props it receives are stable, so pair it with `useCallback` / `useMemo`.',
+    'An object in a dependency array makes the effect run on every render. Depend on the primitives inside it.',
+    'Measure first. Memoising everything adds cost and noise, and it is not a fix for wrong logic.'
+  ],
+  mistakes:[
+    {bad:'Wrapping a child in `React.memo` but passing `onClick={() => ...}` inline.', why:'The inline function is new on every render, so the props are never equal and the memo does nothing.'},
+    {bad:'Putting `{ page, size }` in a dependency array.', why:'The object is rebuilt each render, so the effect re-runs each render. Use `[page, size]` or memoise the object.'}
+  ],
+  quiz:[
+    {q:'What does `useMemo` cache?', opts:['The JSX of the component','The return value of the calculation','The DOM nodes','The state setter'], a:1, why:'It stores the value your function returned and hands it back until a dependency changes.'},
+    {q:'Why does `<Child onSave={() => save()} />` defeat `React.memo(Child)`?', opts:['Arrow functions are slow','memo only works with class components','The inline function is a new object each render, so the props differ','memo ignores function props'], a:2, why:'`React.memo` compares props with `Object.is`. A newly created function is never identical to the previous one.'},
+    {q:'Which statement is true?', opts:['`useCallback(fn, deps)` is the same as `useMemo(() => fn, deps)`','`useMemo` runs after the render','`useCallback` calls the function immediately','They can only be used with `React.memo`'], a:0, why:'`useCallback` is just shorthand for memoising a function value.'},
+    {q:'When should you add `useMemo`?', opts:['Around every variable','Never, it is deprecated','After measuring a slow calculation, or when a stable reference is needed','Only inside custom hooks'], a:2, why:'Memoisation has a cost too. Use it for a measured problem or where a stable reference is genuinely required.'}
+  ],
+  challenges:[
+    {id:'um-callback', title:'Memoised rows still re-render',
+     symptom:'The rows are wrapped in `memo`, but they re-render every time you click the parent button.',
+     hint:'`handleSelect` is created again on every render, so the memo sees a new prop. Wrap it in `useCallback` with `[]` (state setters are stable).',
+     starter:`const Row = memo(function Row({ label, onSelect }) {
+  return <li><button onClick={() => onSelect(label)}>{label}</button></li>;
+});
+
+function App() {
+  const [count, setCount] = useState(0);
+  const [selected, setSelected] = useState('none');
+
+  const handleSelect = (label) => setSelected(label); // new function each render
+
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>Clicked {count}</button>
+      <p>Selected: {selected}</p>
+      <ul>
+        <Row label="a" onSelect={handleSelect} />
+        <Row label="b" onSelect={handleSelect} />
+      </ul>
+    </div>
+  );
+}
+`,
+     solution:`const Row = memo(function Row({ label, onSelect }) {
+  return <li><button onClick={() => onSelect(label)}>{label}</button></li>;
+});
+
+function App() {
+  const [count, setCount] = useState(0);
+  const [selected, setSelected] = useState('none');
+
+  const handleSelect = useCallback((label) => setSelected(label), []);
+
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>Clicked {count}</button>
+      <p>Selected: {selected}</p>
+      <ul>
+        <Row label="a" onSelect={handleSelect} />
+        <Row label="b" onSelect={handleSelect} />
+      </ul>
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'rows render once at the start', script:`expect(renders('Row')).toBe(2);`},
+      {name:'rows do not re-render when the parent count changes', script:`const b = screen.getByRole('button',{name:/Clicked/});
+fireEvent.click(b); fireEvent.click(b); fireEvent.click(b);
+expect(screen.getByRole('button',{name:'Clicked 3'})).toBeInTheDocument();
+expect(renders('Row')).toBe(2);`},
+      {name:'selecting still works', script:`fireEvent.click(screen.getByRole('button',{name:'a'}));
+expect(screen.getByText('Selected: a')).toBeInTheDocument();`}
+     ]},
+    {id:'um-objdep', title:'The search effect fires on every render',
+     symptom:'"searching" is logged after every unrelated click, not only when the search term changes.',
+     hint:'`query` is a new object each render, so `[query]` always looks changed. Depend on `term` instead (or memoise the object with `useMemo`).',
+     starter:`function Search({ term }) {
+  const query = { term, limit: 10 }; // a new object on every render
+
+  useEffect(() => {
+    console.log('searching for', query.term);
+  }, [query], 'search');
+
+  return <p>Searching: {term}</p>;
+}
+
+function App() {
+  const [term, setTerm] = useState('cat');
+  const [clicks, setClicks] = useState(0);
+  return (
+    <div>
+      <button onClick={() => setClicks(clicks + 1)}>Unrelated clicks: {clicks}</button>
+      <button onClick={() => setTerm('dog')}>Search dog</button>
+      <Search term={term} />
+    </div>
+  );
+}
+`,
+     solution:`function Search({ term }) {
+  const query = useMemo(() => ({ term, limit: 10 }), [term]);
+
+  useEffect(() => {
+    console.log('searching for', query.term);
+  }, [query], 'search');
+
+  return <p>Searching: {term}</p>;
+}
+
+function App() {
+  const [term, setTerm] = useState('cat');
+  const [clicks, setClicks] = useState(0);
+  return (
+    <div>
+      <button onClick={() => setClicks(clicks + 1)}>Unrelated clicks: {clicks}</button>
+      <button onClick={() => setTerm('dog')}>Search dog</button>
+      <Search term={term} />
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'searches once on mount', script:`expect(effects('search').filter(e => e.ev === 'setup')).toHaveLength(1);`},
+      {name:'unrelated re-renders do not search again', script:`const b = screen.getByRole('button',{name:/Unrelated clicks/});
+fireEvent.click(b); fireEvent.click(b); fireEvent.click(b);
+expect(screen.getByText('Unrelated clicks: 3')).toBeInTheDocument();
+expect(effects('search').filter(e => e.ev === 'setup')).toHaveLength(1);`},
+      {name:'a new term searches again', script:`fireEvent.click(screen.getByRole('button',{name:'Search dog'}));
+expect(screen.getByText('Searching: dog')).toBeInTheDocument();
+expect(effects('search').filter(e => e.ev === 'setup')).toHaveLength(2);`}
+     ]},
+    {id:'um-expensive', title:'Toggling the theme re-runs the slow filter',
+     symptom:'Switching the theme should be instant, but the expensive filter runs again on every render.',
+     hint:'Wrap the call in `useMemo(() => heavyFilter(WORDS, query), [query])` so it only re-runs when `query` changes.',
+     starter:`function heavyFilter(words, q) {
+  console.log('filtering');
+  return words.filter(w => w.includes(q));
+}
+
+const WORDS = ['apple', 'banana', 'cherry', 'date', 'elderberry', 'fig', 'grape'];
+
+function App() {
+  const [query, setQuery] = useState('');
+  const [theme, setTheme] = useState('light');
+  const results = heavyFilter(WORDS, query); // runs on every render
+
+  return (
+    <div className={theme}>
+      <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>Toggle theme</button>
+      <input aria-label="Filter" value={query} onChange={e => setQuery(e.target.value)} />
+      <ul>
+        {results.map(w => <li key={w}>{w}</li>)}
+      </ul>
+    </div>
+  );
+}
+`,
+     solution:`function heavyFilter(words, q) {
+  console.log('filtering');
+  return words.filter(w => w.includes(q));
+}
+
+const WORDS = ['apple', 'banana', 'cherry', 'date', 'elderberry', 'fig', 'grape'];
+
+function App() {
+  const [query, setQuery] = useState('');
+  const [theme, setTheme] = useState('light');
+  const results = useMemo(() => heavyFilter(WORDS, query), [query]);
+
+  return (
+    <div className={theme}>
+      <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>Toggle theme</button>
+      <input aria-label="Filter" value={query} onChange={e => setQuery(e.target.value)} />
+      <ul>
+        {results.map(w => <li key={w}>{w}</li>)}
+      </ul>
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'filters as you type', script:`userType(screen.getByLabelText('Filter'), 'an');
+expect(screen.getAllByRole('listitem')).toHaveLength(1);
+expect(screen.getByText('banana')).toBeInTheDocument();`},
+      {name:'theme changes do not re-run the filter', script:`const t = screen.getByRole('button',{name:'Toggle theme'});
+fireEvent.click(t); fireEvent.click(t); fireEvent.click(t);
+const n = logs().filter(l => l.text === 'filtering').length;
+expect(n).toBe(1);`},
+      {name:'typing still recomputes', script:`userType(screen.getByLabelText('Filter'), 'gr');
+const n = logs().filter(l => l.text === 'filtering').length;
+expect(n).toBeGreaterThan(1);
+expect(screen.getByText('grape')).toBeInTheDocument();`}
+     ]}
+  ]
+});
+
+LESSONS.push({
+  id:'usereducer', title:'useReducer', tag:'State machines',
+  intro:'`useReducer` is `useState` for state that changes in several related ways. You write a **pure** function, `reducer(state, action)`, that returns the next state, and components only describe what happened with `dispatch({ type: "add" })`. Because every transition lives in one place, it is easy to test and to refuse impossible moves, which is how you build small state machines such as idle, loading, done. A reducer must never mutate `state`: return a new object for a change, and return the same object when nothing should change.',
+  analogy:'A reducer is a bank teller with a rulebook. You hand over a slip ("deposit 20"); you do not scribble on your own balance. The teller applies the rules, writes the new balance, and refuses slips that make no sense, like withdrawing from a closed account.',
+  variants:[
+    {id:'counter', label:'Counter reducer', tab:'console', note:'Every button dispatches a small action object. Look at the console: the reducer receives each one.', code:`function reducer(state, action) {
+  console.log('reducer got', action.type);
+  switch (action.type) {
+    case 'inc': return { count: state.count + state.step };
+    case 'dec': return { count: state.count - state.step };
+    case 'step': return { ...state, step: action.step };
+    case 'reset': return { count: 0, step: 1 };
+    default: return state;
+  }
+}
+
+function App() {
+  const [state, dispatch] = useReducer(reducer, { count: 0, step: 1 });
+  return (
+    <div>
+      <h2>Count: {state.count} (step {state.step})</h2>
+      <button onClick={() => dispatch({ type: 'dec' })}>-</button>{' '}
+      <button onClick={() => dispatch({ type: 'inc' })}>+</button>{' '}
+      <button onClick={() => dispatch({ type: 'step', step: state.step + 1 })}>Bigger step</button>{' '}
+      <button onClick={() => dispatch({ type: 'reset' })}>Reset</button>
+    </div>
+  );
+}
+`},
+    {id:'todos', label:'Todo list', tab:'renders', note:'Add, toggle and remove. Each item has a stable id, which we use as the key.', code:`function reducer(todos, action) {
+  switch (action.type) {
+    case 'add': return [...todos, { id: action.id, text: action.text, done: false }];
+    case 'toggle': return todos.map(t => t.id === action.id ? { ...t, done: !t.done } : t);
+    case 'remove': return todos.filter(t => t.id !== action.id);
+    default: return todos;
+  }
+}
+
+let nextId = 3;
+function App() {
+  const [todos, dispatch] = useReducer(reducer, [
+    { id: 1, text: 'Learn hooks', done: true },
+    { id: 2, text: 'Write tests', done: false }
+  ]);
+  return (
+    <div>
+      <button onClick={() => dispatch({ type: 'add', id: nextId, text: 'Task ' + nextId++ })}>Add task</button>
+      <ul>
+        {todos.map(t => (
+          <li key={t.id}>
+            <label>
+              <input type="checkbox" checked={t.done} onChange={() => dispatch({ type: 'toggle', id: t.id })} />
+              {' '}{t.text}
+            </label>{' '}
+            <button onClick={() => dispatch({ type: 'remove', id: t.id })}>x</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+`},
+    {id:'machine', label:'Status machine', tab:'effects', note:'Click Save twice quickly: the reducer only allows loading from idle or done, so the second click is ignored.', code:`function reducer(state, action) {
+  switch (action.type) {
+    case 'save':
+      if (state.status === 'loading') return state; // not allowed while loading
+      return { ...state, status: 'loading' };
+    case 'done':
+      if (state.status !== 'loading') return state;
+      return { status: 'done', saves: state.saves + 1 };
+    default:
+      return state;
+  }
+}
+
+function fakeSave() {
+  return new Promise(resolve => setTimeout(resolve, 600));
+}
+
+function App() {
+  const [state, dispatch] = useReducer(reducer, { status: 'idle', saves: 0 });
+
+  useEffect(() => {
+    if (state.status !== 'loading') return;
+    let ignore = false;
+    fakeSave().then(() => { if (!ignore) dispatch({ type: 'done' }); });
+    return () => { ignore = true; };
+  }, [state.status], 'save');
+
+  return (
+    <div>
+      <button onClick={() => dispatch({ type: 'save' })} disabled={state.status === 'loading'}>Save</button>
+      <p>Status: {state.status}</p>
+      <p>Saved: {state.saves}</p>
+    </div>
+  );
+}
+`}
+  ],
+  takeaways:[
+    'A reducer is a pure function `(state, action) => nextState`. No mutation, no side effects.',
+    '`dispatch(action)` does not change state directly; it asks React to run the reducer and re-render.',
+    'Return a new object when something changed and the same object when nothing did.',
+    'Centralised transitions make impossible states easy to block (for example, submitting while already loading).',
+    'Use stable ids as keys for lists that a reducer adds to, removes from or reorders.'
+  ],
+  mistakes:[
+    {bad:'`state.items.push(x); return state;` in a reducer.', why:'The returned object is the same one, so React bails out and the screen does not update. Return a fresh copy.'},
+    {bad:'`key={index}` for a list that can be reordered or filtered.', why:'React matches items by key, so DOM state (checkboxes, inputs) sticks to the position instead of the item.'}
+  ],
+  quiz:[
+    {q:'Which of these must a reducer be?', opts:['An async function','A method on a class','A function that may call `setState`','A pure function that returns the next state'], a:3, why:'Given the same state and action a reducer must return the same result, and it must not mutate or do side effects.'},
+    {q:'What does `dispatch({ type: "add" })` do?', opts:['Calls the reducer with the current state and that action, then re-renders if the state changed','Directly edits the state object','Runs an effect','Reloads the page'], a:0, why:'React passes the current state and the action to your reducer and uses the returned value as the next state.'},
+    {q:'When is `useReducer` a better fit than several `useState` calls?', opts:['When the state is a single boolean','When you never update state','Only when using TypeScript','When the next state depends on several fields or on rules about which change is allowed'], a:3, why:'A reducer keeps all transition rules in one place, which is clearer for related fields and state machines.'},
+    {q:'A reducer returns the exact same state object it received. What does React do?', opts:['Skips re-rendering because nothing changed','Throws an error','Re-renders the whole app','Resets the state'], a:0, why:'Same reference means "no change", which is also why mutating and returning `state` shows nothing on screen.'}
+  ],
+  challenges:[
+    {id:'ure-mutate', title:'Add does nothing',
+     symptom:'"Add" should append a new item, but nothing changes on screen. "Clear" works.',
+     hint:'The reducer pushes onto the existing array and returns the same `state`. Return a new object with a new array: `{ ...state, items: [...state.items, action.text] }`.',
+     starter:`function reducer(state, action) {
+  switch (action.type) {
+    case 'add':
+      state.items.push(action.text); // mutation!
+      return state; // same object, so React sees no change
+    case 'clear':
+      return { items: [] };
+    default:
+      return state;
+  }
+}
+
+function App() {
+  const [state, dispatch] = useReducer(reducer, { items: ['first'] });
+  return (
+    <div>
+      <button onClick={() => dispatch({ type: 'add', text: 'item ' + (state.items.length + 1) })}>Add</button>
+      <button onClick={() => dispatch({ type: 'clear' })}>Clear</button>
+      <ul>
+        {state.items.map(t => <li key={t}>{t}</li>)}
+      </ul>
+    </div>
+  );
+}
+`,
+     solution:`function reducer(state, action) {
+  switch (action.type) {
+    case 'add':
+      return { ...state, items: [...state.items, action.text] };
+    case 'clear':
+      return { items: [] };
+    default:
+      return state;
+  }
+}
+
+function App() {
+  const [state, dispatch] = useReducer(reducer, { items: ['first'] });
+  return (
+    <div>
+      <button onClick={() => dispatch({ type: 'add', text: 'item ' + (state.items.length + 1) })}>Add</button>
+      <button onClick={() => dispatch({ type: 'clear' })}>Clear</button>
+      <ul>
+        {state.items.map(t => <li key={t}>{t}</li>)}
+      </ul>
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'starts with one item', script:`expect(screen.getAllByRole('listitem')).toHaveLength(1);`},
+      {name:'Add appends items', script:`const b = screen.getByRole('button',{name:'Add'});
+fireEvent.click(b); fireEvent.click(b);
+expect(screen.getAllByRole('listitem')).toHaveLength(3);`},
+      {name:'Clear empties the list', script:`fireEvent.click(screen.getByRole('button',{name:'Add'}));
+fireEvent.click(screen.getByRole('button',{name:'Clear'}));
+expect(screen.queryAllByRole('listitem')).toHaveLength(0);`}
+     ]},
+    {id:'ure-keys', title:'The tick jumps to the wrong task',
+     symptom:'Tick "Learn hooks", then remove it: the tick is now on "Write tests". Ticks stick to positions, not to tasks.',
+     hint:'`key={index}` ties DOM state to the position. Use the stable `todo.id` as the key.',
+     starter:`function reducer(state, action) {
+  switch (action.type) {
+    case 'remove':
+      return state.filter(t => t.id !== action.id);
+    default:
+      return state;
+  }
+}
+
+function App() {
+  const [todos, dispatch] = useReducer(reducer, [
+    { id: 'a', text: 'Learn hooks' },
+    { id: 'b', text: 'Write tests' },
+    { id: 'c', text: 'Ship it' }
+  ]);
+  return (
+    <ul>
+      {todos.map((todo, index) => (
+        <li key={index}>
+          <input type="checkbox" aria-label={'done ' + todo.text} />
+          {todo.text}{' '}
+          <button onClick={() => dispatch({ type: 'remove', id: todo.id })}>Remove {todo.text}</button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+`,
+     solution:`function reducer(state, action) {
+  switch (action.type) {
+    case 'remove':
+      return state.filter(t => t.id !== action.id);
+    default:
+      return state;
+  }
+}
+
+function App() {
+  const [todos, dispatch] = useReducer(reducer, [
+    { id: 'a', text: 'Learn hooks' },
+    { id: 'b', text: 'Write tests' },
+    { id: 'c', text: 'Ship it' }
+  ]);
+  return (
+    <ul>
+      {todos.map(todo => (
+        <li key={todo.id}>
+          <input type="checkbox" aria-label={'done ' + todo.text} />
+          {todo.text}{' '}
+          <button onClick={() => dispatch({ type: 'remove', id: todo.id })}>Remove {todo.text}</button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+`,
+     tests:[
+      {name:'shows three tasks', script:`expect(screen.getAllByRole('listitem')).toHaveLength(3);`},
+      {name:'removing the first task does not move its tick to the next one', script:`fireEvent.click(screen.getByRole('checkbox',{name:'done Learn hooks'}));
+fireEvent.click(screen.getByRole('button',{name:'Remove Learn hooks'}));
+expect(screen.getByRole('checkbox',{name:'done Write tests'})).not.toBeChecked();`},
+      {name:'a tick stays with its own task', script:`fireEvent.click(screen.getByRole('checkbox',{name:'done Ship it'}));
+fireEvent.click(screen.getByRole('button',{name:'Remove Learn hooks'}));
+expect(screen.getByRole('checkbox',{name:'done Ship it'})).toBeChecked();
+expect(screen.getByRole('checkbox',{name:'done Write tests'})).not.toBeChecked();`}
+     ]},
+    {id:'ure-machine', title:'Double click saves twice',
+     symptom:'Clicking Save twice quickly saves two times ("Saved: 2") although only one save should ever be in flight.',
+     hint:'Teach the reducer the rules: ignore `save` while the status is `loading`, and ignore `success` unless the status is `loading`.',
+     starter:`function reducer(state, action) {
+  switch (action.type) {
+    case 'submit':
+      return { ...state, status: 'loading' }; // allowed from any status
+    case 'success':
+      return { status: 'done', saves: state.saves + 1 };
+    default:
+      return state;
+  }
+}
+
+function fakeSave() {
+  return new Promise(resolve => setTimeout(resolve, 40));
+}
+
+function App() {
+  const [state, dispatch] = useReducer(reducer, { status: 'idle', saves: 0 });
+
+  function save() {
+    dispatch({ type: 'submit' });
+    fakeSave().then(() => dispatch({ type: 'success' }));
+  }
+
+  return (
+    <div>
+      <button onClick={save}>Save</button>
+      <p>Status: {state.status}</p>
+      <p>Saved: {state.saves}</p>
+    </div>
+  );
+}
+`,
+     solution:`function reducer(state, action) {
+  switch (action.type) {
+    case 'submit':
+      if (state.status === 'loading') return state; // ignore while busy
+      return { ...state, status: 'loading' };
+    case 'success':
+      if (state.status !== 'loading') return state; // only valid while loading
+      return { status: 'done', saves: state.saves + 1 };
+    default:
+      return state;
+  }
+}
+
+function fakeSave() {
+  return new Promise(resolve => setTimeout(resolve, 40));
+}
+
+function App() {
+  const [state, dispatch] = useReducer(reducer, { status: 'idle', saves: 0 });
+
+  function save() {
+    dispatch({ type: 'submit' });
+    fakeSave().then(() => dispatch({ type: 'success' }));
+  }
+
+  return (
+    <div>
+      <button onClick={save}>Save</button>
+      <p>Status: {state.status}</p>
+      <p>Saved: {state.saves}</p>
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'one click saves once', script:`fireEvent.click(screen.getByRole('button',{name:'Save'}));
+expect(screen.getByText('Status: loading')).toBeInTheDocument();
+await screen.findByText('Status: done');
+expect(screen.getByText('Saved: 1')).toBeInTheDocument();`},
+      {name:'a double click still saves only once', script:`const b = screen.getByRole('button',{name:'Save'});
+fireEvent.click(b); fireEvent.click(b);
+await screen.findByText('Status: done');
+await sleep(150);
+expect(screen.getByText('Saved: 1')).toBeInTheDocument();`},
+      {name:'can save again after finishing', script:`const b = screen.getByRole('button',{name:'Save'});
+fireEvent.click(b);
+await screen.findByText('Saved: 1');
+fireEvent.click(b);
+await screen.findByText('Saved: 2');`}
+     ]}
+  ]
+});
+
+LESSONS.push({
+  id:'usecontext', title:'useContext', tag:'Context',
+  intro:'Context lets a value skip the props relay race. A Provider high in the tree makes a value available, and any descendant can read it with `useContext`, however deep it sits. It is perfect for things many components need (theme, current user, language) and avoids "prop drilling" through components that do not care. The catch: every component that reads a context re-renders whenever the Provider\'s `value` changes (compared with `Object.is`). An inline `value={{ a, b }}` is a brand-new object on every render of the provider, so memoise it or split the context.',
+  analogy:'Context is the PA system in a building. Instead of whispering a message down a chain of people (props), an announcement is heard in every room that is tuned in. The downside is that every listener is interrupted by every announcement, even one they do not care about.',
+  variants:[
+    {id:'theme', label:'Theme context', tab:'renders', note:'Toggle the theme: only the components that call useContext re-render (plus the provider\'s owner). Layout in the middle is skipped.', code:`const ThemeContext = createContext('light');
+
+function Label() {
+  const theme = useContext(ThemeContext);
+  return <p>The current theme is <strong>{theme}</strong></p>;
+}
+
+const Layout = memo(function Layout({ children }) {
+  return <section style={{ padding: 8, border: '1px dashed #999' }}>{children}</section>;
+});
+
+function App() {
+  const [theme, setTheme] = useState('light');
+  return (
+    <ThemeContext.Provider value={theme}>
+      <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>Toggle theme</button>
+      <Layout>
+        <Label />
+      </Layout>
+    </ThemeContext.Provider>
+  );
+}
+`},
+    {id:'drilling', label:'Prop drilling vs context', tab:'renders', note:'Left: the name is passed through Panel, which does not use it. Right: context delivers it straight to Greeting.', code:`const NameContext = createContext('nobody');
+
+function Greeting({ name }) { return <p>Hello, {name}!</p>; }
+function Panel({ name }) { return <div><Greeting name={name} /></div>; }   // only relays the prop
+
+function ContextGreeting() {
+  const name = useContext(NameContext);
+  return <p>Hello from context, {name}!</p>;
+}
+function ContextPanel() { return <div><ContextGreeting /></div>; }         // no props needed
+
+function App() {
+  const [name, setName] = useState('Ada');
+  return (
+    <div>
+      <input aria-label="Name" value={name} onChange={e => setName(e.target.value)} />
+      <Panel name={name} />
+      <NameContext.Provider value={name}>
+        <ContextPanel />
+      </NameContext.Provider>
+    </div>
+  );
+}
+`},
+    {id:'caveat', label:'Re-render caveat', tab:'renders', note:'Click "Unrelated clicks". With the inline value object the memoised Profile re-renders anyway; tick "Stabilise value" and it stops.', code:`const UserContext = createContext(null);
+
+const Profile = memo(function Profile() {
+  const { user } = useContext(UserContext);
+  return <p>User: {user}</p>;
+});
+
+function App() {
+  const [user] = useState('Ada');
+  const [clicks, setClicks] = useState(0);
+  const [stabilise, setStabilise] = useState(false);
+
+  const memoValue = useMemo(() => ({ user }), [user]);
+  const value = stabilise ? memoValue : { user }; // inline object: new every render
+
+  return (
+    <UserContext.Provider value={value}>
+      <button onClick={() => setClicks(clicks + 1)}>Unrelated clicks: {clicks}</button>{' '}
+      <label>
+        <input type="checkbox" checked={stabilise} onChange={e => setStabilise(e.target.checked)} /> Stabilise value
+      </label>
+      <Profile />
+    </UserContext.Provider>
+  );
+}
+`}
+  ],
+  takeaways:[
+    '`createContext(default)` makes the context, `<Ctx.Provider value>` supplies it, `useContext(Ctx)` reads it.',
+    'A component outside any Provider receives the default value, which is a classic source of "it never changes".',
+    'When the Provider\'s value changes (by `Object.is`), every consumer re-renders, even inside `React.memo`.',
+    'Memoise object values with `useMemo`, or split rarely-changing and often-changing data into separate contexts.',
+    'Context is for widely shared data. For values used one or two levels down, plain props are simpler.'
+  ],
+  mistakes:[
+    {bad:'`<Ctx.Provider value={{ user, setUser }}>` with no memoisation.', why:'A new object on every render makes all consumers re-render whenever the provider\'s parent renders.'},
+    {bad:'Reading a context in a component that is rendered outside the Provider.', why:'You silently get the default value (or `null` and a crash). Check where the Provider wraps.'}
+  ],
+  quiz:[
+    {q:'A component calls `useContext(ThemeContext)` but no Provider is above it. What does it get?', opts:['An error is thrown','`undefined` always','The default value passed to `createContext`','The value from the nearest sibling'], a:2, why:'The default value exists exactly for this case.'},
+    {q:'A Provider\'s value changes. Which components re-render?', opts:['Only the Provider','Every component that reads that context with `useContext`','The whole application','Only components using `React.memo`'], a:1, why:'Consumers re-render when the context value changes, even if a `memo` ancestor would otherwise have skipped them.'},
+    {q:'Why can `value={{ a, b }}` be a performance problem?', opts:['Objects cannot be context values','It is invalid syntax','React copies the object deeply','It creates a new object each render, so consumers always see a change'], a:3, why:'Context compares values with `Object.is`. A fresh object is never identical to the previous one.'},
+    {q:'When is context the right tool?', opts:['Data needed by many components at different depths, like theme or the current user','Every piece of local state','Passing a prop to a direct child','Storing timer ids'], a:0, why:'Context shines for widely shared data and gets in the way for local, one-level-deep values.'}
+  ],
+  challenges:[
+    {id:'uc-provider', title:'The theme label never changes',
+     symptom:'The button toggles the theme state, but the label always says "light".',
+     hint:'`Label` is not inside the Provider, so it only sees the default value. Wrap the part of the tree that contains `Label`.',
+     starter:`const ThemeContext = createContext('light');
+
+function Label() {
+  const theme = useContext(ThemeContext);
+  return <p>Theme is {theme}</p>;
+}
+
+function Header({ children }) {
+  return <header>{children}</header>;
+}
+
+function App() {
+  const [theme, setTheme] = useState('light');
+  return (
+    <div>
+      <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>Toggle theme</button>
+      <ThemeContext.Provider value={theme}>
+        <Header>Welcome</Header>
+      </ThemeContext.Provider>
+      <main>
+        <Label />
+      </main>
+    </div>
+  );
+}
+`,
+     solution:`const ThemeContext = createContext('light');
+
+function Label() {
+  const theme = useContext(ThemeContext);
+  return <p>Theme is {theme}</p>;
+}
+
+function Header({ children }) {
+  return <header>{children}</header>;
+}
+
+function App() {
+  const [theme, setTheme] = useState('light');
+  return (
+    <ThemeContext.Provider value={theme}>
+      <div>
+        <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>Toggle theme</button>
+        <Header>Welcome</Header>
+        <main>
+          <Label />
+        </main>
+      </div>
+    </ThemeContext.Provider>
+  );
+}
+`,
+     tests:[
+      {name:'starts light', script:`expect(screen.getByText('Theme is light')).toBeInTheDocument();`},
+      {name:'toggling switches the label to dark', script:`fireEvent.click(screen.getByRole('button',{name:'Toggle theme'}));
+expect(screen.getByText('Theme is dark')).toBeInTheDocument();`},
+      {name:'toggling twice returns to light', script:`const b = screen.getByRole('button',{name:'Toggle theme'});
+fireEvent.click(b); fireEvent.click(b);
+expect(screen.getByText('Theme is light')).toBeInTheDocument();`}
+     ]},
+    {id:'uc-value', title:'The profile re-renders on every click',
+     symptom:'Profile is wrapped in `memo` and its data never changes, yet it re-renders every time the unrelated counter is clicked.',
+     hint:'The Provider receives `{ user }`, a new object each render. Create it with `useMemo(() => ({ user }), [user])`.',
+     starter:`const UserContext = createContext(null);
+
+const Profile = memo(function Profile() {
+  const { user } = useContext(UserContext);
+  return <p>User: {user}</p>;
+});
+
+function App() {
+  const [user] = useState('Ada');
+  const [clicks, setClicks] = useState(0);
+  const value = { user }; // new object every render
+
+  return (
+    <UserContext.Provider value={value}>
+      <button onClick={() => setClicks(clicks + 1)}>Clicks: {clicks}</button>
+      <Profile />
+    </UserContext.Provider>
+  );
+}
+`,
+     solution:`const UserContext = createContext(null);
+
+const Profile = memo(function Profile() {
+  const { user } = useContext(UserContext);
+  return <p>User: {user}</p>;
+});
+
+function App() {
+  const [user] = useState('Ada');
+  const [clicks, setClicks] = useState(0);
+  const value = useMemo(() => ({ user }), [user]);
+
+  return (
+    <UserContext.Provider value={value}>
+      <button onClick={() => setClicks(clicks + 1)}>Clicks: {clicks}</button>
+      <Profile />
+    </UserContext.Provider>
+  );
+}
+`,
+     tests:[
+      {name:'shows the user', script:`expect(screen.getByText('User: Ada')).toBeInTheDocument();`},
+      {name:'the counter still works', script:`fireEvent.click(screen.getByRole('button',{name:/Clicks/}));
+expect(screen.getByRole('button',{name:'Clicks: 1'})).toBeInTheDocument();`},
+      {name:'Profile does not re-render for unrelated clicks', script:`const b = screen.getByRole('button',{name:/Clicks/});
+fireEvent.click(b); fireEvent.click(b); fireEvent.click(b);
+expect(renders('Profile')).toBe(1);`}
+     ]},
+    {id:'uc-shape', title:'"is not iterable" when reading the context',
+     symptom:'The page crashes with a TypeError as soon as the button renders.',
+     hint:'The Provider passes an object, `{ count, setCount }`, but the consumer destructures it like an array. Destructure with braces.',
+     starter:`const CounterContext = createContext(null);
+
+function CounterProvider({ children }) {
+  const [count, setCount] = useState(0);
+  return (
+    <CounterContext.Provider value={{ count, setCount }}>
+      {children}
+    </CounterContext.Provider>
+  );
+}
+
+function CounterButton() {
+  const [count, setCount] = useContext(CounterContext); // the Provider gives an object
+  return <button onClick={() => setCount(count + 1)}>Count: {count}</button>;
+}
+
+function Total() {
+  const { count } = useContext(CounterContext);
+  return <p>Total clicks: {count}</p>;
+}
+
+function App() {
+  return (
+    <CounterProvider>
+      <CounterButton />
+      <Total />
+    </CounterProvider>
+  );
+}
+`,
+     solution:`const CounterContext = createContext(null);
+
+function CounterProvider({ children }) {
+  const [count, setCount] = useState(0);
+  return (
+    <CounterContext.Provider value={{ count, setCount }}>
+      {children}
+    </CounterContext.Provider>
+  );
+}
+
+function CounterButton() {
+  const { count, setCount } = useContext(CounterContext);
+  return <button onClick={() => setCount(count + 1)}>Count: {count}</button>;
+}
+
+function Total() {
+  const { count } = useContext(CounterContext);
+  return <p>Total clicks: {count}</p>;
+}
+
+function App() {
+  return (
+    <CounterProvider>
+      <CounterButton />
+      <Total />
+    </CounterProvider>
+  );
+}
+`,
+     tests:[
+      {name:'renders the button', script:`expect(screen.getByRole('button',{name:'Count: 0'})).toBeInTheDocument();`},
+      {name:'clicking updates the button', script:`fireEvent.click(screen.getByRole('button',{name:'Count: 0'}));
+expect(screen.getByRole('button',{name:'Count: 1'})).toBeInTheDocument();`},
+      {name:'the other consumer sees the same count', script:`const b = screen.getByRole('button',{name:'Count: 0'});
+fireEvent.click(b);
+fireEvent.click(screen.getByRole('button',{name:'Count: 1'}));
+expect(screen.getByText('Total clicks: 2')).toBeInTheDocument();`}
+     ]}
+  ]
+});
+
+LESSONS.push({
+  id:'customhooks', title:'Custom hooks', tag:'Reuse',
+  intro:'A custom hook is just a function whose name starts with `use` and that calls other hooks. It lets you extract stateful **logic** (not UI) and reuse it: `useToggle`, `useDebounce` and `useFetch` hide the state, effects and cleanup behind a tiny API. Every component that calls a hook gets its own private copy of the state; two components using `useToggle` do not share a switch. The rules of hooks still apply, so call hooks at the top level, never inside conditions or loops.',
+  analogy:'A custom hook is a recipe card. The card is shared by everyone in the building, but each cook (component) makes their own dish with their own ingredients. Two cooks using the same card do not share a pot.',
+  variants:[
+    {id:'toggle', label:'useToggle', tab:'renders', note:'Two Switch components call the same hook but each gets its own state.', code:`function useToggle(initial = false) {
+  const [on, setOn] = useState(initial);
+  const toggle = useCallback(() => setOn(v => !v), []);
+  return [on, toggle];
+}
+
+function Switch({ label, startOn }) {
+  const [on, toggle] = useToggle(startOn);
+  return <button onClick={toggle}>{label}: {on ? 'ON' : 'OFF'}</button>;
+}
+
+function App() {
+  return (
+    <div>
+      <Switch label="Wi-Fi" />{' '}
+      <Switch label="Bluetooth" startOn={true} />
+    </div>
+  );
+}
+`},
+    {id:'stored', label:'useStoredState', tab:'effects', note:'A useLocalStorage-style hook backed by a plain object (the sandbox has no storage). Type a name, click Remount and the value comes back.', code:`const memoryStore = {}; // stands in for localStorage inside the sandbox
+
+function useStoredState(key, initial) {
+  const [value, setValue] = useState(() => (key in memoryStore ? memoryStore[key] : initial));
+  useEffect(() => { memoryStore[key] = value; }, [key, value], 'save ' + key);
+  return [value, setValue];
+}
+
+function NameBox() {
+  const [name, setName] = useStoredState('name', 'Ada');
+  return <input aria-label="Name" value={name} onChange={e => setName(e.target.value)} />;
+}
+
+function App() {
+  const [round, setRound] = useState(0);
+  return (
+    <div>
+      <NameBox key={round} />{' '}
+      <button onClick={() => setRound(round + 1)}>Remount (round {round})</button>
+    </div>
+  );
+}
+`},
+    {id:'debounce', label:'useDebounce + useFetch', tab:'effects', note:'Type quickly: the search only starts 300 ms after you stop. The Effects tab shows the timer being cancelled and restarted.', code:`function useDebounce(value, delay) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay], 'debounce');
+  return debounced;
+}
+
+const FRUIT = ['apple', 'apricot', 'banana', 'blueberry', 'cherry'];
+function fakeSearch(q) {
+  return new Promise(resolve =>
+    setTimeout(() => resolve(FRUIT.filter(w => w.startsWith(q))), 150)
+  );
+}
+
+function useFetch(fetcher, arg) {
+  const [state, setState] = useState({ loading: true, data: null });
+  useEffect(() => {
+    let ignore = false;
+    setState({ loading: true, data: null });
+    fetcher(arg).then(data => { if (!ignore) setState({ loading: false, data }); });
+    return () => { ignore = true; };
+  }, [fetcher, arg], 'fetch');
+  return state;
+}
+
+function App() {
+  const [text, setText] = useState('a');
+  const query = useDebounce(text, 300);
+  const { loading, data } = useFetch(fakeSearch, query);
+  return (
+    <div>
+      <input aria-label="Search" value={text} onChange={e => setText(e.target.value)} />
+      <p>Searching for "{query}"</p>
+      {loading ? <p>Loading...</p> : <ul>{data.map(w => <li key={w}>{w}</li>)}</ul>}
+    </div>
+  );
+}
+`}
+  ],
+  takeaways:[
+    'A custom hook is a function named `useSomething` that calls other hooks.',
+    'Hooks share logic, not state: each call site gets its own independent state.',
+    'Put the effect, the cleanup and any refs inside the hook so callers cannot forget them.',
+    'Return the smallest useful API (a pair, an object) and keep returned functions stable with `useCallback`.',
+    'Everything from the rules of hooks still applies inside a custom hook: top level only, same order every render.'
+  ],
+  mistakes:[
+    {bad:'Keeping a hook\'s data in a module-level variable.', why:'Module variables are shared by every component that uses the hook. State must live in `useState` or `useReducer`.'},
+    {bad:'Using an object created inside the hook as an effect dependency.', why:'A new object each render re-runs the effect each render, and if it also sets state you get an infinite loop.'}
+  ],
+  quiz:[
+    {q:'Two components both call `useToggle()`. Do they share the same on/off value?', opts:['Yes, hooks are global','Only inside the same file','Only if they have the same name','No, each call has its own state'], a:3, why:'State belongs to the component instance that called the hook, not to the hook function.'},
+    {q:'Why must a custom hook\'s name start with "use"?', opts:['React would not run it otherwise','Tools and lint rules can check the rules of hooks','It makes the hook faster','It is required by JavaScript'], a:1, why:'The prefix is a convention that lets linters (and readers) know the function follows the rules of hooks.'},
+    {q:'In `useDebounce`, why does the effect return `() => clearTimeout(id)`?', opts:['To free memory after unmount only','To cancel the previous pending update when the value changes again','To make the timeout longer','It is optional and has no effect'], a:1, why:'Each keystroke would otherwise leave an old timeout running. The cleanup cancels it so only the last value survives.'},
+    {q:'Which of these breaks the rules of hooks?', opts:['Calling `useState` at the top of the hook','Returning an array','Calling `useEffect` inside an `if` statement','Calling one custom hook from another'], a:2, why:'Hooks must run in the same order every render, so they cannot be inside conditions, loops or nested functions.'}
+  ],
+  challenges:[
+    {id:'ch-debounce', title:'Debounce fires for every keystroke',
+     symptom:'Typing "hey" quickly updates the debounced value three times (h, he, hey) instead of once at the end.',
+     hint:'Every keystroke starts a new timeout and none is cancelled. Save the id and return `() => clearTimeout(id)` from the effect.',
+     starter:`function useDebounce(value, delay) {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    setTimeout(() => setDebounced(value), delay); // never cancelled
+  }, [value, delay]);
+
+  return debounced;
+}
+
+function App() {
+  const [text, setText] = useState('');
+  const debounced = useDebounce(text, 100);
+
+  useEffect(() => {
+    console.log('debounced ->', debounced);
+  }, [debounced]);
+
+  return (
+    <div>
+      <input aria-label="Text" value={text} onChange={e => setText(e.target.value)} />
+      <p>Debounced: {debounced}</p>
+    </div>
+  );
+}
+`,
+     solution:`function useDebounce(value, delay) {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+
+  return debounced;
+}
+
+function App() {
+  const [text, setText] = useState('');
+  const debounced = useDebounce(text, 100);
+
+  useEffect(() => {
+    console.log('debounced ->', debounced);
+  }, [debounced]);
+
+  return (
+    <div>
+      <input aria-label="Text" value={text} onChange={e => setText(e.target.value)} />
+      <p>Debounced: {debounced}</p>
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'the debounced value catches up', script:`userType(screen.getByLabelText('Text'), 'hey');
+await screen.findByText('Debounced: hey');`},
+      {name:'intermediate values are skipped', script:`userType(screen.getByLabelText('Text'), 'hey');
+await screen.findByText('Debounced: hey');
+await sleep(250);
+const seen = logs().filter(l => l.text.indexOf('debounced ->') === 0);
+expect(seen).toHaveLength(2);`},
+      {name:'no timers are left after unmount', script:`userType(screen.getByLabelText('Text'), 'hey');
+unmount();
+expect(timers().timeouts).toBe(0);`}
+     ]},
+    {id:'ch-loop', title:'The request repeats forever',
+     symptom:'The Console fills with "request page 1" over and over. The data flickers and the network is hammered.',
+     hint:'`options` is a new object each render, so `[options]` changes every time and `setData({...})` triggers another render. Depend on `page` instead.',
+     starter:`function fakeApi(page) {
+  return new Promise(resolve => setTimeout(() => resolve('Results for page ' + page), 20));
+}
+
+function useFetch(page) {
+  const [data, setData] = useState(null);
+  const options = { page }; // new object every render
+
+  useEffect(() => {
+    console.log('request page', options.page);
+    fakeApi(options.page).then(text => setData({ text }));
+  }, [options]);
+
+  return data;
+}
+
+function App() {
+  const [page, setPage] = useState(1);
+  const data = useFetch(page);
+  return (
+    <div>
+      <p>{data ? data.text : 'Loading...'}</p>
+      <button onClick={() => setPage(page + 1)}>Next page</button>
+    </div>
+  );
+}
+`,
+     solution:`function fakeApi(page) {
+  return new Promise(resolve => setTimeout(() => resolve('Results for page ' + page), 20));
+}
+
+function useFetch(page) {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    console.log('request page', page);
+    let ignore = false;
+    fakeApi(page).then(text => { if (!ignore) setData({ text }); });
+    return () => { ignore = true; };
+  }, [page]);
+
+  return data;
+}
+
+function App() {
+  const [page, setPage] = useState(1);
+  const data = useFetch(page);
+  return (
+    <div>
+      <p>{data ? data.text : 'Loading...'}</p>
+      <button onClick={() => setPage(page + 1)}>Next page</button>
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'shows the first page', script:`await screen.findByText('Results for page 1');`},
+      {name:'makes exactly one request', script:`await screen.findByText('Results for page 1');
+await sleep(250);
+expect(logs().filter(l => l.text.indexOf('request page') === 0)).toHaveLength(1);`},
+      {name:'the next page makes one more request', script:`await screen.findByText('Results for page 1');
+fireEvent.click(screen.getByRole('button',{name:'Next page'}));
+await screen.findByText('Results for page 2');
+await sleep(150);
+expect(logs().filter(l => l.text.indexOf('request page') === 0)).toHaveLength(2);`}
+     ]},
+    {id:'ch-shared', title:'Two switches move together',
+     symptom:'Toggling Wi-Fi and then Bluetooth leaves Bluetooth OFF, as if both buttons controlled the same switch.',
+     hint:'`let value` lives outside React, so both components share it. Keep the state inside the hook with `useState`.',
+     starter:`let value = false; // lives outside React, so every caller shares it
+
+function useToggle() {
+  const [, forceRender] = useState(0);
+  const toggle = () => {
+    value = !value;
+    forceRender(n => n + 1);
+  };
+  return [value, toggle];
+}
+
+function Switch({ label }) {
+  const [on, toggle] = useToggle();
+  return <button onClick={toggle}>{label}: {on ? 'ON' : 'OFF'}</button>;
+}
+
+function App() {
+  return (
+    <div>
+      <Switch label="Wi-Fi" />
+      <Switch label="Bluetooth" />
+    </div>
+  );
+}
+`,
+     solution:`function useToggle() {
+  const [value, setValue] = useState(false);
+  const toggle = () => setValue(v => !v);
+  return [value, toggle];
+}
+
+function Switch({ label }) {
+  const [on, toggle] = useToggle();
+  return <button onClick={toggle}>{label}: {on ? 'ON' : 'OFF'}</button>;
+}
+
+function App() {
+  return (
+    <div>
+      <Switch label="Wi-Fi" />
+      <Switch label="Bluetooth" />
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'both switches start OFF', script:`expect(screen.getByText('Wi-Fi: OFF')).toBeInTheDocument();
+expect(screen.getByText('Bluetooth: OFF')).toBeInTheDocument();`},
+      {name:'Wi-Fi toggles on its own', script:`fireEvent.click(screen.getByText('Wi-Fi: OFF'));
+expect(screen.getByText('Wi-Fi: ON')).toBeInTheDocument();
+expect(screen.getByText('Bluetooth: OFF')).toBeInTheDocument();`},
+      {name:'Bluetooth toggles independently of Wi-Fi', script:`fireEvent.click(screen.getByText('Wi-Fi: OFF'));
+fireEvent.click(screen.getByText('Bluetooth: OFF'));
+expect(screen.getByText('Wi-Fi: ON')).toBeInTheDocument();
+expect(screen.getByText('Bluetooth: ON')).toBeInTheDocument();`}
+     ]}
+  ]
+});
+
+LESSONS.push({
+  id:'rerender', title:'Why did it re-render?', tag:'Rendering',
+  intro:'A component re-renders for a small set of reasons: its **own state** changed, a **context** it reads changed, or its **parent** re-rendered. Props are not an independent reason, because they only change when a parent renders. By default when a parent renders, all of its children render too, even with identical props. `React.memo` lets a child skip that when its props are shallow-equal. Re-rendering is usually cheap and is not a bug; the skill is being able to name the reason, and this lab\'s Render highlighter helps by flashing components and explaining the cause.',
+  analogy:'Think of a classroom. If the teacher (parent) says "everyone redo the worksheet", every student redoes it, even if the worksheet is unchanged, unless a student (memo) checks "is this the same worksheet as last time?" and keeps the old answer. A student may also redo their own work (own state) or react when the school bell (context) rings.',
+  variants:[
+    {id:'parent', label:'Parent vs own state', tab:'renders', note:'Click "Parent state": Plain re-renders because its parent did, Memoised skips. Click "Own state": only that button re-renders.', code:`function Plain({ label }) {
+  return <p>Plain child: {label}</p>;
+}
+const Memoised = memo(function Memoised({ label }) {
+  return <p>Memo child: {label}</p>;
+});
+
+function Own() {
+  const [n, setN] = useState(0);
+  return <button onClick={() => setN(n + 1)}>Own state: {n}</button>;
+}
+
+function App() {
+  const [count, setCount] = useState(0);
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>Parent state: {count}</button>
+      <Plain label="same props" />
+      <Memoised label="same props" />
+      <Own />
+    </div>
+  );
+}
+`},
+    {id:'ctx', label:'Context change', tab:'renders', note:'Click "Change language". Only the components that read the context re-render (and the provider\'s owner). Memo does not protect a consumer.', code:`const LangContext = createContext('en');
+
+const Reader = memo(function Reader() {
+  const lang = useContext(LangContext);
+  return <p>Reader sees: {lang}</p>;
+});
+const Bystander = memo(function Bystander() {
+  return <p>Bystander does not read the context</p>;
+});
+
+function App() {
+  const [lang, setLang] = useState('en');
+  return (
+    <LangContext.Provider value={lang}>
+      <button onClick={() => setLang(lang === 'en' ? 'fr' : 'en')}>Change language</button>
+      <Reader />
+      <Bystander />
+    </LangContext.Provider>
+  );
+}
+`},
+    {id:'refs', label:'New references', tab:'renders', note:'Both children are memoised. The one that receives inline objects/functions re-renders anyway; look at the reason in the Renders tab.', code:`const Card = memo(function Card({ label, style, onOpen }) {
+  return <button style={style} onClick={onOpen}>{label}</button>;
+});
+
+const cardStyle = { padding: 6 };
+
+function App() {
+  const [n, setN] = useState(0);
+  const open = useCallback(() => console.log('open'), []);
+  return (
+    <div>
+      <button onClick={() => setN(n + 1)}>Re-render parent ({n})</button>{' '}
+      <Card label="Stable props" style={cardStyle} onOpen={open} />{' '}
+      <Card label="Inline props" style={{ padding: 6 }} onOpen={() => console.log('open')} />
+    </div>
+  );
+}
+`}
+  ],
+  takeaways:[
+    'Reasons to re-render: own state changed, a read context changed, or the parent re-rendered.',
+    'A parent re-render re-renders all children by default, whether or not their props changed.',
+    '`React.memo` skips a child when every prop is `Object.is`-equal to the previous one.',
+    'Inline objects, arrays and functions are new every render, so they break memoisation.',
+    'Move state down to where it is used, or pass content as `children`, before reaching for `memo`.'
+  ],
+  mistakes:[
+    {bad:'Keeping fast-changing state (like a text input) in a high-level component.', why:'Every keystroke re-renders the whole subtree. Move the state into a small component next to the input.'},
+    {bad:'Defining a component inside another component, or using `key={Math.random()}`.', why:'React sees a brand-new component type or key each render, throws away the old one and remounts it, losing its state.'}
+  ],
+  quiz:[
+    {q:'Which is NOT a reason for a component to re-render?', opts:['Its own state changed','A context it reads changed','Its parent re-rendered','A sibling\'s state changed'], a:3, why:'A sibling\'s state only affects that sibling and, through it, its own children. It re-renders the shared parent only if the state lives there.'},
+    {q:'A parent re-renders. A `memo` child gets identical primitive props. Does the child re-render?', opts:['Yes, always','Only in StrictMode','No, memo skips it because the props are equal','Only if it has state'], a:2, why:'`React.memo` shallow-compares props and bails out when they are all equal.'},
+    {q:'A `memo` child receives `style={{ color: "red" }}` written inline. What happens on parent re-renders?', opts:['It never re-renders','It re-renders every time, the object is new each render','It re-renders only once','React compares the object deeply'], a:1, why:'The style object is recreated every render, so the shallow comparison sees a changed prop.'},
+    {q:'A component re-renders too often and feels slow. What is a good first step?', opts:['Wrap everything in `memo`','Delete all state','Find why it renders, then move state down or split the component','Use `key={Math.random()}`'], a:2, why:'First understand the cause. Often the fix is structural (colocate state) rather than adding memoisation everywhere.'}
+  ],
+  challenges:[
+    {id:'rr-state-high', title:'Typing re-renders the heavy list',
+     symptom:'Every keystroke in the notes box re-renders `HeavyList`, which does not use the text at all.',
+     hint:'The `text` state lives in `App`, so everything below re-renders. Move the input and its state into their own component (or wrap `HeavyList` in `memo`).',
+     starter:`function HeavyList() {
+  return (
+    <ul>
+      {['a', 'b', 'c'].map(x => <li key={x}>{x}</li>)}
+    </ul>
+  );
+}
+
+function App() {
+  const [text, setText] = useState('');
+  return (
+    <div>
+      <input aria-label="Notes" value={text} onChange={e => setText(e.target.value)} />
+      <p>You typed: {text}</p>
+      <HeavyList />
+    </div>
+  );
+}
+`,
+     solution:`function HeavyList() {
+  return (
+    <ul>
+      {['a', 'b', 'c'].map(x => <li key={x}>{x}</li>)}
+    </ul>
+  );
+}
+
+function NoteBox() {
+  const [text, setText] = useState('');
+  return (
+    <div>
+      <input aria-label="Notes" value={text} onChange={e => setText(e.target.value)} />
+      <p>You typed: {text}</p>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div>
+      <NoteBox />
+      <HeavyList />
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'typing shows the text', script:`userType(screen.getByLabelText('Notes'), 'abc');
+expect(screen.getByText('You typed: abc')).toBeInTheDocument();`},
+      {name:'the list is still rendered', script:`expect(screen.getAllByRole('listitem')).toHaveLength(3);`},
+      {name:'HeavyList renders only once while typing', script:`userType(screen.getByLabelText('Notes'), 'abc');
+expect(renders('HeavyList')).toBe(1);`}
+     ]},
+    {id:'rr-key', title:'The input forgets what you typed',
+     symptom:'Type a name, click "Re-render": the text disappears and the field is empty again.',
+     hint:'`key={Math.random()}` gives the field a new identity on every render, so React unmounts and remounts it. Remove the key (or use a stable one).',
+     starter:`function Field({ label }) {
+  const [value, setValue] = useState('');
+  useEffect(() => {
+    console.log('mounted ' + label);
+  }, [], 'mounted');
+  return <input aria-label={label} value={value} onChange={e => setValue(e.target.value)} />;
+}
+
+function App() {
+  const [count, setCount] = useState(0);
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>Re-render {count}</button>
+      <Field key={Math.random()} label="Name" />
+    </div>
+  );
+}
+`,
+     solution:`function Field({ label }) {
+  const [value, setValue] = useState('');
+  useEffect(() => {
+    console.log('mounted ' + label);
+  }, [], 'mounted');
+  return <input aria-label={label} value={value} onChange={e => setValue(e.target.value)} />;
+}
+
+function App() {
+  const [count, setCount] = useState(0);
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>Re-render {count}</button>
+      <Field label="Name" />
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'typing works', script:`const i = screen.getByLabelText('Name');
+userType(i, 'Ada');
+expect(i).toHaveValue('Ada');`},
+      {name:'the typed text survives a parent re-render', script:`userType(screen.getByLabelText('Name'), 'Ada');
+fireEvent.click(screen.getByRole('button',{name:/Re-render/}));
+expect(screen.getByLabelText('Name')).toHaveValue('Ada');`},
+      {name:'Field mounts only once', script:`fireEvent.click(screen.getByRole('button',{name:/Re-render/}));
+fireEvent.click(screen.getByRole('button',{name:/Re-render/}));
+expect(effects('mounted').filter(e => e.ev === 'setup')).toHaveLength(1);`}
+     ]},
+    {id:'rr-inner', title:'The panel closes itself',
+     symptom:'Open the details panel, then click the parent counter: the panel snaps shut and forgets its state.',
+     hint:'`Panel` is declared inside `App`, so it is a new component type on every render and React remounts it. Move `Panel` outside `App`.',
+     starter:`function App() {
+  const [count, setCount] = useState(0);
+
+  function Panel() {
+    const [open, setOpen] = useState(false);
+    return (
+      <div>
+        <button onClick={() => setOpen(!open)}>Toggle details</button>
+        {open && <p>Details are visible</p>}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>Parent clicks: {count}</button>
+      <Panel />
+    </div>
+  );
+}
+`,
+     solution:`function Panel() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <button onClick={() => setOpen(!open)}>Toggle details</button>
+      {open && <p>Details are visible</p>}
+    </div>
+  );
+}
+
+function App() {
+  const [count, setCount] = useState(0);
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>Parent clicks: {count}</button>
+      <Panel />
+    </div>
+  );
+}
+`,
+     tests:[
+      {name:'the panel opens', script:`fireEvent.click(screen.getByRole('button',{name:'Toggle details'}));
+expect(screen.getByText('Details are visible')).toBeInTheDocument();`},
+      {name:'the parent counter works', script:`fireEvent.click(screen.getByRole('button',{name:/Parent clicks/}));
+expect(screen.getByRole('button',{name:'Parent clicks: 1'})).toBeInTheDocument();`},
+      {name:'the panel stays open when the parent re-renders', script:`fireEvent.click(screen.getByRole('button',{name:'Toggle details'}));
+fireEvent.click(screen.getByRole('button',{name:/Parent clicks/}));
+expect(screen.getByText('Details are visible')).toBeInTheDocument();`}
+     ]}
+  ]
+});
+
+/* ==========================================================================
+   Runner: owns the sandbox iframe lifecycle, the load timeout and the
+   run / test watchdogs. Pure logic (no DOM) so it can be unit tested with a
+   fake frame and fake timers.
+   ========================================================================== */
+/*@@RUNNER-START*/
+function makeRunner(env){
+  var frame=null, state='idle', waiters=[], loadT=null, job=null, seq=0;
+  var LOAD_MS=env.loadMs||15000, RUN_MS=env.runMs||3000, TEST_MS=env.testMs||10000;
+  function setState(s){ state=s; if(env.onState) env.onState(s); }
+  function clr(t){ if(t!=null) env.clearTimeout(t); }
+  function destroy(){
+    clr(loadT); loadT=null;
+    if(job) clr(job.timer);
+    if(frame){ try{ frame.destroy(); }catch(e){} frame=null; }
+  }
+  function rejectWaiters(kind){ var w=waiters; waiters=[]; w.forEach(function(x){ x.rej({kind:kind}); }); }
+  function fail(kind){ destroy(); setState(kind==='offline'?'offline':'stuck'); rejectWaiters(kind); }
+  function ensure(){
+    if(state==='ready'&&frame) return Promise.resolve();
+    return new Promise(function(res,rej){
+      waiters.push({res:res,rej:rej});
+      if(state==='loading') return;
+      destroy();
+      setState('loading');
+      frame=env.createFrame();
+      loadT=env.setTimeout(function(){ loadT=null; fail('offline'); },LOAD_MS);
+    });
+  }
+  function stuck(my){
+    destroy();
+    setState('stuck');
+    if(job===my) job=null;
+    my.cb.onDone({stuck:true,index:my.cur});
+  }
+  function cancel(){ if(job){ clr(job.timer); job=null; } }
+  function armTest(my){ clr(my.timer); my.timer=env.setTimeout(function(){ if(job===my) stuck(my); },TEST_MS); }
+  function run(payload,cb){
+    cancel();
+    var my=job={id:++seq,mode:'run',cb:cb,timer:null,cur:-1};
+    ensure().then(function(){
+      if(job!==my) return;
+      frame.post(Object.assign({t:'run',id:my.id},payload));
+      my.timer=env.setTimeout(function(){ if(job===my) stuck(my); },RUN_MS);
+    },function(err){ if(job===my){ job=null; cb.onDone({offline:true,kind:err&&err.kind}); } });
+    return my.id;
+  }
+  function test(payload,cb){
+    cancel();
+    var my=job={id:++seq,mode:'test',cb:cb,timer:null,cur:-1};
+    ensure().then(function(){
+      if(job!==my) return;
+      frame.post(Object.assign({t:'test'},payload));
+      armTest(my);
+    },function(err){ if(job===my){ job=null; cb.onDone({offline:true,kind:err&&err.kind}); } });
+    return my.id;
+  }
+  function deliver(m){
+    if(!m||typeof m!=='object') return;
+    if(m.t==='ready'){
+      if(state==='loading'){ clr(loadT); loadT=null; setState('ready'); var w=waiters; waiters=[]; w.forEach(function(x){ x.res(); }); }
+      if(env.onReady) env.onReady(m);
+      return;
+    }
+    if(m.t==='loadfail'){ if(state==='loading') fail('offline'); return; }
+    if(m.t==='log'){ if(env.onLog) env.onLog(m.level,m.text); return; }
+    if(m.t==='instr'){ if(env.onInstr) env.onInstr(m); return; }
+    var my=job;
+    if(!my) return;
+    if(my.mode==='run'){
+      if(m.t==='rendered'&&m.id===my.id){ clr(my.timer); job=null; my.cb.onDone({ok:true}); }
+      else if(m.t==='error'&&m.id===my.id){ clr(my.timer); job=null; my.cb.onDone({error:m.message}); }
+    }else{
+      if(m.t==='start'){ my.cur=m.i; armTest(my); if(my.cb.onStart) my.cb.onStart(m.i); }
+      else if(m.t==='result'){ armTest(my); my.cb.onResult(m); }
+      else if(m.t==='done'){ clr(my.timer); job=null; my.cb.onDone({ok:true}); }
+      else if(m.t==='fatal'){ clr(my.timer); job=null; my.cb.onDone({fatal:m.message}); }
+    }
+  }
+  return {
+    run:run, test:test, deliver:deliver, cancel:cancel,
+    retry:function(){ return ensure().then(function(){},function(){}); },
+    frame:function(){ return frame; },
+    state:function(){ return state; }
+  };
+}
+
+/* Cheap pre-check for the most obvious never-ending loops. A same-process sandbox iframe cannot be
+   interrupted by the parent, so we refuse to run these instead of freezing the tab. Everything else is
+   caught by the 3 second watchdog above. */
+function looksInfinite(code){
+  var src=String(code), out='', i=0, n=src.length, c, d, q;
+  while(i<n){
+    c=src[i]; d=src[i+1];
+    if(c==='/'&&d==='/'){ while(i<n&&src[i]!=='\n') i++; out+=' '; continue; }
+    if(c==='/'&&d==='*'){ i+=2; while(i<n&&!(src[i]==='*'&&src[i+1]==='/')) i++; i+=2; out+=' '; continue; }
+    if(c==='"'||c==="'"||c==='`'){
+      q=c; i++;
+      while(i<n&&src[i]!==q){ if(src[i]==='\\') i++; i++; }
+      i++; out+='""'; continue;
+    }
+    out+=c; i++;
+  }
+  var re=/\b(?:while\s*\(\s*(?:true|1|!0)\s*\)|for\s*\(\s*;\s*;\s*\))\s*(\{|;)/g, m;
+  while((m=re.exec(out))){
+    if(m[1]===';') return true;
+    var start=m.index+m[0].length, depth=1, j=start;
+    while(j<out.length&&depth>0){ if(out[j]==='{') depth++; else if(out[j]==='}') depth--; j++; }
+    var body=out.slice(start,depth===0?j-1:out.length);
+    if(!/\b(?:break|return|throw)\b/.test(body)) return true;
+  }
+  return false;
+}
+/*@@RUNNER-END*/
+
+/* ==========================================================================
+   DOM helpers, storage (all access wrapped in try/catch with in-memory fallback), theme
+   ========================================================================== */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const md=s=>esc(s).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+function selectorFor(a){
+  if(!a||a===document.body) return null;
+  if(a.id) return '#'+a.id;
+  const ds=a.dataset||{}, ks=Object.keys(ds);
+  return ks.length?a.tagName.toLowerCase()+ks.map(k=>'[data-'+k.replace(/[A-Z]/g,m=>'-'+m.toLowerCase())+'="'+String(ds[k]).replace(/"/g,'')+'"]').join(''):null;
+}
+/* innerHTML that keeps keyboard focus on the "same" control after a re-render */
+function setHTML(el,html){
+  const a=document.activeElement, sel=a&&el.contains(a)?selectorFor(a):null;
+  el.innerHTML=html;
+  if(sel){ const n=el.querySelector(sel); if(n&&n!==document.activeElement) n.focus(); }
+}
+const P={
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M20.5 14A8.5 8.5 0 1110 3.5a7 7 0 0010.5 10.5z"/>',
+  code:'<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
+  play:'<path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  reset:'<path d="M3.5 12a8.5 8.5 0 108.5-8.5A8.5 8.5 0 006 6L3.5 8.5M3.5 3.5v5h5"/>',
+  flask:'<path d="M9 3h6M10 3v6L4.6 18.6A1.6 1.6 0 006 21h12a1.6 1.6 0 001.4-2.4L14 9V3"/>',
+  left:'<path d="M15 5l-7 7 7 7"/>',
+  right:'<path d="M9 5l7 7-7 7"/>'
+};
+const ic=(n,s=16)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+
+const KEY_SHARED='code-playground:v1', KEY='code-playground:react:v1';
+const memStore={};
+function lsGet(k){
+  if(Object.prototype.hasOwnProperty.call(memStore,k)) return memStore[k];
+  try{ return localStorage.getItem(k); }catch(e){ return null; }
+}
+function lsSet(k,v){
+  try{ localStorage.setItem(k,v); delete memStore[k]; }catch(e){ memStore[k]=v; }
+}
+function readShared(){
+  try{ const o=JSON.parse(lsGet(KEY_SHARED)); return o&&typeof o==='object'&&!Array.isArray(o)?o:{}; }catch(e){ return {}; }
+}
+let theme=(()=>{ const t=readShared().theme; return t==='light'||t==='dark'?t:null; })();
+const prefersDark=()=>{ try{ return !!(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches); }catch(e){ return false; } };
+const isDark=()=>theme?theme==='dark':prefersDark();
+function applyTheme(){
+  if(theme) document.documentElement.dataset.theme=theme; else delete document.documentElement.dataset.theme;
+  $('#theme-btn').innerHTML=ic(isDark()?'sun':'moon',18);
+  $('#theme-btn').title=isDark()?'Switch to light theme':'Switch to dark theme';
+}
+function toggleTheme(){
+  theme=isDark()?'light':'dark';
+  const o=readShared(); o.theme=theme; lsSet(KEY_SHARED,JSON.stringify(o));   // only `theme` changes; other fields are kept
+  applyTheme();
+}
+function toast(msg,bad){
+  const t=document.createElement('div'); t.className='toast'+(bad?' bad':''); t.textContent=msg;
+  $('#toasts').appendChild(t); setTimeout(()=>t.remove(),3200);
+}
+function announce(msg){
+  const l=$('#live'); l.textContent=''; setTimeout(()=>{ l.textContent=msg; },30);
+}
+const reducedMotion=()=>{ try{ return !!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches); }catch(e){ return false; } };
+
+/* ==========================================================================
+   Persistent state (progress, edits, preferences)
+   ========================================================================== */
+const TOTAL_BUGS=LESSONS.reduce((n,L)=>n+L.challenges.length,0);
+const TOTAL_Q=LESSONS.reduce((n,L)=>n+L.quiz.length,0);
+const lessonById=id=>LESSONS.find(L=>L.id===id);
+function loadState(){
+  let o=null;
+  try{ o=JSON.parse(lsGet(KEY)); }catch(e){}
+  if(!o||typeof o!=='object'||Array.isArray(o)) o={};
+  const obj=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
+  return {
+    v:1,
+    current:lessonById(o.current)?o.current:LESSONS[0].id,
+    variant:obj(o.variant), code:obj(o.code), solved:obj(o.solved), quiz:obj(o.quiz),
+    renders:o.renders!==false, strict:o.strict===true
+  };
+}
+let S=loadState();
+let saveT=null;
+function save(){ clearTimeout(saveT); saveT=setTimeout(saveNow,150); }
+function saveNow(){ clearTimeout(saveT); saveT=null; lsSet(KEY,JSON.stringify(S)); }
+window.addEventListener('pagehide',()=>{ if(saveT) saveNow(); });
+
+function quizAnswers(L){ const q=S.quiz[L.id]; return Array.isArray(q&&q.a)?q.a:[]; }
+function lessonStats(L){
+  const a=quizAnswers(L);
+  return {
+    solved:L.challenges.filter(c=>S.solved[c.id]).length,
+    answered:L.quiz.filter((q,i)=>a[i]!=null).length,
+    correct:L.quiz.filter((q,i)=>a[i]===q.a).length
+  };
+}
+function overall(){
+  let bugs=0, pts=0;
+  LESSONS.forEach(L=>{ const s=lessonStats(L); bugs+=s.solved; pts+=s.correct; });
+  return {bugs,pts,pct:Math.round(100*(bugs+pts)/(TOTAL_BUGS+TOTAL_Q))};
+}
+
+/* ==========================================================================
+   Runtime (non persistent) state
+   ========================================================================== */
+const R={mode:'ex',tab:'console',logs:[],commits:[],totals:{},events:[],fxRenders:false,tests:{},testCount:0,testState:'idle',testMsg:'',
+  hint:false,solution:false,status:'',pv:'idle',pvMsg:'',reduced:reducedMotion(),testBusy:false};
+const lesson=()=>lessonById(S.current);
+const isEx=()=>R.mode==='ex';
+const challenge=()=>isEx()?null:lesson().challenges[R.mode];
+function variant(){
+  const L=lesson(); return L.variants.find(v=>v.id===S.variant[L.id])||L.variants[0];
+}
+const codeKey=()=>isEx()?lesson().id+':'+variant().id:challenge().id;
+const starterCode=()=>isEx()?variant().code:challenge().starter;
+const getCode=()=>{ const c=S.code[codeKey()]; return typeof c==='string'?c:starterCode(); };
+
+/* ==========================================================================
+   Sandbox frame wiring
+   ========================================================================== */
+let FRAME_SRC_CACHE=null;
+const frameSrc=()=>FRAME_SRC_CACHE||(FRAME_SRC_CACHE=buildFrameSrc());
+const runner=makeRunner({
+  createFrame(){
+    const f=document.createElement('iframe');
+    f.setAttribute('sandbox','allow-scripts'); f.title='Component preview'; f.srcdoc=frameSrc();
+    $('#preview-host').appendChild(f);
+    return {el:f,post(m){ try{ f.contentWindow.postMessage(m,'*'); }catch(e){} },destroy(){ f.remove(); }};
+  },
+  setTimeout:(fn,ms)=>setTimeout(fn,ms), clearTimeout:t=>clearTimeout(t),
+  onState(s){
+    if(s==='loading') setPv('loading');
+    else if(s==='offline') setPv('offline');
+    else if(s==='stuck') setPv('stuck');
+  },
+  onReady(m){ if(m&&m.reduced){ R.reduced=true; scheduleRender('renders'); } },
+  onLog(level,text){ addLog(level,text); },
+  onInstr(m){
+    if(Array.isArray(m.events)) R.events.push(...m.events.filter(e=>e&&typeof e==='object')); if(R.events.length>700) R.events.splice(0,R.events.length-700);
+    if(Array.isArray(m.renders)) R.commits.push(...m.renders.filter(c=>c&&typeof c==='object')); if(R.commits.length>150) R.commits.splice(0,R.commits.length-150);
+    if(m.totals&&typeof m.totals==='object') R.totals=m.totals;
+    scheduleRender('renders'); scheduleRender('effects'); scheduleRender('tabs');
+  }
+});
+window.addEventListener('message',e=>{
+  const fr=runner.frame();
+  if(!fr||!fr.el||e.source!==fr.el.contentWindow) return;   // only our own iframe may talk to us
+  runner.deliver(e.data);
+});
+
+/* ==========================================================================
+   Rendering: sidebar, header, lab, recap, quiz
+   ========================================================================== */
+const pending={}; let pendT=null;
+function scheduleRender(name){
+  pending[name]=true;
+  if(pendT) return;
+  pendT=setTimeout(()=>{
+    pendT=null;
+    const p=Object.keys(pending); p.forEach(k=>delete pending[k]);
+    p.forEach(k=>{ ({console:renderConsole,renders:renderRenders,effects:renderEffects,tests:renderTests,tabs:renderTabs})[k](); });
+  },40);
+}
+
+function renderSidebar(){
+  const o=overall();
+  $('#prog-text').textContent=o.pct+'% complete';
+  $('#prog-detail').textContent=o.bugs+'/'+TOTAL_BUGS+' bugs · '+o.pts+'/'+TOTAL_Q+' quiz';
+  const bar=$('#prog-bar'); bar.setAttribute('aria-valuenow',String(o.pct)); bar.setAttribute('aria-valuetext',o.pct+' percent complete');
+  bar.firstElementChild.style.width=o.pct+'%';
+  setHTML($('#lessons'),LESSONS.map((L,i)=>{
+    const s=lessonStats(L), done=s.solved===L.challenges.length&&s.answered===L.quiz.length;
+    const cur=L.id===S.current;
+    return `<li><button class="litem" data-id="${L.id}" aria-pressed="${cur}">
+      <span class="lnum${done?' done':''}" aria-hidden="true">${done?ic('check',13):i+1}</span>
+      <span class="lmain"><span class="ltitle">${esc(L.title)}${cur?'<span class="sr-only"> (current lesson)</span>':''}${done?'<span class="sr-only"> (completed)</span>':''}</span>
+      <span class="lmeta">${s.solved}/${L.challenges.length} bugs · quiz ${s.answered?s.correct+'/'+L.quiz.length:'not taken'}</span></span></button></li>`;
+  }).join(''));
+}
+
+function renderHead(){
+  const L=lesson(), i=LESSONS.indexOf(L);
+  setHTML($('#lesson-head'),`<div class="lesson-h"><div><h1 id="lesson-title">${i+1}. ${esc(L.title)}</h1>
+    <div class="tags"><span class="pill react">Lesson ${i+1} of ${LESSONS.length}</span><span class="pill">${esc(L.tag)}</span></div></div>
+    <div class="pager"><button class="btn sm" id="prev-l" ${i===0?'disabled':''}>${ic('left',14)} Previous</button><button class="btn sm" id="next-l" ${i===LESSONS.length-1?'disabled':''}>Next ${ic('right',14)}</button></div></div>
+    <p style="margin-top:12px">${md(L.intro)}</p>
+    <div class="analogy"><b>Think of it like this:</b><span>${md(L.analogy)}</span></div>`);
+}
+
+function renderModes(){
+  const L=lesson();
+  const items=[`<button data-mode="ex" aria-pressed="${isEx()}">Example</button>`].concat(L.challenges.map((c,i)=>
+    `<button data-mode="${i}" aria-pressed="${R.mode===i}">Bug ${i+1}${S.solved[c.id]?' <span aria-hidden="true">✓</span><span class="sr-only">(solved)</span>':''}</button>`));
+  setHTML($('#modes'),items.join(''));
+}
+
+function renderDesc(){
+  const L=lesson(), el=$('#lab-desc');
+  if(isEx()){
+    const v=variant();
+    setHTML(el,`<div class="row"><span class="muted">Example:</span><div class="seg" id="variants" role="group" aria-label="Example variants">${L.variants.map(x=>`<button data-variant="${x.id}" aria-pressed="${x.id===v.id}">${esc(x.label)}</button>`).join('')}</div></div>
+      <p>${md(v.note||'')}</p>`);
+  }else{
+    const c=challenge(), n=R.mode+1, solved=!!S.solved[c.id];
+    setHTML(el,`<div class="row"><span class="pill bad">Bug ${n} of ${L.challenges.length}</span><strong>${esc(c.title)}</strong>${solved?'<span class="pill good">✓ Solved</span>':''}</div>
+      <div class="symptom"><b>Symptom</b><span>${md(c.symptom)}</span></div>
+      <p class="muted">Fix the code, then press <strong>Run tests</strong>. The tests are hidden, but each result tells you what was expected.</p>
+      <div class="row"><button class="btn sm" id="hint-btn" aria-expanded="${R.hint}">${R.hint?'Hide hint':'Show hint'}</button><button class="btn sm" id="sol-btn" aria-expanded="${R.solution}">${R.solution?'Hide solution':'Show solution'}</button></div>
+      ${R.hint?`<div class="hintbox"><b>Hint:</b> ${md(c.hint)}</div>`:''}
+      ${R.solution?`<div class="solbox"><div class="solbox-h"><span>Reference solution</span><button class="btn sm" id="sol-copy" style="margin-left:auto">Copy into editor</button></div><pre class="codeblock">${esc(c.solution)}</pre></div>`:''}`);
+  }
+}
+
+let gutterLines=0;
+function updateGutter(force){
+  const n=$('#code').value.split('\n').length;
+  if(!force&&n===gutterLines) return;
+  gutterLines=n;
+  $('#gutter').textContent=Array.from({length:n},(_,i)=>i+1).join('\n');
+}
+function renderEditor(){
+  const ta=$('#code');
+  ta.value=getCode(); ta.scrollTop=0; ta.scrollLeft=0;
+  updateGutter(true);
+  $('#file-label').innerHTML=ic('code',15)+' <span>App.jsx</span>';
+  ta.setAttribute('aria-label',isEx()?'Code editor for the example':'Code editor for bug '+(R.mode+1));
+  $('#test-btn').hidden=isEx();
+  $('#run-btn').innerHTML=ic('play',14)+' Run <span class="kbd">Ctrl/Cmd+Enter</span>';
+  $('#test-btn').innerHTML=ic('flask',14)+' Run tests';
+  $('#reset-code').innerHTML=ic('reset',13)+' Reset code';
+  $('#opt-renders').checked=S.renders; $('#opt-strict').checked=S.strict;
+}
+
+function setPv(mode,msg){
+  R.pv=mode; R.pvMsg=msg||'';
+  const el=$('#pv-state');
+  el.className='pv-state'+(mode==='offline'||mode==='stuck'?' bad':'');
+  el.hidden=mode==='live';
+  if(mode==='live') return;
+  const retry='<button class="btn primary sm" data-act="retry">Retry</button>';
+  el.innerHTML={
+    idle:'<div><strong>Live preview</strong>Press Run to render your component here.</div>',
+    loading:'<div><span class="spinner" aria-hidden="true"></span><strong>Loading React...</strong>Fetching React 18 and Babel from cdnjs.cloudflare.com inside the sandbox.</div>',
+    offline:'<div><strong>React failed to load (offline?)</strong>The lessons, editor, quiz and progress still work. Connect to the internet and retry to enable the live preview and tests.<br>'+retry+'</div>',
+    stuck:'<div><strong>Your code seems stuck (infinite loop?)</strong>The preview took over 3 seconds and was restarted safely. Look for a loop that never ends, like <code>while (true)</code>, then press Run again.<br><button class="btn primary sm" data-act="rerun">Run again</button></div>',
+    cleared:'<div><strong>Preview cleared</strong>The test run used the sandbox. Press Run to render your component again.</div>'
+  }[mode]||'';
+}
+function setStatus(s){ R.status=s; $('#status').innerHTML=s?esc(s):''; }
+
+function renderTabs(){
+  const L=lesson();
+  const tabs=[
+    {id:'console',label:'Console',n:R.logs.length},
+    {id:'renders',label:'Renders',n:Object.keys(R.totals).reduce((a,k)=>a+(+R.totals[k]||0),0)},
+    {id:'effects',label:'Effect timeline',n:R.events.filter(e=>e.ev!=='render'&&e.ev!=='note').length}
+  ];
+  if(!isEx()) tabs.push({id:'tests',label:'Tests',n:R.testCount?Object.values(R.tests).filter(t=>t.pass).length+'/'+R.testCount:''});
+  if(!tabs.some(t=>t.id===R.tab)) R.tab='console';
+ setHTML($('#tabs'),tabs.map(t=>`<button class="tab" role="tab" id="tab-${t.id}" data-tab="${t.id}" aria-selected="${t.id===R.tab}" aria-controls="panel-${t.id}" tabindex="${t.id===R.tab?0:-1}">${t.label}${t.n!==''&&t.n!==0?` <span class="count">${t.n}</span>`:''}</button>`).join(''));
+  ['console','renders','effects','tests'].forEach(id=>{ const p=$('#panel-'+id); p.hidden=id!==R.tab; p.setAttribute('aria-labelledby','tab-'+id); });
+}
+function setTab(id){ R.tab=id; renderTabs(); }
+
+function addLog(level,text){
+  if(R.logs.length>=300){ if(!R.logsFull){ R.logsFull=true; R.logs.push({level:'meta',text:'...console output truncated after 300 lines'}); scheduleRender('console'); } return; }
+  R.logs.push({level,text}); scheduleRender('console'); scheduleRender('tabs');
+}
+function renderConsole(){
+  const el=$('#panel-console'), stick=el.scrollHeight-el.scrollTop-el.clientHeight<40;
+  setHTML(el,R.logs.length?R.logs.map(l=>`<div class="log log-${esc(l.level)}"><pre>${esc(l.text)}</pre></div>`).join('')
+    :'<div class="placeholder"><strong>Console</strong>console.log and React warnings from your code appear here.</div>');
+  if(stick) el.scrollTop=el.scrollHeight;
+}
+function renderRenders(){
+  const el=$('#panel-renders'), stick=el.scrollHeight-el.scrollTop-el.clientHeight<40;
+  const names=Object.keys(R.totals);
+  let h=`<p class="note"><b>Reasons are inferred.</b> The lab compares each component's props, state and context with its previous render (and whether its parent rendered in the same commit) to guess why it ran. Treat it as a good hint, not React's own answer. Only function components are tracked.</p>`;
+  if(R.reduced) h+=`<p class="note"><b>Flashes are off</b> because your system asks for reduced motion. The counts and this log still work.</p>`;
+  else if(!S.renders) h+=`<p class="note"><b>Show renders is off.</b> Turn it on to flash an outline and a badge such as <b>App ×3</b> (component name and how many times it has rendered) on every component that renders.</p>`;
+  else h+=`<p class="note">With <b>Show renders</b> on, each component that renders flashes an outline with a badge such as <b>App ×3</b> (name and render count) in the preview.</p>`;
+  if(names.length) h+=`<div class="chips" aria-label="Render counts">${names.map(n=>`<span class="chip"><b>${esc(n)}</b> <i>×${esc(R.totals[n])}</i></span>`).join('')}</div>`;
+  if(R.commits.length){
+    h+=`<div class="chips"><button class="btn sm ghost" data-act="clear-renders">Clear log</button></div>`;
+    h+=R.commits.map(c=>`<div class="commit"><div class="commit-h">Commit ${esc(c.c)}</div>${(Array.isArray(c.entries)?c.entries:[]).map(e=>`<div class="rl"><b>${esc(e.label)}</b><span class="cnt">${+e.n?'×'+esc(e.n):''}</span><span class="tag ${esc(e.kind)}">${esc(e.kind)}</span><span class="why">${+e.n?'rendered: ':''}${esc(e.reason)}${+e.calls>1?' · function called '+esc(+e.calls)+'× (StrictMode)':''}</span></div>`).join('')}</div>`).join('');
+  }else h+=`<div class="placeholder"><strong>No renders yet</strong>Run the example, then click around in the preview. Each commit lists the components that rendered and why.</div>`;
+  setHTML(el,h);
+  if(stick) el.scrollTop=el.scrollHeight;
+}
+function renderEffects(){
+  const el=$('#panel-effects'), stick=el.scrollHeight-el.scrollTop-el.clientHeight<40;
+  const evs=R.events.filter(e=>R.fxRenders||e.ev!=='render');
+  let h=`<div class="chips"><label class="switch"><input type="checkbox" data-act="fx-renders" ${R.fxRenders?'checked':''}> Include render calls</label><button class="btn sm ghost" data-act="clear-events">Clear</button></div>`;
+  h+=S.strict
+    ?`<p class="note"><b>StrictMode is on.</b> In development React mounts each component, simulates an unmount, then mounts it again to check your cleanup. Look for <b>setup, cleanup, setup</b> for the same effect, and function components called twice. Rows tagged "StrictMode" come from that extra check. Production builds skip it.</p>`
+    :`<p class="note">Turn on <b>StrictMode</b> and run again to see React's development-only double invocation (setup, cleanup, setup on mount). Events are listed in the true order they happened.</p>`;
+  const names={setup:'effect setup',cleanup:'cleanup',mount:'mount',unmount:'unmount',render:'render',note:'note'};
+  h+=evs.length?`<div>${evs.map(e=>`<div class="ev ${esc(e.ev)}"><span class="n">${esc(e.seq)}</span><span class="k">${names[e.ev]||esc(e.ev)}</span><span>${esc(e.comp||'')}${e.label&&e.ev!=='note'?' · '+esc(e.label):esc(e.ev==='note'?e.label:'')}${e.kind==='layout'?' (layout)':''}</span>${e.deps?`<span class="d">deps ${esc(e.deps)}</span>`:''}${e.note==='strict'?' <span class="tag context">StrictMode</span>':''}</div>`).join('')}</div>`
+    :`<div class="placeholder"><strong>No events yet</strong>Mount, effect setup, cleanup and unmount events appear here as they happen. Wrap <code>useEffect(fn, deps, 'label')</code> with a third argument to name an effect.</div>`;
+  setHTML(el,h);
+  if(stick) el.scrollTop=el.scrollHeight;
+}
+function renderTests(){
+  const el=$('#panel-tests'), c=isEx()?null:challenge();
+  if(!c){ el.innerHTML=''; return; }
+  const total=c.tests.length, res=R.tests;
+  const pass=Object.values(res).filter(r=>r.pass).length;
+  let h='';
+  if(R.testMsg) h+=`<div class="summary bad"><strong>${esc(R.testMsg)}</strong></div>`;
+  else if(R.testState==='idle') h+=`<div class="placeholder"><strong>${total} hidden tests</strong>Press <b>Run tests</b> to check your fix. The starter code fails at least one of them.</div>`;
+  else{
+    const ok=R.testState==='done'&&pass===total;
+    h+=`<div class="summary ${ok?'ok':R.testState==='done'?'bad':''}"><strong>${R.testState==='running'?'Running...':ok?'All tests passed':pass+' of '+total+' passed'}</strong><div class="bar"><i style="width:${Math.round(100*pass/total)}%"></i></div></div>`;
+  }
+  if(R.testState!=='idle'){
+    h+=c.tests.map((t,i)=>{
+      const r=res[i], st=!r?'':r.running?'running':r.pass?'pass':'fail';
+      if(!r&&R.testState!=='running') return '';
+      return `<div class="tcase ${st}"><div class="tcase-h"><span class="tname">${esc(t.name)}</span><span class="tbadge ${st}">${!r?'waiting':r.running?'running':r.pass?'PASS':'FAIL'}</span></div>${r&&!r.pass&&!r.running&&r.error?`<pre class="terr">${esc(r.error)}</pre>`:''}</div>`;
+    }).join('');
+  }
+  setHTML(el,h);
+}
+
+function renderRecap(){
+  const L=lesson();
+  setHTML($('#recap'),`<h2 id="recap-h">Recap</h2><div class="two"><div><h3>Key takeaways</h3><ul>${L.takeaways.map(t=>`<li>${md(t)}</li>`).join('')}</ul></div>
+    <div><h3>Common mistakes</h3>${L.mistakes.map(m=>`<div class="mistake"><div>${md(m.bad)}</div><p>${md(m.why)}</p></div>`).join('')}</div></div>`);
+}
+function renderQuiz(){
+  const L=lesson(), a=quizAnswers(L), s=lessonStats(L);
+  const letters='ABCD';
+  setHTML($('#quiz'),`<div class="quiz-h"><h2 id="quiz-h">Quiz</h2><span class="score" id="quiz-score">${s.answered?'Score '+s.correct+'/'+L.quiz.length+(s.answered<L.quiz.length?' ('+s.answered+' answered)':''):'4 questions'}</span><button class="btn sm ghost" id="quiz-reset" ${s.answered?'':'hidden'} style="margin-left:auto">Retake quiz</button></div>`+
+    L.quiz.map((q,qi)=>{
+      const ans=a[qi];
+      return `<fieldset class="q" data-q="${qi}"><legend>${qi+1}. ${md(q.q)}</legend><div class="qopts">${q.opts.map((o,oi)=>{
+        let cls='', mark='';
+        if(ans!=null){ if(oi===q.a){ cls=' right'; mark='<span class="mark">✓ Correct answer</span>'; } else if(oi===ans){ cls=' wrong'; mark='<span class="mark">✗ Your answer</span>'; } }
+        return `<button class="qopt${cls}" data-q="${qi}" data-o="${oi}" aria-disabled="${ans!=null}"><span><b>${letters[oi]}.</b> ${md(o)}</span>${mark}</button>`;
+      }).join('')}</div><div class="q-fb">${ans!=null?`<b>${ans===q.a?'Correct.':'Not quite.'}</b> ${md(q.why)}`:''}</div></fieldset>`;
+    }).join(''));
+}
+
+function renderAll(){
+  renderSidebar(); renderHead(); renderModes(); renderDesc(); renderEditor(); renderTabs();
+  renderConsole(); renderRenders(); renderEffects(); renderTests(); renderRecap(); renderQuiz();
+}
+
+/* ==========================================================================
+   Actions
+   ========================================================================== */
+function clearOutputs(){
+  R.logs=[]; R.logsFull=false; R.commits=[]; R.totals={}; R.events=[];
+}
+function resetTests(){ R.tests={}; R.testCount=0; R.testState='idle'; R.testMsg=''; }
+function runPayload(){ return {code:$('#code').value,name:'App',strict:S.strict,flash:S.renders}; }
+
+function refuseLoop(){
+  runner.cancel();
+  setPv('stuck'); setStatus('Stuck');
+  addLog('error','Your code seems stuck (infinite loop?). It has a loop with no way out (no break or return), so it was not run.');
+  announce('Your code seems stuck. It has a loop that never ends, so it was not run.');
+}
+function doRun(){
+  clearOutputs(); resetTests();
+  if(looksInfinite($('#code').value)){ renderConsole(); renderTabs(); refuseLoop(); return; }
+  setStatus('Running...');
+  if(runner.state()==='ready') setPv('live');
+  renderConsole(); renderRenders(); renderEffects(); renderTabs(); renderTests();
+  const t0=performance.now();
+  runner.run(runPayload(),{onDone(info){
+    const ms=Math.round(performance.now()-t0);
+    if(info.offline){ setPv('offline'); setStatus('React failed to load'); announce('React failed to load. Check your connection and press Retry.'); return; }
+    if(info.stuck){
+      setPv('stuck'); setStatus('Stuck');
+      addLog('error','Your code seems stuck (infinite loop?). The preview was restarted; fix the loop and press Run again.');
+      announce('Your code seems stuck. The preview was restarted.'); return;
+    }
+    setPv('live');
+    if(info.error){ addLog('error',info.error); setStatus('Error'); announce('Render error: '+info.error.split('\n')[0]); return; }
+    setStatus('Rendered in '+ms+' ms'); announce('Rendered.');
+  }});
+}
+
+function doTests(){
+  if(isEx()) return;
+  const c=challenge();
+  if(looksInfinite($('#code').value)){ resetTests(); R.testState='done'; R.testMsg='Your code seems stuck (infinite loop?)'; renderTests(); refuseLoop(); return; }
+  resetTests(); R.testState='running'; R.testCount=c.tests.length; R.testBusy=true;
+  setTab('tests'); setStatus('Running tests...'); renderTests();
+  const finish=(state,msg)=>{ R.testBusy=false; R.testState=state; R.testMsg=msg||''; renderTests(); renderTabs(); };
+  runner.test({code:$('#code').value,name:'App',tests:c.tests.map(t=>({name:t.name,script:t.script,strict:!!t.strict}))},{
+    onStart(i){ R.tests[i]={running:true}; renderTests(); },
+    onResult(r){ R.tests[r.i]={pass:!!r.pass,error:r.error,ms:r.ms}; renderTests(); renderTabs(); },
+    onDone(info){
+      if(info.offline){ finish('done','Could not run tests: React failed to load (offline?)'); setPv('offline'); setStatus('React failed to load'); announce('Tests could not run because React failed to load.'); return; }
+      if(info.stuck){
+        if(info.index>=0&&R.tests[info.index]) R.tests[info.index]={pass:false,error:'This test never finished: your code seems stuck (infinite loop?). The sandbox was restarted.'};
+        finish('done','Your code seems stuck (infinite loop?)'); setPv('stuck'); setStatus('Stuck'); announce('Your code seems stuck. The sandbox was restarted.'); return;
+      }
+      if(info.fatal){ finish('done',info.fatal); setStatus('Could not run tests'); announce('Could not run tests: '+info.fatal); return; }
+      const pass=Object.values(R.tests).filter(t=>t.pass).length, total=c.tests.length;
+      finish('done');
+      setPv('cleared'); setStatus(pass===total?'All tests passed':pass+'/'+total+' passed');
+      if(pass===total){
+        const first=!S.solved[c.id];
+        S.solved[c.id]=true; save(); renderSidebar(); renderModes();
+        if(first){ toast('Bug fixed! Nice work.'); }
+        announce('All '+total+' tests passed. Bug solved.');
+      }else announce(pass+' of '+total+' tests passed.');
+    }
+  });
+}
+
+function selectLesson(id,mode){
+  if(!lessonById(id)) return;
+  runner.cancel();
+  S.current=id; save();
+  R.mode=mode==null?'ex':mode; R.hint=false; R.solution=false; R.tab='console';
+  clearOutputs(); resetTests(); setStatus('');
+  renderAll();
+  setTimeout(doRun,0);
+}
+function selectMode(mode){
+  if(mode===R.mode) return;
+  runner.cancel();
+  R.mode=mode; R.hint=false; R.solution=false;
+  if(mode==='ex'&&R.tab==='tests') R.tab='console';
+  clearOutputs(); resetTests(); setStatus('');
+  renderModes(); renderDesc(); renderEditor(); renderTabs(); renderConsole(); renderRenders(); renderEffects(); renderTests();
+  setTimeout(doRun,0);
+}
+function selectVariant(id){
+  const L=lesson();
+  S.variant[L.id]=id; save();
+  const v=variant(); if(v.tab&&v.tab!=='preview') R.tab=v.tab;
+  runner.cancel(); clearOutputs(); setStatus('');
+  renderDesc(); renderEditor(); renderTabs(); renderConsole(); renderRenders(); renderEffects();
+  setTimeout(doRun,0);
+}
+
+/* --- modal dialogs (same look as index.html) --- */
+function modal(html,{narrow=false}={}){
+  const ov=document.createElement('div'); ov.className='overlay';
+  ov.innerHTML=`<div class="dialog${narrow?' narrow':''}" role="dialog" aria-modal="true" aria-labelledby="dlg-title">${html}</div>`;
+  const prev=document.activeElement;
+  const close=()=>{ ov.remove(); document.removeEventListener('keydown',onKey,true); if(prev&&prev.focus) prev.focus(); };
+  const onKey=e=>{
+    if(e.key==='Escape'){ e.stopPropagation(); close(); }
+    else if(e.key==='Tab'){
+      const f=$$('button,input,select,textarea,[href]',ov).filter(x=>!x.disabled&&!x.hidden);
+      if(!f.length) return;
+      const first=f[0], last=f[f.length-1];
+      if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); }
+    }
+  };
+  document.addEventListener('keydown',onKey,true);
+  ov.addEventListener('mousedown',e=>{ if(e.target===ov) close(); });
+  ov.addEventListener('click',e=>{ if(e.target.closest('[data-close]')) close(); });
+  $('#modal-root').appendChild(ov);
+  const first=$('button.btn.primary',ov)||$('button',ov); if(first) first.focus();
+  return {el:ov,close};
+}
+const modalOpen=()=>!!$('#modal-root .overlay');
+function confirmDialog(title,message,okLabel){
+  return new Promise(res=>{
+    const m=modal(`<div class="dialog-h"><h2 id="dlg-title">${esc(title)}</h2></div><div class="dialog-b"><p style="margin:0">${esc(message)}</p></div>
+      <div class="dialog-f"><button class="btn" data-close>Cancel</button><button class="btn primary" id="ok-btn">${esc(okLabel||'OK')}</button></div>`,{narrow:true});
+    let done=false;
+    $('#ok-btn',m.el).addEventListener('click',()=>{ done=true; m.close(); res(true); });
+    const obs=new MutationObserver(()=>{ if(!document.body.contains(m.el)){ obs.disconnect(); if(!done) res(false); } });
+    obs.observe($('#modal-root'),{childList:true});
+  });
+}
+
+/* --- editor key handling: Tab indent, Esc then Tab leaves, Enter keeps indentation --- */
+function insertText(ta,text){
+  ta.focus();
+  let ok=false;
+  try{ ok=document.execCommand('insertText',false,text); }catch(e){}
+  if(!ok){ ta.setRangeText(text,ta.selectionStart,ta.selectionEnd,'end'); ta.dispatchEvent(new Event('input',{bubbles:true})); }
+}
+const lineStart=(v,i)=>i===0?0:v.lastIndexOf('\n',i-1)+1;
+let escArmed=false;
+function onEditorKey(e){
+  if(e.key==='Escape'){ escArmed=true; announce('Editor focus released: press Tab to move to the next control.'); return; }
+  if(e.key==='Shift'||e.key==='Control'||e.key==='Alt'||e.key==='Meta') return;
+  if(e.key==='Tab'&&escArmed){ escArmed=false; return; }
+  escArmed=false;
+  if(e.ctrlKey||e.metaKey||e.altKey||e.isComposing) return;
+  const ta=e.target, s=ta.selectionStart, en=ta.selectionEnd, v=ta.value, k=e.key;
+  if(k==='Tab'){
+    e.preventDefault();
+    if(s===en&&!e.shiftKey){ insertText(ta,'  '); return; }
+    const ls=lineStart(v,s); let le=v.indexOf('\n',en); if(le<0) le=v.length;
+    const block=v.slice(ls,le);
+    const out=e.shiftKey?block.replace(/^( {1,2}|\t)/gm,''):block.replace(/^/gm,'  ');
+    ta.setSelectionRange(ls,le); insertText(ta,out); ta.setSelectionRange(ls,ls+out.length);
+    return;
+  }
+  if(k==='Enter'&&!e.shiftKey){
+    e.preventDefault();
+    const indent=v.slice(lineStart(v,s),s).match(/^\s*/)[0], before=v[s-1];
+    insertText(ta,'\n'+indent+(before&&'{[('.includes(before)?'  ':''));
+  }
+}
+
+/* ==========================================================================
+   Wire up
+   ========================================================================== */
+function init(){
+  $('#logo').innerHTML=ic('code',18);
+  applyTheme();
+  $('#theme-btn').addEventListener('click',toggleTheme);
+  try{ if(window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{ if(!theme) applyTheme(); }); }catch(e){}
+
+  $('#lessons').addEventListener('click',e=>{ const b=e.target.closest('.litem'); if(b) selectLesson(b.dataset.id); });
+  $('#lesson-head').addEventListener('click',e=>{
+    const i=LESSONS.indexOf(lesson());
+    if(e.target.closest('#prev-l')&&i>0) selectLesson(LESSONS[i-1].id);
+    if(e.target.closest('#next-l')&&i<LESSONS.length-1) selectLesson(LESSONS[i+1].id);
+  });
+  $('#modes').addEventListener('click',e=>{ const b=e.target.closest('[data-mode]'); if(b) selectMode(b.dataset.mode==='ex'?'ex':+b.dataset.mode); });
+  $('#lab-desc').addEventListener('click',async e=>{
+    const v=e.target.closest('[data-variant]'); if(v){ selectVariant(v.dataset.variant); return; }
+    if(e.target.closest('#hint-btn')){ R.hint=!R.hint; renderDesc(); return; }
+    if(e.target.closest('#sol-btn')){
+      if(R.solution){ R.solution=false; renderDesc(); return; }
+      if(await confirmDialog('Show the solution?','Try the hint first: you learn more from fixing it yourself. Showing the solution does not mark the bug as solved.','Show solution')){ R.solution=true; renderDesc(); }
+      return;
+    }
+    if(e.target.closest('#sol-copy')){ const ta=$('#code'); ta.value=challenge().solution; S.code[codeKey()]=ta.value; save(); updateGutter(true); toast('Solution copied into the editor'); }
+  });
+  $('#preview').addEventListener('click',e=>{
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    if(b.dataset.act==='retry'||b.dataset.act==='rerun') doRun();
+  });
+
+  const ta=$('#code');
+  ta.addEventListener('keydown',onEditorKey);
+  ta.addEventListener('blur',()=>{ escArmed=false; });
+  let editT;
+  ta.addEventListener('input',()=>{
+    updateGutter();
+    clearTimeout(editT);
+    editT=setTimeout(()=>{ S.code[codeKey()]=ta.value; save(); },250);
+  });
+  ta.addEventListener('scroll',()=>{ $('#gutter').scrollTop=ta.scrollTop; });
+  $('#run-btn').addEventListener('click',doRun);
+  $('#test-btn').addEventListener('click',doTests);
+  $('#reset-code').addEventListener('click',async()=>{
+    if($('#code').value===starterCode()){ toast('Code is already the starter'); return; }
+    if(await confirmDialog('Reset code?','Your edits to this code will be replaced with the original.','Reset')){
+      delete S.code[codeKey()]; save(); renderEditor(); doRun();
+    }
+  });
+  $('#opt-renders').addEventListener('change',e=>{
+    S.renders=e.target.checked; save();
+    const fr=runner.frame(); if(fr&&runner.state()==='ready') fr.post({t:'flash',on:S.renders});
+    scheduleRender('renders');
+    announce('Render flashes '+(S.renders?'on':'off'));
+  });
+  $('#opt-strict').addEventListener('change',e=>{
+    S.strict=e.target.checked; save(); scheduleRender('effects'); announce('StrictMode '+(S.strict?'on':'off')+'. Re-running.'); doRun();
+  });
+  $('#tabs').addEventListener('click',e=>{ const b=e.target.closest('[data-tab]'); if(b) setTab(b.dataset.tab); });
+  $('#tabs').addEventListener('keydown',e=>{
+    if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft') return;
+    const t=$$('[data-tab]',$('#tabs')), i=t.findIndex(x=>x.dataset.tab===R.tab), n=(i+(e.key==='ArrowRight'?1:t.length-1))%t.length;
+    setTab(t[n].dataset.tab); $('#tab-'+t[n].dataset.tab).focus(); e.preventDefault();
+  });
+  $('#panel-effects').addEventListener('click',e=>{
+    const b=e.target.closest('[data-act]'); if(!b) return;
+    if(b.dataset.act==='clear-events'){ R.events=[]; renderEffects(); renderTabs(); }
+  });
+  $('#panel-effects').addEventListener('change',e=>{
+    if(e.target.dataset.act==='fx-renders'){ R.fxRenders=e.target.checked; renderEffects(); }
+  });
+  $('#panel-renders').addEventListener('click',e=>{
+    if(e.target.closest('[data-act="clear-renders"]')){ R.commits=[]; renderRenders(); }
+  });
+
+  $('#quiz').addEventListener('click',e=>{
+    if(e.target.closest('#quiz-reset')){ delete S.quiz[lesson().id]; save(); renderQuiz(); renderSidebar(); announce('Quiz reset.'); return; }
+    const b=e.target.closest('.qopt'); if(!b||b.getAttribute('aria-disabled')==='true') return;
+    const L=lesson(), qi=+b.dataset.q, oi=+b.dataset.o;
+    const q=S.quiz[L.id]=S.quiz[L.id]||{a:[]};
+    if(!Array.isArray(q.a)) q.a=[];
+    while(q.a.length<L.quiz.length) q.a.push(null);
+    q.a[qi]=oi; save();
+    renderQuiz(); renderSidebar();
+    const s=lessonStats(L), right=oi===L.quiz[qi].a;
+    announce((right?'Correct. ':'Not quite. ')+L.quiz[qi].why.replace(/`/g,'')+(s.answered===L.quiz.length?' Quiz finished: '+s.correct+' out of '+L.quiz.length+'.':''));
+  });
+  $('#reset-progress').addEventListener('click',async()=>{
+    if(await confirmDialog('Reset progress?','Solved bugs and quiz answers will be cleared. Your code edits are kept.','Reset progress')){
+      S.solved={}; S.quiz={}; save(); renderSidebar(); renderModes(); renderDesc(); renderQuiz(); toast('Progress reset');
+    }
+  });
+  document.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==='Enter'&&!modalOpen()){ e.preventDefault(); if(e.shiftKey&&!isEx()) doTests(); else doRun(); }
+  });
+
+  setPv('idle');
+  renderAll();
+  setTimeout(doRun,0);
+}
+init();
+
+</script>
+<script src="levelup-nav.js"></script>
+</body>
+</html>
